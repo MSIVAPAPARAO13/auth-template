@@ -1,4 +1,6 @@
 # Enterprise Authentication Platform & Template Studio
+<img width="1914" height="944" alt="image" src="https://github.com/user-attachments/assets/c1720e9c-68fb-43c8-b8ac-3d35682be1d6" />
+
 
 A production-ready, highly secure Django authentication platform featuring multi-channel OTP delivery (Email, SMS, WhatsApp), multiple visual design templates, an interactive Custom Builder, database configuration management, and one-click ZIP project export.
 
