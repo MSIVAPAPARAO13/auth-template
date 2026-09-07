@@ -348,4 +348,89 @@ html, body {
   transition: color 0.2s ease;
 }
 
+/* ==========================================================================
+   FLOATING TEMPLATE SWITCHER (Google Stitch Toolbar)
+   ========================================================================== */
+.floating-template-switcher {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(24, 24, 27, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+  padding: 0.3rem 0.65rem;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Inter', sans-serif);
+  font-size: 0.75rem;
+  user-select: none;
+  animation: floatFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.floating-template-switcher .switcher-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #a1a1aa;
+  margin-right: 0.2rem;
+  padding-left: 0.25rem;
+}
+
+.floating-template-switcher .switcher-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #d4d4d8;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  line-height: 1.2;
+}
+
+.floating-template-switcher .switcher-btn:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.floating-template-switcher .switcher-btn.active {
+  background: #ffffff;
+  color: #18181b;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.floating-template-switcher .switcher-btn-all {
+  background: rgba(255, 255, 255, 0.08);
+  border-left: 1px solid rgba(255, 255, 255, 0.15);
+  padding-left: 0.75rem;
+  margin-left: 0.15rem;
+}
+
+.floating-template-switcher .switcher-btn-all:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+@keyframes floatFadeIn {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* Hide floating toolbar when embedded inside Builder preview iframe */
+body.is-preview .floating-template-switcher,
+html.is-preview .floating-template-switcher,
+[data-preview="1"] .floating-template-switcher {
+  display: none !important;
+}
+
+
 

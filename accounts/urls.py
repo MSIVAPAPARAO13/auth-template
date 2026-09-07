@@ -16,6 +16,7 @@ urlpatterns = [
     path("api/reset-password/", views.reset_password_api, name="reset_password_api"),
     path("dashboard/", views.dashboard_view, name="dashboard"),
     path("logout/", views.logout_view, name="logout"),
+    path("templates/", views.templates_gallery_view, name="templates"),
     path("templates-preview/", views.templates_preview_view, name="templates_preview"),
     path("builder/", views.builder_view, name="builder"),
     path("api/builder/configurations/", views.config_list_api, name="config_list_api"),

@@ -946,10 +946,10 @@ def reset_password_api(request):
     )
 
 
-def templates_preview_view(request):
+def templates_gallery_view(request):
     """
-    Renders the developer preview showcase for all three visual authentication templates
-    (Modern Glass, Split Screen, Minimal Corporate).
+    Renders the official polished Google Stitch Authentication Templates Gallery
+    showcase for all registered visual templates (Modern Glass, Split Screen, Minimal Corporate).
     """
     param = request.GET.get("template")
     if param and param in VALID_TEMPLATES:
@@ -964,6 +964,15 @@ def templates_preview_view(request):
             "active_template": active_temp,
         },
     )
+
+
+def templates_preview_view(request):
+    """
+    Public indexable preview endpoint for templates.
+    Shares the official polished Google Stitch gallery layout for SEO and backward compatibility.
+    """
+    return templates_gallery_view(request)
+
 
 
 def builder_view(request):

@@ -21,8 +21,9 @@
       <span class="builder-brand-title">AuthPlatform <span class="sr-only">Auth Studio</span></span>
       <div class="builder-nav-divider"></div>
       <nav class="builder-main-nav">
+        <a href="/dashboard/" class="nav-link">Dashboard</a>
         <a href="/builder/" class="nav-link active" aria-current="page">Builder</a>
-        <a href="/templates-preview/" class="nav-link">Templates</a>
+        <a href="/templates/" class="nav-link">Templates</a>
         <button type="button" id="btn-nav-export" class="nav-link nav-btn-link" onclick="document.getElementById('btn-export-zip').click()">Export</button>
       </nav>
       <span id="active-config-badge" class="builder-config-badge">Default Modern</span>
@@ -495,15 +496,36 @@
         <button type="button" class="state-btn" id="state-success">Success</button>
       </div>
 
-      <!-- Preview frame wrapper -->
-      <div id="preview-frame-wrapper" class="preview-frame-wrapper mode-desktop">
-        <iframe id="preview-iframe" class="preview-iframe" src="/login/?template={{ selected_template|default:'modern' }}&preview=1" title="Live Preview"></iframe>
-      </div>
+      <!-- Preview Shell: Stable layout box for viewport and style selector -->
+      <div class="preview-shell">
+        <div id="preview-frame-wrapper" class="preview-frame-wrapper preview-viewport mode-desktop">
+          <iframe id="preview-iframe" class="preview-iframe" src="/login/?template={{ selected_template|default:'modern' }}&preview=1" title="Live Preview"></iframe>
+        </div>
 
-      <!-- Preview Helper Label from Stitch -->
-      <div class="preview-sync-badge">
-        <span class="pulse-dot"></span>
-        <span>Live Sync Active • Changes update instantly</span>
+        <!-- Google Stitch Bottom Style Selector -->
+        <div class="builder-style-selector" role="group" aria-label="Template Style Selector">
+          <span class="style-selector-label">Style:</span>
+          <div class="style-segmented-control" id="builder-style-pills">
+            <button type="button" class="style-pill-btn {% if selected_template == 'modern' or not selected_template %}active{% endif %}" data-template="modern" title="Switch to Modern Minimal">
+              <span class="style-pill-indicator"></span>
+              <span>Modern</span>
+            </button>
+            <button type="button" class="style-pill-btn {% if selected_template == 'split' %}active{% endif %}" data-template="split" title="Switch to Split Screen">
+              <span class="style-pill-indicator"></span>
+              <span>Split</span>
+            </button>
+            <button type="button" class="style-pill-btn {% if selected_template == 'corporate' %}active{% endif %}" data-template="corporate" title="Switch to Minimal Corporate">
+              <span class="style-pill-indicator"></span>
+              <span>Corporate</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Preview Helper Label from Stitch -->
+        <div class="preview-sync-badge">
+          <span class="pulse-dot"></span>
+          <span>Live Sync Active • Changes update instantly</span>
+        </div>
       </div>
     </main>
   </div>

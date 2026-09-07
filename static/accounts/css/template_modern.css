@@ -497,3 +497,84 @@ body.template-modern {
     font-size: 1.35rem;
   }
 }
+
+/* ==========================================================================
+   OTP STATUS UI — standardized across Login / Register / Forgot Password
+   ========================================================================== */
+
+/* "Code sent to ..." info block above OTP digit input */
+.template-modern .otp-target-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+  padding: 0.6rem 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(76, 69, 70, 0.25);
+  border-radius: var(--radius-sm, 8px);
+}
+
+.template-modern .otp-target-text {
+  font-size: 0.825rem;
+  color: var(--muted-color, #988e90);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.template-modern .otp-target-value {
+  color: var(--text-color, #e5e1e4);
+  font-weight: 600;
+}
+
+.template-modern .otp-edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.775rem;
+  padding: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Countdown + Resend row */
+.template-modern .otp-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
+  font-size: 0.8rem;
+}
+
+.template-modern .otp-expire-label {
+  color: var(--muted-color, #988e90);
+  font-size: 0.8rem;
+}
+
+.template-modern .otp-countdown-value {
+  color: var(--primary-color, #c6c6c6);
+  font-weight: 600;
+}
+
+/* Field-level inline errors */
+.template-modern .field-error-text {
+  display: block;
+  color: var(--color-error, #ef4444);
+  font-size: 0.775rem;
+  margin-top: 0.3rem;
+  line-height: 1.35;
+}
+
+/* Screen-reader only utility (accessible labels without visual label) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+

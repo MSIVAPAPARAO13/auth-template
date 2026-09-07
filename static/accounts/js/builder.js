@@ -390,14 +390,30 @@
   // BIND FORM CONTROLS
   // --------------------------------------------------------------------------
   function bindInputs() {
-    // Template Selector
+    // Template Selector (Dropdown & Bottom Style Segmented Pills)
     const tplSelect = document.getElementById('ctrl-template-select');
     if (tplSelect) {
       tplSelect.addEventListener('change', () => {
         currentConfig.template = tplSelect.value;
+        document.querySelectorAll('.style-pill-btn').forEach((btn) => {
+          btn.classList.toggle('active', btn.dataset.template === tplSelect.value);
+        });
         updatePreviewUrl();
       });
     }
+
+    document.querySelectorAll('.style-pill-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const tpl = btn.dataset.template;
+        if (!tpl) return;
+        currentConfig.template = tpl;
+        if (tplSelect) tplSelect.value = tpl;
+        document.querySelectorAll('.style-pill-btn').forEach((b) => {
+          b.classList.toggle('active', b.dataset.template === tpl);
+        });
+        updatePreviewUrl();
+      });
+    });
 
     // Colors
     ['primary', 'secondary', 'background', 'card_bg', 'text', 'muted', 'border'].forEach((colorKey) => {
@@ -997,6 +1013,10 @@
     if (tplSelect && config.template) {
       tplSelect.value = config.template;
     }
+    const activeTemplate = config.template || 'modern';
+    document.querySelectorAll('.style-pill-btn').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.template === activeTemplate);
+    });
 
     // Colors
     const colors = config.colors || {};
@@ -1341,6 +1361,26 @@
   // Initialize
   syncSidebarControlsFromConfig(currentConfig);
   bindInputs();
+
+  // Handle URL query parameters (e.g. ?template=split, ?action=export)
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramTemplate = urlParams.get('template');
+    if (paramTemplate && ['modern', 'split', 'corporate'].includes(paramTemplate)) {
+      currentConfig.template = paramTemplate;
+      const tplSelect = document.getElementById('ctrl-template-select');
+      if (tplSelect) tplSelect.value = paramTemplate;
+      document.querySelectorAll('.style-pill-btn').forEach((b) => {
+        b.classList.toggle('active', b.dataset.template === paramTemplate);
+      });
+      updatePreviewUrl();
+    }
+    const paramAction = urlParams.get('action');
+    if (paramAction === 'export') {
+      const expBtn = document.getElementById('btn-export-zip');
+      if (expBtn) setTimeout(() => expBtn.click(), 400);
+    }
+  } catch (e) {}
 
   // Ensure live styles and logo are applied immediately if iframe is already loaded
   if (previewFrame && previewFrame.contentDocument && (previewFrame.contentDocument.readyState === 'complete' || previewFrame.contentDocument.readyState === 'interactive')) {

@@ -892,7 +892,20 @@ body.builder-body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* Preview Frame Wrapper with Stitch Box Shadow */
+/* Stable Preview Shell Layout Box */
+.preview-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  max-width: 1100px;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+/* Stable Viewport with fixed layout dimensions */
 .preview-frame-wrapper {
   background: #131315;
   border-radius: 12px;
@@ -904,26 +917,25 @@ body.builder-body {
   position: relative;
   z-index: 10;
   width: 100%;
-  height: 100%;
+  height: 640px;
+  max-height: 680px;
+  box-sizing: border-box;
 }
 
 .preview-frame-wrapper.mode-desktop {
   width: 100%;
   max-width: 1100px;
-  height: 100%;
-  max-height: 850px;
+  height: 640px;
 }
 
 .preview-frame-wrapper.mode-tablet {
   width: 768px;
-  height: 100%;
-  max-height: 850px;
+  height: 640px;
 }
 
 .preview-frame-wrapper.mode-mobile {
   width: 390px;
-  height: 100%;
-  max-height: 720px;
+  height: 640px;
   border-radius: 28px;
   border: 4px solid #201f22;
 }
@@ -933,12 +945,100 @@ body.builder-body {
   height: 100%;
   border: none;
   background: var(--builder-bg);
+  display: block;
+}
+
+/* Google Stitch Redesigned Style Selector */
+.builder-style-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(29, 27, 30, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 0.35rem 0.5rem 0.35rem 0.85rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+  flex-shrink: 0;
+  z-index: 15;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.builder-style-selector:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.style-selector-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--builder-text-muted, #9a8f90);
+}
+
+.style-segmented-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 3px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.style-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: none;
+  color: var(--builder-text-muted, #9a8f90);
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-family: inherit;
+  padding: 0.32rem 0.85rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  line-height: 1.2;
+}
+
+.style-pill-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.style-pill-btn:focus-visible {
+  outline: 2px solid var(--builder-primary, #c6c6c6);
+  outline-offset: 1px;
+}
+
+.style-pill-btn.active {
+  background: var(--builder-surface, #2a2729);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.style-pill-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: transparent;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+}
+
+.style-pill-btn.active .style-pill-indicator {
+  background: #34d399;
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.7);
 }
 
 /* Preview Sync Badge from Stitch */
 .preview-sync-badge {
-  position: absolute;
-  bottom: 1.25rem;
   font-size: 0.75rem;
   color: rgba(207, 196, 197, 0.6);
   display: flex;
@@ -946,6 +1046,7 @@ body.builder-body {
   gap: 0.4rem;
   z-index: 10;
   user-select: none;
+  margin-top: 0.1rem;
 }
 
 .pulse-dot {

@@ -1,14 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Sign In — Modern Glass | Auth Platform{% endblock %}
+{% block title %}Sign In | Auth Platform{% endblock %}
 
 {% block body_class %}template-modern{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'accounts/css/auth_tokens.css' %}">
 <link rel="stylesheet" href="{% static 'accounts/css/template_modern.css' %}">
-<link rel="stylesheet" href="{% static 'accounts/css/preview.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -40,14 +39,14 @@
     {% if auth_settings.enable_password != False and auth_settings.enable_otp != False %}
     <div class="auth-mode-selector" role="tablist" aria-label="Authentication Method">
       <button type="button" class="mode-tab-btn active" id="mode-password-btn" role="tab" aria-selected="true" aria-controls="password-login-section">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
           <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
         </svg>
         <span>Password</span>
       </button>
       <button type="button" class="mode-tab-btn" id="mode-otp-btn" role="tab" aria-selected="false" aria-controls="otp-login-section">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/>
         </svg>
         <span>One-Time Password</span>
@@ -84,9 +83,7 @@
                      value="{{ password_form.identifier.value|default:'' }}">
             </div>
             {% if password_form.identifier.errors %}
-              <span class="field-error-text" style="color: var(--color-error); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
-                {{ password_form.identifier.errors.0 }}
-              </span>
+              <span class="field-error-text">{{ password_form.identifier.errors.0 }}</span>
             {% endif %}
           </div>
 
@@ -107,16 +104,14 @@
                      autocomplete="current-password"
                      required>
               <button type="button" class="toggle-password-btn" id="toggle-password-btn" aria-label="Show password">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                   <circle cx="12" cy="12" r="3"></circle>
                 </svg>
               </button>
             </div>
             {% if password_form.password.errors %}
-              <span class="field-error-text" style="color: var(--color-error); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
-                {{ password_form.password.errors.0 }}
-              </span>
+              <span class="field-error-text">{{ password_form.password.errors.0 }}</span>
             {% endif %}
           </div>
 
@@ -133,7 +128,7 @@
           <!-- Submit Button -->
           <button type="submit" class="btn-primary" id="password-submit-btn">
             <span class="spinner" aria-hidden="true"></span>
-            <span class="btn-text">Sign In with Password</span>
+            <span class="btn-text">Sign In</span>
           </button>
         </form>
       </section>
@@ -152,7 +147,7 @@
 
           <form id="otp-request-form">
             <div class="form-group">
-              <label class="form-label" for="otp-request-identifier">Email or Mobile Number</label>
+              <label class="form-label" id="otp-identifier-label" for="otp-request-identifier">Email or Mobile Number</label>
               <div class="input-wrapper">
                 <input type="text"
                        id="otp-request-identifier"
@@ -171,9 +166,12 @@
 
         <!-- Step 2: Verify OTP -->
         <div id="otp-step-2" class="otp-screen-step" style="display: none;">
-          <div class="otp-change-identifier" style="margin-bottom: 1rem;">
-            <span>Code sent to <strong id="otp-target-display" style="color: #fff;"></strong></span>
-            <button type="button" id="otp-change-identifier-btn" class="link-subtle" style="background:none; border:none; cursor:pointer; font-size: 0.85rem; margin-left: 0.5rem;">Edit</button>
+          <!-- Info: code sent to... -->
+          <div class="otp-target-info">
+            <p class="otp-target-text">
+              Code sent to <strong id="otp-target-display" class="otp-target-value"></strong>
+            </p>
+            <button type="button" id="otp-change-identifier-btn" class="link-subtle otp-edit-btn">Edit</button>
           </div>
 
           <form id="otp-verify-form" method="POST" action="{% url 'login' %}">
@@ -182,26 +180,18 @@
             <input type="hidden" name="identifier" id="otp-verify-identifier">
             <input type="hidden" name="next" value="{{ next }}">
 
+            <!-- 6-digit OTP Input Component -->
             <div class="form-group">
-              <label class="form-label" for="otp-verify-code">Enter 6-Digit Code</label>
-              <div class="input-wrapper">
-                <input type="text"
-                       name="otp_code"
-                       id="otp-verify-code"
-                       class="form-input"
-                       style="font-size: 1.5rem; letter-spacing: 0.4em; text-align: center; font-family: var(--font-mono); font-weight: 700;"
-                       placeholder="000000"
-                       maxlength="6"
-                       inputmode="numeric"
-                       pattern="[0-9]*"
-                       autocomplete="one-time-code"
-                       required>
-              </div>
+              <label class="form-label sr-only" for="otp-inputs">Enter 6-Digit Verification Code</label>
+              {% include "accounts/components/otp_input.html" %}
             </div>
 
-            <div class="form-row-between" style="margin-bottom: 1.25rem;">
-              <span style="font-size: 0.85rem; color: var(--muted-color);">Code expires in <strong id="otp-countdown-val" style="color: var(--primary-color);">05:00</strong></span>
-              <button type="button" id="resend-otp-btn" class="link-subtle" style="background:none; border:none; cursor:pointer; font-size: 0.85rem;" disabled>Resend Code</button>
+            <!-- Countdown & Resend Row -->
+            <div class="otp-meta-row">
+              <span class="otp-expire-label">
+                Expires in <strong id="otp-countdown-val" class="otp-countdown-value">05:00</strong>
+              </span>
+              <button type="button" id="resend-otp-btn" class="link-subtle" disabled>Resend Code</button>
             </div>
 
             {% if auth_settings.remember_me != False %}
@@ -239,3 +229,4 @@
 {% block extra_js %}
 <script src="{% static 'accounts/js/login.js' %}"></script>
 {% endblock %}
+

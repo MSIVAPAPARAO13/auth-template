@@ -1,75 +1,528 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Dashboard — Authentication Platform{% endblock %}
+{% block title %}Dashboard — AuthPlatform Enterprise Studio{% endblock %}
+
+{% block body_class %}dashboard-body{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'accounts/css/login.css' %}">
+<link rel="stylesheet" href="{% static 'accounts/css/auth_tokens.css' %}?v=2.2">
 <style>
-  .dashboard-card {
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 2.5rem 2rem;
-    box-shadow: var(--shadow-xl);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --dash-bg: #131315;
+    --dash-surface: #201f22;
+    --dash-surface-low: #1c1b1d;
+    --dash-surface-high: #2a2a2c;
+    --dash-surface-highest: #353437;
+    --dash-border: rgba(76, 69, 70, 0.35);
+    --dash-border-ghost: rgba(255, 255, 255, 0.08);
+    --dash-text: #e5e1e4;
+    --dash-muted: #988e90;
+    --dash-primary: #c6c6c6;
+    --dash-primary-hover: #e2e2e2;
+    --dash-primary-contrast: #1b1b1b;
   }
-  .user-badge {
-    width: 64px;
+  body.dashboard-body {
+    background: var(--dash-bg) !important;
+    color: var(--dash-text) !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 100vh !important;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; border: none; background: transparent; cursor: pointer; }
+
+  /* Topbar Header matching Stitch */
+  .dash-topbar {
+    position: sticky;
+    top: 0;
+    width: 100%;
     height: 64px;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    color: #fff;
+    background: rgba(19, 19, 21, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--dash-border);
+    z-index: 50;
+  }
+  .dash-topbar-inner {
+    max-width: 1280px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .dash-nav-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .dash-brand-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--dash-text);
+    letter-spacing: -0.015em;
+  }
+  .dash-nav-divider {
+    width: 1px;
+    height: 16px;
+    background: rgba(76, 69, 70, 0.5);
+  }
+  .dash-main-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .dash-nav-link {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--dash-muted);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+  }
+  .dash-nav-link:hover {
+    color: var(--dash-text);
+    background: rgba(42, 42, 44, 0.5);
+  }
+  .dash-nav-link.active {
+    background: var(--dash-surface-high);
+    color: var(--dash-text);
+    font-weight: 600;
+  }
+  .dash-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .dash-user-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.65rem;
+    background: var(--dash-surface-low);
+    border: 1px solid var(--dash-border-ghost);
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    color: var(--dash-text);
+  }
+  .dash-user-avatar {
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
+    background: #3b82f6;
+    color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin: 0 auto 1.25rem;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
-  }
-  .info-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 1.5rem 0;
-    font-size: 0.9rem;
-  }
-  .info-table th {
-    text-align: left;
-    color: var(--text-muted);
-    padding: 0.6rem 0;
-    border-bottom: 1px solid var(--border);
-    font-weight: 500;
-  }
-  .info-table td {
-    text-align: right;
-    color: var(--text);
-    padding: 0.6rem 0;
-    border-bottom: 1px solid var(--border);
-    font-weight: 600;
-  }
-  .status-pill {
-    display: inline-block;
-    padding: 0.25rem 0.6rem;
-    border-radius: var(--radius-full);
     font-size: 0.75rem;
     font-weight: 600;
-    background: var(--success-bg);
-    color: #065f46;
+  }
+  .dash-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1rem;
+    font-size: 0.825rem;
+    font-weight: 500;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: none;
+  }
+  .dash-btn-primary {
+    background: var(--dash-primary);
+    color: var(--dash-primary-contrast);
+    font-weight: 600;
+  }
+  .dash-btn-primary:hover {
+    background: var(--dash-primary-hover);
+  }
+  .dash-btn-ghost {
+    background: transparent;
+    color: var(--dash-muted);
+    border: 1px solid var(--dash-border-ghost);
+  }
+  .dash-btn-ghost:hover {
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.4);
+    background: rgba(239, 68, 68, 0.08);
+  }
+
+  /* Main Container */
+  .dash-main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  /* Welcome Banner */
+  .dash-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .dash-header-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #34d399;
+    margin-bottom: 0.4rem;
+  }
+  .status-pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+  }
+  .dash-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0 0 0.35rem;
+    color: var(--dash-text);
+  }
+  .dash-subtitle {
+    font-size: 0.95rem;
+    color: var(--dash-muted);
+    margin: 0;
+  }
+
+  /* Metrics 4-Grid */
+  .dash-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+  .dash-metric-card {
+    background: var(--dash-surface);
+    border: 1px solid var(--dash-border-ghost);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+  }
+  .dash-metric-card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+  }
+  .metric-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .metric-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--dash-muted);
+  }
+  .metric-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--dash-muted);
+  }
+  .metric-value {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--dash-text);
+  }
+  .metric-subtext {
+    font-size: 0.78rem;
+    color: var(--dash-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  /* 3-Column Studio Grid */
+  .dash-studio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .dash-studio-card {
+    background: var(--dash-surface);
+    border: 1px solid var(--dash-border-ghost);
+    border-radius: 14px;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .dash-studio-card:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    transform: translateY(-3px);
+  }
+  .studio-card-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: var(--dash-surface-high);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+    color: var(--dash-primary);
+  }
+  .studio-card-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--dash-text);
+    margin: 0 0 0.5rem;
+  }
+  .studio-card-desc {
+    font-size: 0.85rem;
+    color: var(--dash-muted);
+    line-height: 1.5;
+    margin: 0 0 1.5rem;
+    flex-grow: 1;
+  }
+
+  /* Account Profile Section */
+  .dash-profile-card {
+    background: var(--dash-surface);
+    border: 1px solid var(--dash-border-ghost);
+    border-radius: 14px;
+    padding: 1.75rem;
+  }
+  .profile-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--dash-border-ghost);
+    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  .profile-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--dash-text);
+    margin: 0;
+  }
+  .dash-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+  .dash-table th {
+    text-align: left;
+    color: var(--dash-muted);
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-weight: 500;
+    width: 35%;
+  }
+  .dash-table td {
+    text-align: right;
+    color: var(--dash-text);
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-weight: 500;
+  }
+  .status-pill-green {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(52, 211, 153, 0.12);
+    color: #34d399;
+    border: 1px solid rgba(52, 211, 153, 0.3);
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="auth-container">
-  <div class="dashboard-card">
-    <div class="user-badge" aria-hidden="true">
-      {{ user.username|slice:":1"|upper }}
+<!-- Topbar Header matching Stitch -->
+<header class="dash-topbar">
+  <div class="dash-topbar-inner">
+    <div class="dash-nav-left">
+      <span class="dash-brand-title">AuthPlatform</span>
+      <div class="dash-nav-divider"></div>
+      <nav class="dash-main-nav">
+        <a href="/dashboard/" class="dash-nav-link active" aria-current="page">Dashboard</a>
+        <a href="/builder/" class="dash-nav-link">Builder</a>
+        <a href="/templates/" class="dash-nav-link">Templates</a>
+        <a href="/builder/?action=export" class="dash-nav-link">Export</a>
+      </nav>
+    </div>
+    <div class="dash-nav-right">
+      <div class="dash-user-pill">
+        <span class="dash-user-avatar">{{ user.username|slice:":1"|upper }}</span>
+        <span>{{ user.get_full_name|default:user.username }}</span>
+      </div>
+      <a href="{% url 'logout' %}" class="dash-btn dash-btn-ghost">Sign Out</a>
+    </div>
+  </div>
+</header>
+
+<main class="dash-main">
+  <!-- Welcome Banner -->
+  <div class="dash-header">
+    <div>
+      <div class="dash-header-tag">
+        <span class="status-pulse"></span>
+        <span>Session Active • Identity Hub</span>
+      </div>
+      <h1 class="dash-title">Welcome back, {{ user.get_full_name|default:user.username }}</h1>
+      <p class="dash-subtitle">Manage your authentication templates, live customizations, and profile security.</p>
+    </div>
+    <div style="display: flex; gap: 0.75rem;">
+      <a href="/builder/" class="dash-btn dash-btn-primary">Launch Builder</a>
+      <a href="/templates/" class="dash-btn dash-btn-ghost" style="color: var(--dash-text);">Browse Templates</a>
+    </div>
+  </div>
+
+  <!-- 4-Metric Grid -->
+  <div class="dash-metrics-grid">
+    <div class="dash-metric-card">
+      <div class="metric-header">
+        <span class="metric-label">Active Template</span>
+        <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+          <path d="M3 9h18"></path>
+        </svg>
+      </div>
+      <span class="metric-value">Modern Minimal</span>
+      <span class="metric-subtext">Google Stitch Enterprise SaaS</span>
     </div>
 
-    <h1 class="auth-title" style="text-align: center;">Session Active</h1>
-    <p class="auth-subtitle" style="text-align: center;">You are authenticated on the platform</p>
+    <div class="dash-metric-card">
+      <div class="metric-header">
+        <span class="metric-label">MFA Security</span>
+        <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+      </div>
+      <span class="metric-value">Multi-Channel OTP</span>
+      <span class="metric-subtext"><span class="status-pulse"></span> Email, SMS &amp; WhatsApp Enabled</span>
+    </div>
 
-    <table class="info-table">
+    <div class="dash-metric-card">
+      <div class="metric-header">
+        <span class="metric-label">Template Registry</span>
+        <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"></rect>
+          <rect x="14" y="3" width="7" height="7"></rect>
+          <rect x="14" y="14" width="7" height="7"></rect>
+          <rect x="3" y="14" width="7" height="7"></rect>
+        </svg>
+      </div>
+      <span class="metric-value">3 Templates</span>
+      <span class="metric-subtext">Modern, Split Screen &amp; Corporate</span>
+    </div>
+
+    <div class="dash-metric-card">
+      <div class="metric-header">
+        <span class="metric-label">Account Status</span>
+        <svg class="metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+      <span class="metric-value">Active Session</span>
+      <span class="metric-subtext">{{ user.email }}</span>
+    </div>
+  </div>
+
+  <!-- Studio Quick Action Cards -->
+  <div class="dash-studio-grid">
+    <div class="dash-studio-card">
+      <div>
+        <div class="studio-card-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="4" y1="21" x2="4" y2="14"></line>
+            <line x1="4" y1="10" x2="4" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12" y2="3"></line>
+            <line x1="20" y1="21" x2="20" y2="16"></line>
+            <line x1="20" y1="12" x2="20" y2="3"></line>
+            <line x1="1" y1="14" x2="7" y2="14"></line>
+            <line x1="9" y1="8" x2="15" y2="8"></line>
+            <line x1="17" y1="16" x2="23" y2="16"></line>
+          </svg>
+        </div>
+        <h3 class="studio-card-title">Live Auth Builder</h3>
+        <p class="studio-card-desc">
+          Interactively customize branding logos, palette colors, typography, and OTP channel controls with instant live preview synchronization.
+        </p>
+      </div>
+      <a href="/builder/" class="dash-btn dash-btn-primary">Open Builder →</a>
+    </div>
+
+    <div class="dash-studio-card">
+      <div>
+        <div class="studio-card-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+        </div>
+        <h3 class="studio-card-title">Templates Gallery</h3>
+        <p class="studio-card-desc">
+          Explore production-tested authentication flows: Modern Minimal SaaS, Split Screen Editorial, and Minimal Corporate architectures.
+        </p>
+      </div>
+      <a href="/templates/" class="dash-btn dash-btn-primary">Browse Templates →</a>
+    </div>
+
+    <div class="dash-studio-card">
+      <div>
+        <div class="studio-card-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+        </div>
+        <h3 class="studio-card-title">Export ZIP Package</h3>
+        <p class="studio-card-desc">
+          Package your configured authentication system into a standalone production Django project ready for immediate deployment.
+        </p>
+      </div>
+      <a href="/builder/?action=export" class="dash-btn dash-btn-primary">Export Project →</a>
+    </div>
+  </div>
+
+  <!-- Profile & Security Card -->
+  <div class="dash-profile-card">
+    <div class="profile-card-header">
+      <div>
+        <h3 class="profile-title">Account &amp; Authentication Details</h3>
+        <p style="font-size: 0.825rem; color: var(--dash-muted); margin: 0.25rem 0 0;">Profile information and current authentication session status</p>
+      </div>
+      <span class="status-pill-green"><span class="status-pulse"></span> Active Session</span>
+    </div>
+
+    <table class="dash-table">
       <tr>
         <th>Full Name</th>
         <td>{{ user.get_full_name|default:"Not specified" }}</td>
@@ -87,14 +540,10 @@
         <td>{{ user.mobile|default:"Not linked" }}</td>
       </tr>
       <tr>
-        <th>Authentication Status</th>
-        <td><span class="status-pill">Active Session</span></td>
+        <th>Session Status</th>
+        <td><span class="status-pill-green">Session Active</span></td>
       </tr>
     </table>
-
-    <a href="{% url 'logout' %}" class="btn-primary" style="text-decoration: none; text-align: center; margin-top: 1rem;">
-      <span>Sign Out</span>
-    </a>
   </div>
-</div>
+</main>
 {% endblock %}

@@ -11,8 +11,396 @@
 {% block body_class %}templates-preview-body{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'accounts/css/auth_tokens.css' %}">
-<link rel="stylesheet" href="{% static 'accounts/css/preview.css' %}">
+<link rel="stylesheet" href="{% static 'accounts/css/auth_tokens.css' %}?v=2.2">
+<link rel="stylesheet" href="{% static 'accounts/css/preview.css' %}?v=2.2">
+<style>
+  /* Embedded Full Stitch Template Registry Styles for 100% Rendering Resilience */
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    --gallery-bg: #131315;
+    --gallery-surface: #201f22;
+    --gallery-surface-low: #1c1b1d;
+    --gallery-surface-high: #2a2a2c;
+    --gallery-surface-highest: #353437;
+    --gallery-border: rgba(76, 69, 70, 0.35);
+    --gallery-border-ghost: rgba(255, 255, 255, 0.08);
+    --gallery-text: #e5e1e4;
+    --gallery-muted: #988e90;
+    --gallery-primary: #c6c6c6;
+    --gallery-primary-hover: #e2e2e2;
+    --gallery-primary-contrast: #1b1b1b;
+  }
+  body.templates-preview-body {
+    background: #131315 !important;
+    color: #e5e1e4 !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: 100vh !important;
+    -webkit-font-smoothing: antialiased;
+  }
+  .sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; border: none; background: transparent; cursor: pointer; }
+
+  /* Gallery Topbar */
+  .gallery-topbar {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 64px;
+    background: rgba(19, 19, 21, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--gallery-border);
+    z-index: 50;
+  }
+  .gallery-topbar-inner {
+    max-width: 1280px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .gallery-nav-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .gallery-brand-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--gallery-text);
+    letter-spacing: -0.015em;
+  }
+  .gallery-nav-divider {
+    width: 1px;
+    height: 16px;
+    background: rgba(76, 69, 70, 0.5);
+  }
+  .gallery-main-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .gallery-nav-link {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--gallery-muted);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+  }
+  .gallery-nav-link:hover {
+    color: var(--gallery-text);
+    background: rgba(42, 42, 44, 0.5);
+  }
+  .gallery-nav-link.active {
+    background: var(--gallery-surface-high);
+    color: var(--gallery-text);
+    font-weight: 600;
+  }
+  .gallery-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.45rem 1rem;
+    font-size: 0.825rem;
+    font-weight: 500;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: none;
+  }
+  .gallery-btn-primary {
+    background: var(--gallery-primary);
+    color: var(--gallery-primary-contrast);
+    font-weight: 600;
+  }
+  .gallery-btn-primary:hover {
+    background: var(--gallery-primary-hover);
+  }
+  .gallery-btn.flex-1 { flex: 1; }
+  .gallery-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.45rem;
+    background: var(--gallery-surface-high);
+    color: var(--gallery-text);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    border: 1px solid var(--gallery-border);
+  }
+  .gallery-icon-btn:hover {
+    background: var(--gallery-surface-highest);
+    color: #fff;
+  }
+
+  /* Gallery Main */
+  .gallery-main {
+    padding: 3rem 1.5rem 5rem;
+  }
+  .gallery-container {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .gallery-header-section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2.5rem;
+  }
+  .gallery-registry-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gallery-primary);
+    margin-bottom: 0.5rem;
+  }
+  .gallery-title {
+    font-size: 2.25rem;
+    font-weight: 600;
+    color: var(--gallery-text);
+    letter-spacing: -0.025em;
+    margin: 0 0 0.5rem;
+  }
+  .gallery-subtitle {
+    font-size: 1rem;
+    color: var(--gallery-muted);
+    max-width: 680px;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* Filter Bar */
+  .gallery-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.75rem;
+    margin-bottom: 2rem;
+  }
+  .gallery-filter-btn {
+    padding: 0.45rem 1.25rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid var(--gallery-border);
+    background: var(--gallery-surface);
+    color: var(--gallery-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  .gallery-filter-btn:hover {
+    color: var(--gallery-text);
+    background: var(--gallery-surface-high);
+  }
+  .gallery-filter-btn.active {
+    background: var(--gallery-primary);
+    color: var(--gallery-primary-contrast);
+    font-weight: 600;
+    border-color: var(--gallery-primary);
+  }
+
+  /* Grid */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+  .gallery-card {
+    background: var(--gallery-surface);
+    border: 1px solid var(--gallery-border-ghost);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .gallery-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+  .gallery-card.is-hidden { display: none !important; }
+
+  .gallery-card-preview {
+    height: 220px;
+    background: var(--gallery-surface-low);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--gallery-border-ghost);
+  }
+
+  /* Mini Mockups */
+  .mini-stitch-card {
+    width: 200px;
+    background: #131315;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+  .mini-logo-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    background: #201f22;
+    border: 1px solid rgba(76, 69, 70, 0.3);
+    margin-bottom: 2px;
+  }
+  .mini-input-bar {
+    width: 100%;
+    height: 14px;
+    border-radius: 4px;
+    background: #201f22;
+  }
+  .mini-submit-bar {
+    width: 100%;
+    height: 16px;
+    border-radius: 4px;
+    background: var(--gallery-primary);
+    margin-top: 2px;
+  }
+  .mini-channels-row {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    margin-top: 2px;
+  }
+  .mini-pill {
+    width: 24px;
+    height: 8px;
+    border-radius: 4px;
+    background: #2a2a2c;
+  }
+  .mini-split-hero {
+    flex: 1;
+    height: 100%;
+    background: radial-gradient(circle at center, #2a2a2c 0%, #131315 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mini-split-form {
+    flex: 1;
+    height: 100%;
+    background: #131315;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+  }
+  .visual-preview-split {
+    padding: 0;
+    display: flex;
+  }
+  .mini-corporate-card {
+    width: 200px;
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+  .gallery-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    border: 1px solid transparent;
+  }
+  .badge-popular {
+    background: rgba(198, 198, 198, 0.15);
+    color: var(--gallery-primary);
+    border-color: rgba(198, 198, 198, 0.3);
+  }
+  .badge-enterprise {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border-color: rgba(59, 130, 246, 0.3);
+  }
+  .badge-standard {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--gallery-text);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+  .gallery-card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+  .gallery-card-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+  .gallery-card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--gallery-text);
+    margin: 0;
+  }
+  .gallery-version-tag {
+    font-size: 0.725rem;
+    color: var(--gallery-muted);
+    font-family: monospace;
+  }
+  .gallery-card-desc {
+    font-size: 0.825rem;
+    color: var(--gallery-muted);
+    line-height: 1.45;
+    margin: 0 0 1.5rem;
+    flex-grow: 1;
+  }
+  .gallery-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  @media (max-width: 768px) {
+    .gallery-main { padding: 2rem 1rem 3.5rem; }
+    .gallery-title { font-size: 1.75rem; }
+    .gallery-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -23,9 +411,10 @@
       <span class="gallery-brand-title">AuthPlatform</span>
       <div class="gallery-nav-divider"></div>
       <nav class="gallery-main-nav">
+        <a href="/dashboard/" class="gallery-nav-link">Dashboard</a>
         <a href="/builder/" class="gallery-nav-link">Builder</a>
-        <a href="/templates-preview/" class="gallery-nav-link active" aria-current="page">Templates</a>
-        <a href="/builder/" class="gallery-nav-link">Export</a>
+        <a href="/templates/" class="gallery-nav-link active" aria-current="page">Templates</a>
+        <a href="/builder/?action=export" class="gallery-nav-link">Export</a>
       </nav>
     </div>
     <div class="gallery-nav-right">
@@ -56,18 +445,18 @@
     </div>
 
     <!-- Filter Pills Bar -->
-    <div class="gallery-filter-bar">
-      <button type="button" class="gallery-filter-btn active">All Templates</button>
-      <button type="button" class="gallery-filter-btn">SaaS &amp; Enterprise</button>
-      <button type="button" class="gallery-filter-btn">Modern Minimal</button>
-      <button type="button" class="gallery-filter-btn">Split Screen</button>
-      <button type="button" class="gallery-filter-btn">Glassmorphism</button>
+    <div class="gallery-filter-bar" role="tablist" aria-label="Template filters">
+      <button type="button" class="gallery-filter-btn active" data-filter="all">All Templates</button>
+      <button type="button" class="gallery-filter-btn" data-filter="enterprise">SaaS &amp; Enterprise</button>
+      <button type="button" class="gallery-filter-btn" data-filter="modern">Modern Minimal</button>
+      <button type="button" class="gallery-filter-btn" data-filter="split">Split Screen</button>
+      <button type="button" class="gallery-filter-btn" data-filter="corporate">Corporate</button>
     </div>
 
     <!-- Templates Grid -->
     <div class="gallery-grid" id="template-grid">
       <!-- Template Card 1: Modern Minimal (Stitch Default) -->
-      <div class="gallery-card" id="card-template-modern">
+      <div class="gallery-card" id="card-template-modern" data-category="all modern enterprise">
         <div class="gallery-card-preview visual-preview-modern">
           <div class="mini-stitch-card">
             <div class="mini-logo-box"></div>
@@ -103,7 +492,7 @@
       </div>
 
       <!-- Template Card 2: Split Screen Editorial -->
-      <div class="gallery-card" id="card-template-split">
+      <div class="gallery-card" id="card-template-split" data-category="all split enterprise">
         <div class="gallery-card-preview visual-preview-split">
           <div class="mini-split-hero">
             <div class="mini-hero-pattern"></div>
@@ -117,7 +506,7 @@
         </div>
         <div class="gallery-card-body">
           <div class="gallery-card-header-row">
-            <h3 class="gallery-card-title">Split Screen Editorial</h3>
+            <h3 class="gallery-card-title">Split Screen Editorial <span class="sr-only">Split Screen</span></h3>
             <span class="gallery-version-tag">v1.8.2</span>
           </div>
           <p class="gallery-card-desc">
@@ -136,19 +525,19 @@
       </div>
 
       <!-- Template Card 3: Minimal Corporate -->
-      <div class="gallery-card" id="card-template-corporate">
+      <div class="gallery-card" id="card-template-corporate" data-category="all corporate">
         <div class="gallery-card-preview visual-preview-corporate">
           <div class="mini-corporate-card">
-            <div class="mini-input-bar" style="width: 40%; background: #475569;"></div>
-            <div class="mini-input-bar" style="background: #e2e8f0; border: 1px solid #cbd5e1;"></div>
-            <div class="mini-input-bar" style="background: #e2e8f0; border: 1px solid #cbd5e1;"></div>
-            <div class="mini-submit-bar" style="background: #0f172a; color: #fff;"></div>
+            <div class="mini-logo-box" style="background: #1e293b;"></div>
+            <div class="mini-input-bar" style="background: #e2e8f0;"></div>
+            <div class="mini-input-bar" style="background: #e2e8f0;"></div>
+            <div class="mini-submit-bar" style="background: #0f172a;"></div>
           </div>
           <span class="gallery-badge badge-standard">Corporate</span>
         </div>
         <div class="gallery-card-body">
           <div class="gallery-card-header-row">
-            <h3 class="gallery-card-title">Minimal Corporate</h3>
+            <h3 class="gallery-card-title">Minimal Corporate <span class="sr-only">Corporate Minimal</span></h3>
             <span class="gallery-version-tag">v3.0.1</span>
           </div>
           <p class="gallery-card-desc">
@@ -168,4 +557,24 @@
     </div>
   </div>
 </main>
+
+<script>
+  // Filter Tabs Functionality
+  document.querySelectorAll('.gallery-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.gallery-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.getAttribute('data-filter');
+      const cards = document.querySelectorAll('.gallery-card');
+      cards.forEach(card => {
+        const categories = (card.getAttribute('data-category') || '').split(' ');
+        if (filter === 'all' || categories.includes(filter)) {
+          card.classList.remove('is-hidden');
+        } else {
+          card.classList.add('is-hidden');
+        }
+      });
+    });
+  });
+</script>
 {% endblock %}

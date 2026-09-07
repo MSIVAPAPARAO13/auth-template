@@ -3950,6 +3950,42 @@ class LogoAndOTPBuilderRegressionTests(TestCase):
         # Must be HTML-escaped
         self.assertIn("&lt;script&gt;alert(&#x27;xss&#x27;)&lt;/script&gt;", content)
 
+    def test_templates_gallery_route_and_seo(self):
+        """Verify /templates/ and /templates-preview/ return 200 with Stitch gallery and SEO metadata."""
+        # Test official templates route
+        res_gallery = self.client.get("/templates/")
+        self.assertEqual(res_gallery.status_code, 200)
+        content_gallery = res_gallery.content.decode("utf-8")
+        self.assertIn("Authentication Templates", content_gallery)
+        self.assertIn("Modern Minimal", content_gallery)
+        self.assertIn("Split Screen", content_gallery)
+        self.assertIn("Minimal Corporate", content_gallery)
+        self.assertIn('name="robots" content="index, follow"', content_gallery)
+        self.assertIn("/builder/", content_gallery)
+
+        # Test templates-preview route (preserves SEO and rendering)
+        res_preview = self.client.get("/templates-preview/")
+        self.assertEqual(res_preview.status_code, 200)
+        content_preview = res_preview.content.decode("utf-8")
+        self.assertIn("Authentication Templates", content_preview)
+        self.assertIn('name="robots" content="index, follow"', content_preview)
+
+    def test_builder_top_navigation_and_style_selector(self):
+        """Verify builder top navigation points to /templates/ and contains redesigned style selector."""
+        res = self.client.get("/builder/")
+        self.assertEqual(res.status_code, 200)
+        content = res.content.decode("utf-8")
+        # Main nav Templates link points to /templates/
+        self.assertIn('href="/templates/" class="nav-link">Templates</a>', content)
+        # Style selector and preview shell exist
+        self.assertIn("preview-shell", content)
+        self.assertIn("builder-style-selector", content)
+        self.assertIn("style-segmented-control", content)
+        self.assertIn('data-template="modern"', content)
+        self.assertIn('data-template="split"', content)
+        self.assertIn('data-template="corporate"', content)
+
+
 
 
 

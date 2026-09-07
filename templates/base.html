@@ -16,6 +16,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+  <link rel="stylesheet" href="{% static 'accounts/css/auth_tokens.css' %}">
   {% block extra_css %}{% endblock %}
   {% if dynamic_css_vars %}
   <style id="dynamic-theme-vars">
@@ -24,8 +25,13 @@
     }
   </style>
   {% endif %}
+  <script>
+    if (window.self !== window.top || new URLSearchParams(window.location.search).has('preview')) {
+      document.documentElement.classList.add('is-preview');
+    }
+  </script>
 </head>
-<body class="{% block body_class %}{% endblock %}">
+<body class="{% block body_class %}{% endblock %} {% if request.GET.preview %}is-preview{% endif %}">
   {% block content %}{% endblock %}
   <script src="{% static 'accounts/js/auth_common.js' %}"></script>
   {% block extra_js %}{% endblock %}
