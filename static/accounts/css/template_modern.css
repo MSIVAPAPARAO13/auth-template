@@ -1,0 +1,499 @@
+/* ==========================================================================
+   TEMPLATE: MODERN MINIMAL (GOOGLE STITCH SPECIFICATION)
+   Engineering-grade SaaS dark theme matching Stitch Project 9094301353907479196
+   Surfaces: #131315 (base) / #201f22 (card surface) / #c6c6c6 (primary silver accent)
+   ========================================================================== */
+
+:root {
+  --primary-color: #c6c6c6;
+  --primary-hover: #e2e2e2;
+  --primary-contrast: #1b1b1b;
+  --secondary-color: #c7c6c6;
+  --background-color: #131315;
+  --card-background: #201f22;
+  --text-color: #e5e1e4;
+  --muted-color: #988e90;
+  --border-color: rgba(76, 69, 70, 0.35);
+  --border-focus: #c6c6c6;
+  --input-bg: #131315;
+  --focus-ring: rgba(198, 198, 198, 0.2);
+  --card-width: 420px;
+}
+
+body.template-modern {
+  background-color: var(--background-color);
+  background-image: radial-gradient(circle at 50% 30%, rgba(198, 198, 198, 0.03) 0%, transparent 60%);
+  background-attachment: fixed;
+  color: var(--text-color);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  font-family: var(--font-family, 'Inter', sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+.template-modern .auth-wrapper {
+  width: 100%;
+  max-width: var(--card-width, 420px);
+  margin: 0 auto;
+}
+
+.template-modern .auth-card {
+  background: var(--card-background, #201f22);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 12px 40px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  animation: fadeInScale 0.25s ease-out;
+  transition: max-width 0.2s ease, border-radius 0.2s ease, background-color 0.2s ease;
+}
+
+/* Auth Header */
+.template-modern .auth-header {
+  padding: 2rem 2rem 1.25rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.template-modern .brand-header-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.85rem;
+  width: 100%;
+}
+
+.template-modern .brand-header-logo-container.align-left {
+  justify-content: flex-start;
+}
+.template-modern .brand-header-logo-container.align-center {
+  justify-content: center;
+}
+.template-modern .brand-header-logo-container.align-right {
+  justify-content: flex-end;
+}
+
+/* Default Emblem matching Stitch container */
+.template-modern .brand-default-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #131315;
+  border: 1px solid rgba(76, 69, 70, 0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+  color: var(--primary-color, #c6c6c6);
+  transition: color 0.2s ease;
+}
+
+.template-modern .brand-name-container {
+  display: flex;
+  width: 100%;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+  justify-content: center;
+}
+
+.template-modern .brand-name-container.align-left {
+  justify-content: flex-start;
+}
+.template-modern .brand-name-container.align-center {
+  justify-content: center;
+}
+.template-modern .brand-name-container.align-right {
+  justify-content: flex-end;
+}
+
+.template-modern .brand-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--muted-color, #988e90);
+  line-height: 1.35;
+}
+
+.template-modern .auth-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color, #e5e1e4);
+  letter-spacing: -0.02em;
+  margin: 0.25rem 0 0.35rem;
+}
+
+.template-modern .auth-subtitle {
+  font-size: 0.85rem;
+  color: var(--muted-color, #988e90);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.template-modern .auth-body {
+  padding: 0 2rem 2rem;
+}
+
+/* Tabs: Password vs OTP */
+.template-modern .auth-mode-selector {
+  display: flex;
+  background: #131315;
+  padding: 3px;
+  border-radius: var(--radius-sm, 8px);
+  margin: 0 2rem 1.25rem;
+  border: 1px solid rgba(76, 69, 70, 0.3);
+}
+
+.template-modern .mode-tab-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  color: var(--muted-color, #988e90);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.template-modern .mode-tab-btn:hover {
+  color: var(--text-color, #e5e1e4);
+}
+
+.template-modern .mode-tab-btn.active {
+  background: #2a2a2c;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Sub-Channel Selector (Email, SMS, WhatsApp) */
+.template-modern .sub-channel-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--otp-btn-gap, 8px);
+  margin-bottom: 1.25rem;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.template-modern .sub-channel-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  height: var(--otp-btn-height, 38px);
+  padding: var(--otp-btn-padding, 6px 14px);
+  font-size: var(--otp-btn-font-size, 12px);
+  font-weight: 500;
+  border: var(--otp-btn-border-width, 1px) solid var(--border-color, rgba(76, 69, 70, 0.3));
+  background: #131315;
+  color: var(--text-color, #e5e1e4);
+  border-radius: var(--otp-btn-radius, 8px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.template-modern .sub-channel-selector.width-mode-auto .sub-channel-btn,
+.template-modern .sub-channel-selector:not(.width-mode-full):not(.width-mode-custom) .sub-channel-btn {
+  flex: 0 1 auto;
+  min-width: 75px;
+}
+
+.template-modern .sub-channel-selector.width-mode-full .sub-channel-btn {
+  flex: 1 1 0;
+  min-width: 65px;
+}
+
+.template-modern .sub-channel-selector.width-mode-custom .sub-channel-btn {
+  flex: 0 0 auto;
+  width: var(--otp-btn-custom-width, 100px);
+}
+
+.template-modern .sub-channel-btn svg {
+  width: var(--otp-btn-icon-size, 16px) !important;
+  height: var(--otp-btn-icon-size, 16px) !important;
+  flex-shrink: 0 !important;
+  color: var(--muted-color, #988e90);
+  transition: color 0.15s ease;
+}
+
+.template-modern .sub-channel-btn:hover:not(:disabled) {
+  background: #2a2a2c;
+  border-color: rgba(76, 69, 70, 0.6);
+  color: #fff;
+}
+
+.template-modern .sub-channel-btn:hover:not(:disabled) svg {
+  color: var(--primary-color, #c6c6c6);
+}
+
+.template-modern .sub-channel-btn.active {
+  border-color: var(--primary-color, #c6c6c6);
+  background: #2a2a2c;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.template-modern .sub-channel-btn.active svg {
+  color: var(--primary-color, #c6c6c6);
+}
+
+.template-modern .sub-channel-btn:disabled,
+.template-modern .sub-channel-btn.is-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+.template-modern .channel-unavailable-tag {
+  font-size: 0.65rem;
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-left: 2px;
+}
+
+/* Divider from Stitch */
+.template-modern .auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+.template-modern .auth-divider-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(76, 69, 70, 0.3);
+}
+
+.template-modern .auth-divider-text {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--muted-color, #988e90);
+  letter-spacing: 0.06em;
+}
+
+/* Form Controls */
+.template-modern .form-group {
+  margin-bottom: 1.1rem;
+}
+
+.template-modern .form-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-color, #e5e1e4);
+  margin-bottom: 0.35rem;
+}
+
+.template-modern .input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.template-modern .form-input {
+  width: 100%;
+  height: var(--input-height, 42px);
+  padding: 0 0.85rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: var(--text-color, #e5e1e4);
+  background: var(--input-bg, #131315);
+  border: 1px solid var(--border-color, rgba(76, 69, 70, 0.35));
+  border-radius: var(--radius-sm, 8px);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+}
+
+.template-modern .form-input::placeholder {
+  color: #757575;
+}
+
+.template-modern .form-input:focus {
+  border-color: var(--primary-color, #c6c6c6);
+  box-shadow: 0 0 0 2px rgba(198, 198, 198, 0.2);
+  background: #131315;
+}
+
+.template-modern .toggle-password-btn {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: var(--muted-color, #988e90);
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s ease;
+}
+
+.template-modern .toggle-password-btn:hover {
+  color: var(--text-color, #e5e1e4);
+}
+
+.template-modern .form-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
+  font-size: 0.8rem;
+}
+
+.template-modern .checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--muted-color, #988e90);
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.8rem;
+}
+
+.template-modern .form-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary-color, #c6c6c6);
+  cursor: pointer;
+}
+
+.template-modern .link-subtle {
+  color: var(--primary-color, #c6c6c6);
+  text-decoration: none;
+  font-weight: 500;
+  transition: text-decoration 0.15s ease;
+}
+
+.template-modern .link-subtle:hover {
+  text-decoration: underline;
+}
+
+/* Primary Submit Button matching Stitch */
+.template-modern .btn-primary {
+  width: 100%;
+  height: var(--button-height, 42px);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary-contrast, #1b1b1b);
+  background: var(--primary-color, #c6c6c6);
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.template-modern .btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover, #e2e2e2);
+  opacity: 0.95;
+}
+
+.template-modern .btn-primary:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.template-modern .btn-secondary {
+  width: 100%;
+  height: var(--button-height, 42px);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-color, #e5e1e4);
+  background: #2a2a2c;
+  border: 1px solid var(--border-color, rgba(76, 69, 70, 0.3));
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background 0.15s ease;
+}
+
+.template-modern .btn-secondary:hover:not(:disabled) {
+  background: #353437;
+  color: #fff;
+}
+
+/* Password Strength Meter */
+.template-modern .strength-meter-box {
+  margin-top: 0.4rem;
+}
+
+.template-modern .strength-bar-track {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+}
+
+.template-modern .strength-bar-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.template-modern .strength-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--muted-color, #988e90);
+}
+
+/* Footer Link */
+.template-modern .auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--muted-color, #988e90);
+}
+
+.template-modern .auth-footer a {
+  color: var(--primary-color, #c6c6c6);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.template-modern .auth-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  body.template-modern {
+    padding: 1rem 0.75rem;
+    align-items: flex-start;
+  }
+  .template-modern .auth-header {
+    padding: 1.5rem 1.25rem 1rem;
+  }
+  .template-modern .auth-mode-selector {
+    margin: 0 1.25rem 1.25rem;
+  }
+  .template-modern .auth-body {
+    padding: 0 1.25rem 1.5rem;
+  }
+  .template-modern .auth-title {
+    font-size: 1.35rem;
+  }
+}

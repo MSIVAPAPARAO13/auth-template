@@ -1,0 +1,18 @@
+{% comment %}
+Shared Notification Alerts Component
+{% endcomment %}
+<div id="alert-container" class="alert-container" aria-live="polite">
+  {% if demo_mode or channel_status.email.is_demo or channel_status.sms.is_demo or channel_status.whatsapp.is_demo %}
+    <div class="alert-box alert-warning demo-banner" role="note">
+      <span><strong>DEVELOPMENT / DEMO MODE</strong> (No real credentials required)</span>
+      <span class="demo-otp-badge">Demo OTP: 123456</span>
+    </div>
+  {% endif %}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert-box alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}warning{% endif %}" role="alert">
+        <span>{{ message }}</span>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>

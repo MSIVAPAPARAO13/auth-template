@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard — Authentication Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/login.css' %}">
+<style>
+  .dashboard-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 2.5rem 2rem;
+    box-shadow: var(--shadow-xl);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .user-badge {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 auto 1.25rem;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+  }
+  .info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+  }
+  .info-table th {
+    text-align: left;
+    color: var(--text-muted);
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+  .info-table td {
+    text-align: right;
+    color: var(--text);
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+  }
+  .status-pill {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--success-bg);
+    color: #065f46;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="dashboard-card">
+    <div class="user-badge" aria-hidden="true">
+      {{ user.username|slice:":1"|upper }}
+    </div>
+
+    <h1 class="auth-title" style="text-align: center;">Session Active</h1>
+    <p class="auth-subtitle" style="text-align: center;">You are authenticated on the platform</p>
+
+    <table class="info-table">
+      <tr>
+        <th>Full Name</th>
+        <td>{{ user.get_full_name|default:"Not specified" }}</td>
+      </tr>
+      <tr>
+        <th>Username</th>
+        <td>{{ user.username }}</td>
+      </tr>
+      <tr>
+        <th>Email Address</th>
+        <td>{{ user.email }}</td>
+      </tr>
+      <tr>
+        <th>Mobile Number</th>
+        <td>{{ user.mobile|default:"Not linked" }}</td>
+      </tr>
+      <tr>
+        <th>Authentication Status</th>
+        <td><span class="status-pill">Active Session</span></td>
+      </tr>
+    </table>
+
+    <a href="{% url 'logout' %}" class="btn-primary" style="text-decoration: none; text-align: center; margin-top: 1rem;">
+      <span>Sign Out</span>
+    </a>
+  </div>
+</div>
+{% endblock %}

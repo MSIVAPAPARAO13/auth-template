@@ -1,0 +1,68 @@
+# ==============================================================================
+# Git Ignore Configuration for Auth Template Platform
+# ==============================================================================
+
+# Environment variables & secrets (CRITICAL)
+.env
+.env.*
+!.env.example
+
+# Python runtime and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environment directories
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Local databases
+*.sqlite3
+*.db
+db.sqlite3
+
+# Log files and application runtime outputs
+*.log
+logs/
+*.pid
+
+# Test runners, debug & code analysis artifacts
+.pytest_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+nosetests.xml
+coverage.xml
+*.cover
+scratch/
+
+# IDE & Editor specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# Operating System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Project specific temporary files & ZIP exports
+*.zip
+*.tar.gz
+temp/
+tmp/

@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign In — Split Screen | Auth Platform{% endblock %}
+
+{% block body_class %}template-split{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/auth_tokens.css' %}">
+<link rel="stylesheet" href="{% static 'accounts/css/template_split.css' %}">
+<link rel="stylesheet" href="{% static 'accounts/css/preview.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="split-container">
+  <!-- Left Hero Branding Column -->
+  <aside class="split-hero">
+    <div class="hero-brand" id="hero-brand-container">
+      <img src="{{ branding.logo_url|default:'' }}"
+           alt="{{ branding.brand_name|default:'Platform' }} Logo"
+           class="brand-custom-logo hero-brand-logo"
+           id="hero-brand-logo"
+           style="{% if not branding.logo_url %}display: none;{% endif %} max-width: calc(var(--logo-width, 120px) * var(--logo-scale, 1)); max-height: calc(var(--logo-height, 36px) * var(--logo-scale, 1)); object-fit: var(--logo-object-fit, contain);">
+      <div class="hero-brand-icon" id="hero-brand-default-badge" aria-hidden="true" style="{% if branding.logo_url %}display: none;{% endif %}">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </div>
+      <span class="hero-brand-title">{{ branding.brand_name|default:"Auth Platform" }}</span>
+    </div>
+
+    <div class="hero-body">
+      <div class="hero-tag">
+        <span>Enterprise Identity Security</span>
+      </div>
+      <h2 class="hero-title">Authentication Built for Modern Scale.</h2>
+      <p class="hero-subtitle">
+        Unified multi-factor identity, multi-channel OTP delivery across Email, SMS, and WhatsApp, and instant session invalidation.
+      </p>
+
+      <ul class="feature-list">
+        <li class="feature-item">
+          <span class="feature-icon" aria-hidden="true">✓</span>
+          <span>Multi-Channel OTP Delivery (Email, SMS, WhatsApp)</span>
+        </li>
+        <li class="feature-item">
+          <span class="feature-icon" aria-hidden="true">✓</span>
+          <span>Cryptographic PBKDF2 Password Hashing</span>
+        </li>
+        <li class="feature-item">
+          <span class="feature-icon" aria-hidden="true">✓</span>
+          <span>Instant Session Control &amp; Invalidation</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="hero-footer">
+      <span>Trusted by security-first teams</span>
+      <span>Enterprise Grade</span>
+    </div>
+  </aside>
+
+  <!-- Right Authentication Column -->
+  <main class="split-auth">
+    <div class="auth-wrapper">
+      <div class="auth-card" id="main-auth-card">
+        <!-- Header -->
+        <div class="auth-header">
+          <div class="brand-header-logo-container align-{{ branding.logo_align|default:'left' }}" id="brand-header-container">
+            <img src="{{ branding.logo_url|default:'' }}"
+                 alt="{{ branding.brand_name|default:'Platform' }} Logo"
+                 class="brand-custom-logo"
+                 id="brand-header-logo"
+                 style="{% if not branding.logo_url %}display: none;{% endif %} max-width: calc(var(--logo-width, 120px) * var(--logo-scale, 1)); max-height: calc(var(--logo-height, 36px) * var(--logo-scale, 1)); object-fit: var(--logo-object-fit, contain);">
+            <div class="brand-badge brand-default-badge" id="brand-header-default-badge" aria-hidden="true" style="{% if branding.logo_url %}display: none;{% endif %}">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+          </div>
+          <div class="brand-name-container align-{{ branding.logo_align|default:'left' }}" id="brand-name-container"{% if not branding.brand_name %} style="display: none;"{% endif %}>
+            <span class="brand-name" id="brand-header-name">{{ branding.brand_name|default:"Auth Platform" }}</span>
+          </div>
+          <h1 class="auth-title">Welcome Back</h1>
+          <p class="auth-subtitle">Sign in to access your platform account</p>
+        </div>
+
+        <!-- Mode Selector: Password vs OTP -->
+        {% if auth_settings.enable_password != False and auth_settings.enable_otp != False %}
+        <div class="auth-mode-selector" role="tablist" aria-label="Authentication Method">
+          <button type="button" class="mode-tab-btn active" id="mode-password-btn" role="tab" aria-selected="true" aria-controls="password-login-section">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span>Password</span>
+          </button>
+          <button type="button" class="mode-tab-btn" id="mode-otp-btn" role="tab" aria-selected="false" aria-controls="otp-login-section">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/>
+            </svg>
+            <span>One-Time Password</span>
+          </button>
+        </div>
+        {% endif %}
+
+        <!-- Body -->
+        <div class="auth-body">
+          <!-- Shared Alerts -->
+          {% include "accounts/components/alerts.html" %}
+
+          <!-- MODE 1: PASSWORD LOGIN -->
+          {% if auth_settings.enable_password != False %}
+          <section id="password-login-section" role="tabpanel" aria-labelledby="mode-password-btn">
+            <form method="POST" action="{% url 'login' %}" id="password-login-form">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="password_login">
+              <input type="hidden" name="next" value="{{ next }}">
+
+              <!-- Identifier -->
+              <div class="form-group">
+                <label class="form-label" for="password-identifier">Username, Email, or Mobile</label>
+                <div class="input-wrapper">
+                  <input type="text"
+                         name="identifier"
+                         id="password-identifier"
+                         class="form-input"
+                         placeholder="e.g. alex, alex@company.com"
+                         autocomplete="username"
+                         required
+                         value="{{ password_form.identifier.value|default:'' }}">
+                </div>
+                {% if password_form.identifier.errors %}
+                  <span class="field-error-text" style="color: var(--color-error); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
+                    {{ password_form.identifier.errors.0 }}
+                  </span>
+                {% endif %}
+              </div>
+
+              <!-- Password -->
+              <div class="form-group">
+                <div class="form-row-between">
+                  <label class="form-label" for="password-input" style="margin-bottom: 0;">Password</label>
+                  {% if auth_settings.show_forgot != False %}
+                  <a href="{% url 'forgot_password' %}" class="link-subtle" tabindex="0">Forgot password?</a>
+                  {% endif %}
+                </div>
+                <div class="input-wrapper">
+                  <input type="password"
+                         name="password"
+                         id="password-input"
+                         class="form-input"
+                         placeholder="Enter your password"
+                         autocomplete="current-password"
+                         required>
+                  <button type="button" class="toggle-password-btn" id="toggle-password-btn" aria-label="Show password">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                </div>
+                {% if password_form.password.errors %}
+                  <span class="field-error-text" style="color: var(--color-error); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
+                    {{ password_form.password.errors.0 }}
+                  </span>
+                {% endif %}
+              </div>
+
+              <!-- Remember Me -->
+              {% if auth_settings.remember_me != False %}
+              <div class="form-row-between">
+                <label class="checkbox-label" for="remember-me">
+                  <input type="checkbox" name="remember_me" id="remember-me" class="form-checkbox" {% if password_form.remember_me.value %}checked{% endif %}>
+                  <span>Remember this device</span>
+                </label>
+              </div>
+              {% endif %}
+
+              <button type="submit" class="btn-primary" id="password-submit-btn">
+                <span class="spinner" aria-hidden="true"></span>
+                <span class="btn-text">Sign In</span>
+              </button>
+            </form>
+          </section>
+          {% endif %}
+
+          <!-- MODE 2: OTP LOGIN -->
+          {% if auth_settings.enable_otp != False %}
+          <section id="otp-login-section" role="tabpanel" aria-labelledby="mode-otp-btn" {% if auth_settings.enable_password != False %}style="display: none;"{% endif %}>
+            <!-- Step 1: Request OTP -->
+            <div id="otp-step-1" class="otp-screen-step active">
+              <label class="form-label" style="margin-bottom: 0.4rem;">Verification Method</label>
+              {% include "accounts/components/channel_selector.html" with input_id="otp-channel-input" %}
+
+              <form id="otp-request-form">
+                <div class="form-group">
+                  <label class="form-label" for="otp-request-identifier">Email or Mobile Number</label>
+                  <div class="input-wrapper">
+                    <input type="text"
+                           id="otp-request-identifier"
+                           class="form-input"
+                           placeholder="e.g. user@company.com or +919876543210"
+                           autocomplete="email tel"
+                           required>
+                  </div>
+                </div>
+                <button type="button" class="btn-primary" id="send-otp-btn">
+                  <span class="spinner" aria-hidden="true"></span>
+                  <span class="btn-text">Send Verification Code</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Step 2: Verify OTP -->
+            <div id="otp-step-2" class="otp-screen-step" style="display: none;">
+              <div class="otp-change-identifier" style="margin-bottom: 1rem; font-size: 0.875rem;">
+                <span>Code sent to <strong id="otp-target-display" style="color: var(--text-color);"></strong></span>
+                <button type="button" id="otp-change-identifier-btn" class="link-subtle" style="background:none; border:none; cursor:pointer; font-size: 0.85rem; margin-left: 0.5rem;">Edit</button>
+              </div>
+
+              <form id="otp-verify-form" method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="verify_otp">
+                <input type="hidden" name="identifier" id="otp-verify-identifier">
+                <input type="hidden" name="next" value="{{ next }}">
+
+                <div class="form-group">
+                  <label class="form-label" for="otp-verify-code">Enter 6-Digit Code</label>
+                  <div class="input-wrapper">
+                    <input type="text"
+                           name="otp_code"
+                           id="otp-verify-code"
+                           class="form-input"
+                           style="font-size: 1.5rem; letter-spacing: 0.4em; text-align: center; font-family: var(--font-mono); font-weight: 700;"
+                           placeholder="000000"
+                           maxlength="6"
+                           inputmode="numeric"
+                           pattern="[0-9]*"
+                           autocomplete="one-time-code"
+                           required>
+                  </div>
+                </div>
+
+                <div class="form-row-between" style="margin-bottom: 1.25rem;">
+                  <span style="font-size: 0.85rem; color: var(--muted-color);">Expires in <strong id="otp-countdown-val" style="color: var(--primary-color);">05:00</strong></span>
+                  <button type="button" id="resend-otp-btn" class="link-subtle" style="background:none; border:none; cursor:pointer; font-size: 0.85rem;" disabled>Resend Code</button>
+                </div>
+
+                {% if auth_settings.remember_me != False %}
+                <div class="form-row-between">
+                  <label class="checkbox-label" for="otp-remember-me">
+                    <input type="checkbox" name="remember_me" id="otp-remember-me" class="form-checkbox">
+                    <span>Remember this device</span>
+                  </label>
+                </div>
+                {% endif %}
+
+                <button type="button" class="btn-primary" id="verify-otp-btn">
+                  <span class="spinner" aria-hidden="true"></span>
+                  <span class="btn-text">Verify &amp; Sign In</span>
+                </button>
+              </form>
+            </div>
+          </section>
+          {% endif %}
+
+          {% if auth_settings.show_register != False %}
+          <!-- Footer navigation -->
+          <div class="auth-footer">
+            <span>Don't have an account? <a href="{% url 'register' %}">Create account</a></span>
+          </div>
+          {% endif %}
+        </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Floating Template Switcher -->
+{% include "accounts/components/template_switcher.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'accounts/js/login.js' %}"></script>
+{% endblock %}

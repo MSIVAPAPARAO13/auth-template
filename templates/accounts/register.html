@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create Account — Authentication Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/login.css' %}">
+<style>
+  .strength-meter-container {
+    margin-top: 0.45rem;
+  }
+  .strength-meter-bar-bg {
+    height: 4px;
+    background: var(--border);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+  }
+  .strength-meter-bar {
+    height: 100%;
+    width: 0%;
+    background: #e2e8f0;
+    transition: all 0.3s ease;
+  }
+  .strength-meter-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.3rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="auth-card">
+    <!-- Header -->
+    <div class="auth-header">
+      <div class="brand-header-logo-container align-{{ branding.logo_align|default:'center' }}" id="brand-header-container">
+        <img src="{{ branding.logo_url|default:'' }}"
+             alt="{{ branding.brand_name|default:'Platform' }} Logo"
+             class="brand-custom-logo"
+             id="brand-header-logo"
+             style="{% if not branding.logo_url %}display: none;{% endif %} max-width: calc(var(--logo-width, 120px) * var(--logo-scale, 1)); max-height: calc(var(--logo-height, 36px) * var(--logo-scale, 1)); object-fit: var(--logo-object-fit, contain);">
+        <div class="brand-badge brand-default-badge" id="brand-header-default-badge" aria-hidden="true" style="{% if branding.logo_url %}display: none;{% endif %}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="8.5" cy="7" r="4"></circle>
+            <line x1="20" y1="8" x2="20" y2="14"></line>
+            <line x1="23" y1="11" x2="17" y2="11"></line>
+          </svg>
+        </div>
+      </div>
+      <div class="brand-name-container align-{{ branding.logo_align|default:'center' }}" id="brand-name-container"{% if not branding.brand_name %} style="display: none;"{% endif %}>
+        <span class="brand-name" id="brand-header-name">{{ branding.brand_name|default:"Auth Platform" }}</span>
+      </div>
+      <h1 class="auth-title">Create Account</h1>
+      <p class="auth-subtitle">Join the authentication template platform</p>
+    </div>
+
+    <div class="auth-body">
+      <!-- Dynamic Notifications Container -->
+      <div id="reg-alert-container" aria-live="polite">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert-box alert-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      <!-- ========================================================
+           STEP 1: REGISTRATION FORM
+           ======================================================== -->
+      <div id="reg-step-form" {% if step == 'verify' %}style="display: none;"{% endif %}>
+        <form method="POST" action="{% url 'register' %}" id="registration-form">
+          {% csrf_token %}
+
+          <!-- Full Name -->
+          <div class="form-group">
+            <label class="form-label" for="reg-full-name">Full Name</label>
+            <div class="input-wrapper">
+              <input type="text"
+                     name="full_name"
+                     id="reg-full-name"
+                     class="form-input"
+                     placeholder="e.g. Jane Doe"
+                     autocomplete="name"
+                     required
+                     value="{{ form.full_name.value|default:'' }}">
+            </div>
+          </div>
+
+          <!-- Email Address -->
+          <div class="form-group">
+            <label class="form-label" for="reg-email">Email Address</label>
+            <div class="input-wrapper">
+              <input type="email"
+                     name="email"
+                     id="reg-email"
+                     class="form-input"
+                     placeholder="jane@company.com"
+                     autocomplete="email"
+                     required
+                     value="{{ form.email.value|default:'' }}">
+            </div>
+          </div>
+
+          <!-- Mobile Number (Optional) -->
+          <div class="form-group">
+            <label class="form-label" for="reg-mobile">Mobile Number (Optional)</label>
+            <div class="input-wrapper">
+              <input type="tel"
+                     name="mobile"
+                     id="reg-mobile"
+                     class="form-input"
+                     placeholder="e.g. 9876543210"
+                     autocomplete="tel"
+                     value="{{ form.mobile.value|default:'' }}">
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            <label class="form-label" for="reg-password">Password</label>
+            <div class="input-wrapper">
+              <input type="password"
+                     name="password"
+                     id="reg-password"
+                     class="form-input password-field"
+                     placeholder="Create a strong password (min 8 chars)"
+                     autocomplete="new-password"
+                     required>
+              <button type="button" class="toggle-password-btn" id="toggle-reg-password-btn" aria-label="Show password">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+            <!-- Live Password Strength Meter -->
+            <div class="strength-meter-container" aria-live="polite">
+              <div class="strength-meter-bar-bg">
+                <div class="strength-meter-bar" id="password-strength-bar"></div>
+              </div>
+              <div class="strength-meter-meta">
+                <span>Security Level:</span>
+                <strong id="password-strength-text">None</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="form-group">
+            <label class="form-label" for="reg-confirm-password">Confirm Password</label>
+            <div class="input-wrapper">
+              <input type="password"
+                     name="confirm_password"
+                     id="reg-confirm-password"
+                     class="form-input password-field"
+                     placeholder="Re-enter your password"
+                     autocomplete="new-password"
+                     required>
+              <button type="button" class="toggle-password-btn" id="toggle-confirm-password-btn" aria-label="Show confirm password">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Verification Channel Selector -->
+          <div class="form-group" style="margin-top: 1.25rem;">
+            <label class="form-label">Verify Account Using</label>
+            <div class="sub-channel-selector" role="group" aria-label="Registration Verification Channel">
+              <button type="button" class="sub-channel-btn active" id="reg-channel-email-btn" data-channel="email">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                <span>Email</span>
+              </button>
+              <button type="button" class="sub-channel-btn {% if not channel_status.sms.available %}is-disabled{% endif %}" id="reg-channel-sms-btn" data-channel="sms" {% if not channel_status.sms.available %}title="SMS provider not configured in .env"{% endif %}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>SMS</span>
+                {% if not channel_status.sms.available %}<span class="channel-unavailable-tag">Off</span>{% endif %}
+              </button>
+              <button type="button" class="sub-channel-btn {% if not channel_status.whatsapp.available %}is-disabled{% endif %}" id="reg-channel-whatsapp-btn" data-channel="whatsapp" {% if not channel_status.whatsapp.available %}title="WhatsApp provider not configured in .env"{% endif %}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                </svg>
+                <span>WhatsApp</span>
+                {% if not channel_status.whatsapp.available %}<span class="channel-unavailable-tag">Off</span>{% endif %}
+              </button>
+            </div>
+            <input type="hidden" name="channel" id="reg-channel" value="email">
+          </div>
+
+          <!-- Terms agreement placeholder -->
+          <div class="form-row-between" style="margin-bottom: 1.5rem;">
+            <label class="checkbox-label" for="reg-terms">
+              <input type="checkbox" name="terms" id="reg-terms" class="form-checkbox" required checked>
+              <span>I agree to the platform security terms</span>
+            </label>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn-primary" id="submit-reg-btn">
+            <span class="spinner" aria-hidden="true"></span>
+            <span class="btn-text">Continue to Verification</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- ========================================================
+           STEP 2: REGISTRATION OTP VERIFICATION
+           ======================================================== -->
+      <div id="reg-step-verify" {% if step != 'verify' %}style="display: none;"{% endif %}>
+        <div class="otp-change-identifier">
+          <span id="reg-sent-prefix">Verification code sent to <strong id="reg-target-display" style="color: var(--text);">{{ masked_identifier|default:'' }}</strong></span>
+          <a href="#" id="change-reg-details-btn" class="link-subtle" style="font-size: 0.8rem; margin-left: 0.5rem;">Edit Details</a>
+        </div>
+
+        <form id="reg-otp-verify-form">
+          {% csrf_token %}
+          <div class="form-group">
+            <label class="form-label" for="reg-otp-code-input" style="text-align: center;">Enter 6-Digit Registration Code</label>
+            <input type="text"
+                   id="reg-otp-code-input"
+                   class="form-input otp-code-field"
+                   placeholder="••••••"
+                   maxlength="6"
+                   pattern="[0-9]{6}"
+                   inputmode="numeric"
+                   autocomplete="one-time-code"
+                   required>
+          </div>
+
+          <div class="otp-meta-info">
+            <span class="otp-countdown" id="reg-otp-countdown">Valid for 05:00</span>
+            <button type="button" id="resend-reg-otp-btn" class="link-subtle" style="background: none; border: none; cursor: pointer; font-size: 0.85rem;" disabled>
+              Resend in 60s
+            </button>
+          </div>
+
+          <button type="button" class="btn-primary" id="verify-reg-otp-btn">
+            <span class="spinner" aria-hidden="true"></span>
+            <span class="btn-text">Verify & Complete Registration</span>
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="auth-footer">
+    <p>Already have an account? <a href="{% url 'login' %}">Sign In</a></p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'accounts/js/register.js' %}"></script>
+{% endblock %}

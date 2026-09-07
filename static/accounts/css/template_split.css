@@ -1,0 +1,579 @@
+/* ==========================================================================
+   TEMPLATE 2: SPLIT SCREEN
+   2-Column Desktop layout (Hero Branding + Auth Card), stacked on mobile
+   ========================================================================== */
+
+:root {
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --background-color: #f1f5f9;
+  --card-background: #ffffff;
+  --text-color: #0f172a;
+  --muted-color: #64748b;
+  --border-color: #e2e8f0;
+  --border-focus: #2563eb;
+  --input-bg: #f8fafc;
+  --focus-ring: rgba(37, 99, 235, 0.25);
+  --split-hero-bg: linear-gradient(145deg, #0f172a 0%, #1e1b4b 60%, #312e81 100%);
+}
+
+body.template-split {
+  background: #0f172a;
+  color: var(--text-color);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.template-split .split-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* ==========================================================================
+   LEFT HERO BRANDING COLUMN (Desktop)
+   ========================================================================== */
+.template-split .split-hero {
+  flex: 1 1 45%;
+  background: var(--split-hero-bg);
+  color: #fff;
+  padding: 4rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.template-split .split-hero::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.template-split .split-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  left: -50px;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.2) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.template-split .hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.template-split .hero-brand-icon {
+  width: 38px;
+  height: 38px;
+  background: #2563eb;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+.template-split .hero-body {
+  margin: 3rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.template-split .hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #a5b4fc;
+  margin-bottom: 1.5rem;
+}
+
+.template-split .hero-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.25rem;
+  color: #fff;
+}
+
+.template-split .hero-subtitle {
+  font-size: 1.05rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  max-width: 480px;
+  margin-bottom: 2.5rem;
+}
+
+.template-split .feature-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.template-split .feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  color: #e2e8f0;
+}
+
+.template-split .feature-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.25);
+  color: #60a5fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.template-split .hero-footer {
+  position: relative;
+  z-index: 1;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.825rem;
+  color: #64748b;
+}
+
+/* ==========================================================================
+   RIGHT AUTH COLUMN
+   ========================================================================== */
+.template-split .split-auth {
+  flex: 1 1 55%;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  overflow-y: auto;
+}
+
+.template-split .auth-wrapper {
+  width: 100%;
+  max-width: 460px;
+}
+
+.template-split .auth-card {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  overflow: hidden;
+  animation: fadeInScale 0.3s ease-out;
+}
+
+.template-split .auth-header {
+  padding: 2.25rem 2rem 1.25rem;
+  text-align: left;
+}
+
+.template-split .brand-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  background: var(--primary-color, #2563eb);
+  color: #ffffff;
+  border-radius: var(--radius-sm, 6px);
+  margin-bottom: 0;
+}
+
+.template-split .auth-title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.35rem;
+}
+
+.template-split .auth-subtitle {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.template-split .auth-body {
+  padding: 0 2rem 2.25rem;
+}
+
+/* Mode Switcher */
+.template-split .auth-mode-selector {
+  display: flex;
+  background: #f1f5f9;
+  padding: 0.3rem;
+  border-radius: var(--radius-sm);
+  margin: 0 2rem 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.template-split .mode-tab-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.template-split .mode-tab-btn:hover {
+  color: #0f172a;
+}
+
+.template-split .mode-tab-btn.active {
+  background: #ffffff;
+  color: #2563eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Sub-channel selector */
+.template-split .sub-channel-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--otp-btn-gap, 8px);
+  margin-bottom: 1.25rem;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.template-split .sub-channel-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  height: var(--otp-btn-height, 38px);
+  padding: var(--otp-btn-padding, 6px 14px);
+  font-size: var(--otp-btn-font-size, 12px);
+  font-weight: 500;
+  border: var(--otp-btn-border-width, 1px) solid #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
+  border-radius: var(--otp-btn-radius, 6px);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.template-split .sub-channel-selector.width-mode-auto .sub-channel-btn,
+.template-split .sub-channel-selector:not(.width-mode-full):not(.width-mode-custom) .sub-channel-btn {
+  flex: 0 1 auto;
+  min-width: 75px;
+}
+
+.template-split .sub-channel-selector.width-mode-full .sub-channel-btn {
+  flex: 1 1 0;
+  min-width: 65px;
+}
+
+.template-split .sub-channel-selector.width-mode-custom .sub-channel-btn {
+  flex: 0 0 auto;
+  width: var(--otp-btn-custom-width, 100px);
+}
+
+.template-split .sub-channel-btn svg {
+  width: var(--otp-btn-icon-size, 16px) !important;
+  height: var(--otp-btn-icon-size, 16px) !important;
+  flex-shrink: 0 !important;
+}
+
+.template-split .sub-channel-btn:hover:not(:disabled) {
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.template-split .sub-channel-btn.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 600;
+  box-shadow: 0 0 0 1px #2563eb;
+}
+
+.template-split .sub-channel-btn:disabled,
+.template-split .sub-channel-btn.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: #f8fafc;
+  border-style: dashed;
+}
+
+.template-split .channel-unavailable-tag {
+  font-size: 0.65rem;
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-left: 2px;
+}
+
+/* Form Controls */
+.template-split .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.template-split .form-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.4rem;
+}
+
+.template-split .input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.template-split .form-input {
+  width: 100%;
+  height: var(--input-height);
+  padding: 0 1rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.template-split .form-input::placeholder {
+  color: #94a3b8;
+}
+
+.template-split .form-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.template-split .toggle-password-btn {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.template-split .toggle-password-btn:hover {
+  color: #334155;
+}
+
+.template-split .form-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.template-split .checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.template-split .form-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
+}
+
+.template-split .link-subtle {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.template-split .link-subtle:hover {
+  text-decoration: underline;
+}
+
+/* Primary Button */
+.template-split .btn-primary {
+  width: 100%;
+  height: var(--button-height);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  background: #2563eb;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: var(--transition-fast);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+
+.template-split .btn-primary:hover:not(:disabled) {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+}
+
+.template-split .btn-secondary {
+  width: 100%;
+  height: var(--button-height);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #334155;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: var(--transition-fast);
+}
+
+.template-split .btn-secondary:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+/* Strength Meter */
+.template-split .strength-bar-track {
+  height: 4px;
+  background: #e2e8f0;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.template-split .strength-bar-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.template-split .strength-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.template-split .auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.template-split .auth-footer a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.template-split .auth-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   RESPONSIVE (Tablet & Mobile Stacking)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .template-split .split-container {
+    flex-direction: column;
+  }
+  .template-split .split-hero {
+    flex: none;
+    padding: 2.5rem 1.5rem;
+  }
+  .template-split .hero-title {
+    font-size: 1.85rem;
+  }
+  .template-split .hero-subtitle {
+    margin-bottom: 1.5rem;
+  }
+  .template-split .hero-body {
+    margin: 1.5rem 0;
+  }
+  .template-split .feature-list {
+    display: none; /* Streamline for tablet/mobile */
+  }
+  .template-split .hero-footer {
+    display: none;
+  }
+  .template-split .split-auth {
+    padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .template-split .split-hero {
+    padding: 1.75rem 1rem 1.25rem;
+  }
+  .template-split .hero-title {
+    font-size: 1.5rem;
+  }
+  .template-split .hero-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+  }
+  .template-split .auth-header {
+    padding: 1.5rem 1.25rem 1rem;
+  }
+  .template-split .auth-mode-selector {
+    margin: 0 1.25rem 1.25rem;
+  }
+  .template-split .auth-body {
+    padding: 0 1.25rem 1.5rem;
+  }
+}

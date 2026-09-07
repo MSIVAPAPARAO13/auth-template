@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create Account — Modern Glass | Auth Platform{% endblock %}
+
+{% block body_class %}template-modern{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/auth_tokens.css' %}">
+<link rel="stylesheet" href="{% static 'accounts/css/template_modern.css' %}">
+<link rel="stylesheet" href="{% static 'accounts/css/preview.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <main class="auth-card" id="main-auth-card">
+    <!-- Header -->
+    <div class="auth-header">
+      <div class="brand-header-logo-container align-{{ branding.logo_align|default:'center' }}" id="brand-header-container">
+        <img src="{{ branding.logo_url|default:'' }}"
+             alt="{{ branding.brand_name|default:'Platform' }} Logo"
+             class="brand-custom-logo"
+             id="brand-header-logo"
+             style="{% if not branding.logo_url %}display: none;{% endif %} max-width: calc(var(--logo-width, 120px) * var(--logo-scale, 1)); max-height: calc(var(--logo-height, 36px) * var(--logo-scale, 1)); object-fit: var(--logo-object-fit, contain);">
+        <div class="brand-badge brand-default-badge" id="brand-header-default-badge" aria-hidden="true" style="{% if branding.logo_url %}display: none;{% endif %}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="8.5" cy="7" r="4"></circle>
+            <line x1="20" y1="8" x2="20" y2="14"></line>
+            <line x1="23" y1="11" x2="17" y2="11"></line>
+          </svg>
+        </div>
+      </div>
+      <div class="brand-name-container align-{{ branding.logo_align|default:'center' }}" id="brand-name-container"{% if not branding.brand_name %} style="display: none;"{% endif %}>
+        <span class="brand-name" id="brand-header-name">{{ branding.brand_name|default:"Auth Platform" }}</span>
+      </div>
+      <h1 class="auth-title">Create Account</h1>
+      <p class="auth-subtitle">Join the platform to build secure authentication experiences</p>
+    </div>
+
+    <!-- Body -->
+    <div class="auth-body">
+      <!-- Shared Alert Notifications -->
+      {% include "accounts/components/alerts.html" %}
+
+      <!-- ========================================================
+           STEP 1: REGISTRATION DETAILS FORM
+           ======================================================== -->
+      <section id="register-step-1" class="register-step active" aria-label="Account details">
+        <form method="POST" action="{% url 'register' %}" id="registration-form" novalidate>
+          {% csrf_token %}
+
+          <!-- Full Name -->
+          <div class="form-group">
+            <label class="form-label" for="reg-fullname">Full Name</label>
+            <div class="input-wrapper">
+              <input type="text"
+                     name="full_name"
+                     id="reg-fullname"
+                     class="form-input"
+                     placeholder="e.g. Jane Developer"
+                     autocomplete="name"
+                     required
+                     value="{{ form.full_name.value|default:'' }}">
+            </div>
+          </div>
+
+          <!-- Email Address -->
+          <div class="form-group">
+            <label class="form-label" for="reg-email">Email Address</label>
+            <div class="input-wrapper">
+              <input type="email"
+                     name="email"
+                     id="reg-email"
+                     class="form-input"
+                     placeholder="e.g. jane@company.com"
+                     autocomplete="email"
+                     required
+                     value="{{ form.email.value|default:'' }}">
+            </div>
+          </div>
+
+          <!-- Mobile Number -->
+          <div class="form-group">
+            <label class="form-label" for="reg-mobile">Mobile Number (Optional)</label>
+            <div class="input-wrapper">
+              <input type="tel"
+                     name="mobile"
+                     id="reg-mobile"
+                     class="form-input"
+                     placeholder="e.g. +919876543210"
+                     autocomplete="tel"
+                     value="{{ form.mobile.value|default:'' }}">
+            </div>
+          </div>
+
+          <!-- OTP Delivery Method -->
+          <div class="form-group">
+            <label class="form-label">Send Verification Code via</label>
+            {% include "accounts/components/channel_selector.html" with input_id="reg-channel-input" %}
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            <label class="form-label" for="reg-password">Password</label>
+            <div class="input-wrapper">
+              <input type="password"
+                     name="password"
+                     id="reg-password"
+                     class="form-input"
+                     placeholder="Create a strong password"
+                     autocomplete="new-password"
+                     required>
+              <button type="button" class="toggle-password-btn" id="toggle-reg-password" aria-label="Show password">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+            <!-- Strength Meter -->
+            {% include "accounts/components/strength_meter.html" %}
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="form-group">
+            <label class="form-label" for="reg-password-confirm">Confirm Password</label>
+            <div class="input-wrapper">
+              <input type="password"
+                     name="confirm_password"
+                     id="reg-password-confirm"
+                     class="form-input"
+                     placeholder="Repeat your password"
+                     autocomplete="new-password"
+                     required>
+              <button type="button" class="toggle-password-btn" id="toggle-reg-confirm" aria-label="Show password">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn-primary" id="btn-register-submit" style="margin-top: 0.5rem;">
+            <span class="spinner" aria-hidden="true"></span>
+            <span class="btn-text">Create Account</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- ========================================================
+           STEP 2: OTP VERIFICATION
+           ======================================================== -->
+      <section id="register-step-2" class="register-step" style="display: none;" aria-label="Verification code">
+        <div style="text-align: center; margin-bottom: 1.25rem;">
+          <p style="font-size: 0.9rem; color: var(--muted-color);">
+            A 6-digit code was sent to <strong id="masked-recipient" style="color: #fff;"></strong>
+          </p>
+        </div>
+
+        <form id="register-otp-form" novalidate>
+          {% csrf_token %}
+          {% include "accounts/components/otp_input.html" %}
+
+          <div class="form-row-between" style="margin-bottom: 1.5rem;">
+            <span style="font-size: 0.85rem; color: var(--muted-color);">Expires in <strong id="otp-countdown" style="color: var(--primary-color);">05:00</strong></span>
+            <button type="button" id="btn-resend-otp" class="link-subtle" style="background:none; border:none; cursor:pointer; font-size: 0.85rem;" disabled>Resend Code</button>
+          </div>
+
+          <button type="button" class="btn-primary" id="btn-verify-otp">
+            <span class="spinner" aria-hidden="true"></span>
+            <span class="btn-text">Verify &amp; Activate Account</span>
+          </button>
+
+          <button type="button" class="btn-secondary" id="btn-back-to-form" style="margin-top: 0.75rem;">
+            <span>Edit Information</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- Footer navigation -->
+      <div class="auth-footer">
+        <span>Already have an account? <a href="{% url 'login' %}">Sign in</a></span>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Floating Template Switcher -->
+{% include "accounts/components/template_switcher.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'accounts/js/register.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% comment %}
+Shared Template Switcher Toolbar (Development & Demonstration Utility)
+Allows testing and previewing all templates dynamically without code changes.
+{% endcomment %}
+<nav class="floating-template-switcher" aria-label="Template switcher">
+  <span class="switcher-label">Template:</span>
+  <a href="?template=modern" class="switcher-btn {% if active_template == 'modern' or not active_template %}active{% endif %}" title="Switch to Modern Glass">Modern Glass</a>
+  <a href="?template=split" class="switcher-btn {% if active_template == 'split' %}active{% endif %}" title="Switch to Split Screen">Split Screen</a>
+  <a href="?template=corporate" class="switcher-btn {% if active_template == 'corporate' %}active{% endif %}" title="Switch to Minimal Corporate">Minimal Corporate</a>
+  <a href="{% url 'templates_preview' %}" class="switcher-btn" style="background: rgba(255,255,255,0.15); border-left: 1px solid rgba(255,255,255,0.2); padding-left: 0.75rem;" title="View all template designs">Preview All</a>
+</nav>

@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sign In — Authentication Platform{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="auth-card" id="main-auth-card">
+    <!-- Card Header -->
+    <div class="auth-header">
+      <div class="brand-header-logo-container align-{{ branding.logo_align|default:'center' }}" id="brand-header-container">
+        <img src="{{ branding.logo_url|default:'' }}"
+             alt="{{ branding.brand_name|default:'Platform' }} Logo"
+             class="brand-custom-logo"
+             id="brand-header-logo"
+             style="{% if not branding.logo_url %}display: none;{% endif %} max-width: calc(var(--logo-width, 120px) * var(--logo-scale, 1)); max-height: calc(var(--logo-height, 36px) * var(--logo-scale, 1)); object-fit: var(--logo-object-fit, contain);">
+        <div class="brand-badge brand-default-badge" id="brand-header-default-badge" aria-hidden="true" style="{% if branding.logo_url %}display: none;{% endif %}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+      </div>
+      <div class="brand-name-container align-{{ branding.logo_align|default:'center' }}" id="brand-name-container"{% if not branding.brand_name %} style="display: none;"{% endif %}>
+        <span class="brand-name" id="brand-header-name">{{ branding.brand_name|default:"Auth Platform" }}</span>
+      </div>
+      <h1 class="auth-title">Welcome Back</h1>
+      <p class="auth-subtitle">Sign in to access your platform account</p>
+    </div>
+
+    <!-- Mode Selector: Password vs OTP -->
+    {% if auth_settings.enable_password != False and auth_settings.enable_otp != False %}
+    <div class="auth-mode-selector" role="tablist" aria-label="Authentication Method">
+      <button type="button" class="mode-tab-btn active" id="mode-password-btn" role="tab" aria-selected="true" aria-controls="password-login-section">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <span>Password</span>
+      </button>
+      <button type="button" class="mode-tab-btn" id="mode-otp-btn" role="tab" aria-selected="false" aria-controls="otp-login-section">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/></svg>
+        <span>One-Time Password</span>
+      </button>
+    </div>
+    {% endif %}
+
+    <!-- Card Body -->
+    <div class="auth-body">
+      <!-- Dynamic Notifications Container -->
+      <div id="alert-container" aria-live="polite">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert-box alert-{% if message.tags == 'error' %}error{% else %}success{% endif %}">
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      <!-- ========================================================
+           MODE 1: PASSWORD LOGIN SECTION
+           ======================================================== -->
+      {% if auth_settings.enable_password != False %}
+      <section id="password-login-section" role="tabpanel" aria-labelledby="mode-password-btn">
+        <form method="POST" action="{% url 'login' %}" id="password-login-form">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="password_login">
+          <input type="hidden" name="next" value="{{ next }}">
+
+          <!-- Identifier -->
+          <div class="form-group">
+            <label class="form-label" for="password-identifier">Username, Email, or Mobile</label>
+            <div class="input-wrapper">
+              <input type="text"
+                     name="identifier"
+                     id="password-identifier"
+                     class="form-input"
+                     placeholder="e.g. alex, alex@company.com"
+                     autocomplete="username"
+                     required
+                     value="{{ password_form.identifier.value|default:'' }}">
+            </div>
+            {% if password_form.identifier.errors %}
+              <span class="field-error-text" style="color: var(--error); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
+                {{ password_form.identifier.errors.0 }}
+              </span>
+            {% endif %}
+          </div>
+
+          <!-- Password with Show/Hide Toggle -->
+          <div class="form-group">
+            <div class="form-row-between" style="margin-bottom: 0.4rem;">
+              <label class="form-label" for="password-input" style="margin-bottom: 0;">Password</label>
+              {% if auth_settings.show_forgot != False %}
+              <a href="{% url 'forgot_password' %}" class="link-subtle" style="font-size: 0.8rem;" tabindex="0">Forgot password?</a>
+              {% endif %}
+            </div>
+            <div class="input-wrapper">
+              <input type="password"
+                     name="password"
+                     id="password-input"
+                     class="form-input"
+                     placeholder="Enter your password"
+                     autocomplete="current-password"
+                     required>
+              <button type="button" class="toggle-password-btn" id="toggle-password-btn" aria-label="Show password">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+            {% if password_form.password.errors %}
+              <span class="field-error-text" style="color: var(--error); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
+                {{ password_form.password.errors.0 }}
+              </span>
+            {% endif %}
+          </div>
+
+          <!-- Remember Me -->
+          {% if auth_settings.remember_me != False %}
+          <div class="form-row-between">
+            <label class="checkbox-label" for="remember-me">
+              <input type="checkbox" name="remember_me" id="remember-me" class="form-checkbox">
+              <span>Remember me for 30 days</span>
+            </label>
+          </div>
+          {% endif %}
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn-primary" id="password-submit-btn">
+            <span class="spinner" aria-hidden="true"></span>
+            <span class="btn-text">Sign In with Password</span>
+          </button>
+        </form>
+      </section>
+      {% endif %}
+
+      <!-- ========================================================
+           MODE 2: ONE-TIME PASSWORD (OTP) SECTION
+           ======================================================== -->
+      {% if auth_settings.enable_otp != False %}
+      <section id="otp-login-section" {% if auth_settings.enable_password != False %}style="display: none;"{% endif %} role="tabpanel" aria-labelledby="mode-otp-btn">
+        <!-- Sub-channel Selector: Email vs SMS vs WhatsApp -->
+        <div class="sub-channel-selector" role="group" aria-label="OTP Channel">
+          {% if auth_settings.enable_email != False %}
+          <button type="button" class="sub-channel-btn active" id="channel-email-btn" data-channel="email">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            <span>Email</span>
+          </button>
+          {% endif %}
+          {% if auth_settings.enable_sms != False %}
+          <button type="button" class="sub-channel-btn {% if auth_settings.enable_email == False %}active{% endif %} {% if not channel_status.sms.available %}is-disabled{% endif %}" id="channel-mobile-btn" data-channel="sms" {% if not channel_status.sms.available %}title="SMS provider not configured in .env"{% endif %}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>SMS</span>
+            {% if not channel_status.sms.available %}<span class="channel-unavailable-tag">Off</span>{% endif %}
+          </button>
+          {% endif %}
+          {% if auth_settings.enable_whatsapp != False %}
+          <button type="button" class="sub-channel-btn {% if auth_settings.enable_email == False and auth_settings.enable_sms == False %}active{% endif %} {% if not channel_status.whatsapp.available %}is-disabled{% endif %}" id="channel-whatsapp-btn" data-channel="whatsapp" {% if not channel_status.whatsapp.available %}title="WhatsApp provider not configured in .env"{% endif %}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            </svg>
+            <span>WhatsApp</span>
+            {% if not channel_status.whatsapp.available %}<span class="channel-unavailable-tag">Off</span>{% endif %}
+          </button>
+          {% endif %}
+        </div>
+
+        <!-- STEP 1: Request Code Screen -->
+        <div class="otp-screen-step active" id="otp-step-request">
+          <form id="otp-request-form">
+            <input type="hidden" name="channel" id="otp-channel" value="{% if auth_settings.enable_email != False %}email{% elif auth_settings.enable_sms != False %}sms{% else %}whatsapp{% endif %}">
+
+            <div class="form-group">
+              <label class="form-label" for="otp-identifier" id="otp-identifier-label">Email Address</label>
+              <div class="input-wrapper">
+                <input type="email"
+                       name="identifier"
+                       id="otp-identifier"
+                       class="form-input"
+                       placeholder="name@company.com"
+                       autocomplete="email"
+                       required>
+              </div>
+            </div>
+
+            <button type="button" class="btn-primary" id="send-otp-btn">
+              <span class="spinner" aria-hidden="true"></span>
+              <span class="btn-text">Send Verification Code</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- STEP 2: Verify Code Screen -->
+        <div class="otp-screen-step" id="otp-step-verify">
+          <form method="POST" action="{% url 'login' %}" id="otp-verify-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="verify_otp">
+            <input type="hidden" name="identifier" id="verify-identifier">
+
+            <div class="otp-change-identifier">
+              <span id="otp-sent-prefix">Verification code sent to <strong id="otp-target-display" style="color: var(--text);"></strong></span>
+              <a href="#" id="change-identifier-btn" class="link-subtle" style="font-size: 0.8rem; margin-left: 0.5rem;">Change</a>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="otp-code-input" style="text-align: center;">Enter 6-Digit Code</label>
+              <input type="text"
+                     name="otp_code"
+                     id="otp-code-input"
+                     class="form-input otp-code-field"
+                     placeholder="••••••"
+                     maxlength="6"
+                     pattern="[0-9]{6}"
+                     inputmode="numeric"
+                     autocomplete="one-time-code"
+                     required>
+            </div>
+
+            <!-- Countdown & Resend Row -->
+            <div class="otp-meta-info">
+              <span class="otp-countdown" id="otp-countdown">Valid for 05:00</span>
+              <button type="button" id="resend-otp-btn" class="link-subtle" style="background: none; border: none; cursor: pointer; font-size: 0.85rem;" disabled>
+                Resend in 60s
+              </button>
+            </div>
+
+            {% if auth_settings.remember_me != False %}
+            <div class="form-row-between">
+              <label class="checkbox-label" for="otp-remember-me">
+                <input type="checkbox" name="remember_me" id="otp-remember-me" class="form-checkbox">
+                <span>Remember this device</span>
+              </label>
+            </div>
+            {% endif %}
+
+            <button type="button" class="btn-primary" id="verify-otp-btn">
+              <span class="spinner" aria-hidden="true"></span>
+              <span class="btn-text">Verify & Sign In</span>
+            </button>
+          </form>
+        </div>
+      </section>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if auth_settings.show_register != False %}
+  <div class="auth-footer">
+    <p>Don't have an account? <a href="{% url 'register' %}">Create Account</a></p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'accounts/js/login.js' %}"></script>
+{% endblock %}

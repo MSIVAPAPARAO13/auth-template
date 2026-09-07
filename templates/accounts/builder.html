@@ -1,0 +1,562 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Custom Auth Builder — Google Stitch Design System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'accounts/css/auth_tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'accounts/css/builder.css' %}">
+</head>
+<body class="builder-body">
+  {% csrf_token %}
+
+  <!-- Topbar: Google Stitch AuthPlatform Navigation -->
+  <header class="builder-topbar">
+    <div class="builder-nav-left">
+      <span class="builder-brand-title">AuthPlatform <span class="sr-only">Auth Studio</span></span>
+      <div class="builder-nav-divider"></div>
+      <nav class="builder-main-nav">
+        <a href="/builder/" class="nav-link active" aria-current="page">Builder</a>
+        <a href="/templates-preview/" class="nav-link">Templates</a>
+        <button type="button" id="btn-nav-export" class="nav-link nav-btn-link" onclick="document.getElementById('btn-export-zip').click()">Export</button>
+      </nav>
+      <span id="active-config-badge" class="builder-config-badge">Default Modern</span>
+    </div>
+
+    <!-- Center Controls: Viewport & Screen Tabs -->
+    <div class="builder-nav-center">
+      <!-- Device Viewport Switcher -->
+      <div class="builder-viewport-controls" role="group" aria-label="Device Viewport">
+        <button type="button" class="viewport-btn active" data-mode="desktop" title="Desktop View (1200px)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <span>Desktop</span>
+        </button>
+        <button type="button" class="viewport-btn" data-mode="tablet" title="Tablet View (768px)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          <span>Tablet</span>
+        </button>
+        <button type="button" class="viewport-btn" data-mode="mobile" title="Mobile View (375px)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          <span>Mobile</span>
+        </button>
+      </div>
+
+      <!-- Authentication Screen Switcher -->
+      <div class="builder-screen-switcher" role="tablist" aria-label="Authentication Screens">
+        <button type="button" class="screen-tab-btn active" data-screen="login">Login</button>
+        <button type="button" class="screen-tab-btn" data-screen="register">Register</button>
+        <button type="button" class="screen-tab-btn" data-screen="forgot_password">Forgot</button>
+        <button type="button" class="screen-tab-btn" data-screen="reset_password">Reset</button>
+      </div>
+    </div>
+
+    <!-- Right Actions -->
+    <div class="builder-actions">
+      <button type="button" id="btn-open-manage-modal" class="builder-btn builder-btn-default" title="Manage Saved Configurations">My Configs</button>
+      <button type="button" id="btn-open-save-modal" class="builder-btn builder-btn-default" title="Save Current Configuration">Save</button>
+      <button type="button" id="btn-apply-main" class="builder-btn builder-btn-primary" title="Apply these settings to live main site">Apply to Main</button>
+      <a href="/login/" target="_blank" class="builder-btn builder-btn-default" title="Open Main Login in new tab">View Main ↗</a>
+      <button type="button" id="btn-export-zip" class="builder-btn builder-btn-secondary" title="Export configured production ZIP package">Export ZIP</button>
+    </div>
+  </header>
+
+  <!-- Workspace: Sidebar Controls + Center Preview -->
+  <div class="builder-workspace">
+    <!-- Left Sidebar: Builder Controls -->
+    <aside class="builder-sidebar" aria-label="Customization Controls">
+      <div class="sidebar-header-stitch">
+        <div>
+          <h2 class="sidebar-title">Builder Controls</h2>
+          <p class="sidebar-subtitle"><span class="sr-only">Design Controls</span>Customize your authentication flow in real-time</p>
+        </div>
+        <svg class="sidebar-tune-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="21" x2="4" y2="14"></line>
+          <line x1="4" y1="10" x2="4" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12" y2="3"></line>
+          <line x1="20" y1="21" x2="20" y2="16"></line>
+          <line x1="20" y1="12" x2="20" y2="3"></line>
+          <line x1="1" y1="14" x2="7" y2="14"></line>
+          <line x1="9" y1="8" x2="15" y2="8"></line>
+          <line x1="17" y1="16" x2="23" y2="16"></line>
+        </svg>
+      </div>
+
+      <div class="sidebar-scroll-content">
+        <!-- Section 1: Branding & Identity -->
+        <div class="control-section-card">
+          <button type="button" class="section-card-header">
+            <span class="section-badge-title">1. Branding &amp; Identity</span>
+            <span class="section-arrow">&#9662;</span>
+          </button>
+          <div class="section-card-body">
+            <!-- Company Logo Dropzone -->
+            <div class="ctrl-row">
+              <label class="ctrl-label">Company Logo</label>
+              <input type="file" id="ctrl-logo-file" accept="image/png,image/jpeg,image/webp" style="display: none;">
+              <div class="ctrl-dropzone" id="ctrl-logo-dropzone" title="Click or Drag & Drop PNG, JPG, WebP">
+                <div class="dropzone-prompt" id="dropzone-empty-prompt">
+                  <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  <span>Drag & drop logo or <span class="dropzone-browse">browse</span></span>
+                  <span class="dropzone-hint">PNG, JPG, or WEBP (max 500 KB)</span>
+                </div>
+                <div class="logo-preview-box" id="dropzone-preview-box" style="display: none;">
+                  <img id="logo-preview-img" class="logo-preview-thumb" src="" alt="Custom Logo Preview">
+                  <div class="logo-meta">
+                    <span id="logo-preview-name" class="logo-filename">logo.png</span>
+                    <span id="logo-preview-size" class="logo-filesize">0 KB</span>
+                    <div class="logo-actions">
+                      <button type="button" id="btn-replace-logo" class="builder-btn builder-btn-default btn-xs">Replace</button>
+                      <button type="button" id="btn-remove-logo" class="builder-btn builder-btn-default btn-xs btn-danger">Remove</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="restore-logo-row">
+                <button type="button" id="btn-restore-default-logo" class="builder-btn-link">
+                  ↺ Restore Default Emblem
+                </button>
+              </div>
+            </div>
+
+            <!-- Brand Name -->
+            <div class="ctrl-row">
+              <label class="ctrl-label" for="ctrl-brand-name">Brand Name</label>
+              <input type="text" id="ctrl-brand-name" class="ctrl-input-text" value="{{ initial_config.branding.brand_name|default:'Auth Platform' }}" placeholder="e.g. Acme Corp" maxlength="60">
+            </div>
+
+            <!-- Logo Alignment -->
+            <div class="ctrl-row">
+              <label class="ctrl-label">Logo Alignment</label>
+              <div class="ctrl-segmented-control" id="ctrl-logo-align-group">
+                <button type="button" class="segmented-btn" data-align="left">Left</button>
+                <button type="button" class="segmented-btn active" data-align="center">Center</button>
+                <button type="button" class="segmented-btn" data-align="right">Right</button>
+              </div>
+            </div>
+
+            <!-- Maintain Aspect Ratio -->
+            <div class="ctrl-row">
+              <div class="ctrl-toggle-wrapper">
+                <span class="ctrl-label" style="margin: 0;">Maintain Aspect Ratio</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="ctrl-logo-aspect-ratio" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Logo Width & Height -->
+            <div class="ctrl-grid-2">
+              <div class="ctrl-row">
+                <label class="ctrl-label" for="ctrl-logo-width">Max Width</label>
+                <div class="ctrl-number-unit-wrapper">
+                  <input type="number" id="ctrl-logo-width" class="ctrl-input-number" min="30" max="240" step="2" value="120">
+                  <span class="unit-tag">px</span>
+                </div>
+              </div>
+              <div class="ctrl-row">
+                <label class="ctrl-label" for="ctrl-logo-height">Max Height</label>
+                <div class="ctrl-number-unit-wrapper">
+                  <input type="number" id="ctrl-logo-height" class="ctrl-input-number" min="20" max="80" step="2" value="36">
+                  <span class="unit-tag">px</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Logo Scale -->
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label" for="ctrl-logo-scale">Logo Scale</label>
+                <span id="ctrl-logo-scale-val" class="value-display">100%</span>
+              </div>
+              <input type="range" id="ctrl-logo-scale" class="ctrl-slider" min="50" max="150" step="5" value="100">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Color Palette -->
+        <div class="control-section-card">
+          <button type="button" class="section-card-header">
+            <span class="section-badge-title">2. Color Palette</span>
+            <span class="section-arrow">&#9662;</span>
+          </button>
+          <div class="section-card-body">
+            <!-- Quick Swatches & Primary Picker -->
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label">Primary Accent</label>
+                <div class="color-swatches">
+                  <button type="button" class="swatch-btn" data-color="#c6c6c6" style="background:#c6c6c6;" title="Stitch Silver"></button>
+                  <button type="button" class="swatch-btn" data-color="#3b82f6" style="background:#3b82f6;" title="Tech Blue"></button>
+                  <button type="button" class="swatch-btn" data-color="#10b981" style="background:#10b981;" title="Emerald"></button>
+                  <button type="button" class="swatch-btn" data-color="#8b5cf6" style="background:#8b5cf6;" title="Violet"></button>
+                </div>
+              </div>
+              <div class="ctrl-color-wrapper">
+                <input type="color" id="ctrl-color-primary" class="ctrl-input-color" value="#c6c6c6">
+                <input type="text" id="ctrl-color-primary-text" class="ctrl-input-text" value="#c6c6c6">
+              </div>
+            </div>
+
+            <!-- Card Surface Preset Selector -->
+            <div class="ctrl-row">
+              <label class="ctrl-label" for="card-surface-select">Card Surface Preset</label>
+              <select id="card-surface-select" class="ctrl-select">
+                <option value="#201f22" selected>Muted Charcoal (#201f22) — Stitch Default</option>
+                <option value="#1c1b1d">Elevated Dark (#1c1b1d)</option>
+                <option value="#131315">Deep Neutral (#131315)</option>
+              </select>
+            </div>
+
+            <div class="ctrl-row">
+              <label class="ctrl-label">Secondary Accent</label>
+              <div class="ctrl-color-wrapper">
+                <input type="color" id="ctrl-color-secondary" class="ctrl-input-color" value="#c7c6c6">
+                <input type="text" id="ctrl-color-secondary-text" class="ctrl-input-text" value="#c7c6c6">
+              </div>
+            </div>
+
+            <div class="ctrl-row">
+              <label class="ctrl-label">Canvas Background</label>
+              <div class="ctrl-color-wrapper">
+                <input type="color" id="ctrl-color-background" class="ctrl-input-color" value="#131315">
+                <input type="text" id="ctrl-color-background-text" class="ctrl-input-text" value="#131315">
+              </div>
+            </div>
+
+            <div class="ctrl-row">
+              <label class="ctrl-label">Card Background</label>
+              <div class="ctrl-color-wrapper">
+                <input type="color" id="ctrl-color-card_bg" class="ctrl-input-color" value="#201f22">
+                <input type="text" id="ctrl-color-card_bg-text" class="ctrl-input-text" value="#201f22">
+              </div>
+            </div>
+
+            <div class="ctrl-row">
+              <label class="ctrl-label">Main Text Color</label>
+              <div class="ctrl-color-wrapper">
+                <input type="color" id="ctrl-color-text" class="ctrl-input-color" value="#e5e1e4">
+                <input type="text" id="ctrl-color-text-text" class="ctrl-input-text" value="#e5e1e4">
+              </div>
+            </div>
+
+            <div class="ctrl-row">
+              <label class="ctrl-label">Muted / Secondary Text</label>
+              <div class="ctrl-color-wrapper">
+                <input type="color" id="ctrl-color-muted" class="ctrl-input-color" value="#988e90">
+                <input type="text" id="ctrl-color-muted-text" class="ctrl-input-text" value="#988e90">
+              </div>
+            </div>
+
+            <div class="ctrl-row">
+              <label class="ctrl-label">Border Color</label>
+              <div class="ctrl-color-wrapper">
+                <input type="color" id="ctrl-color-border" class="ctrl-input-color" value="#4c4546">
+                <input type="text" id="ctrl-color-border-text" class="ctrl-input-text" value="#4c4546">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Typography -->
+        <div class="control-section-card">
+          <button type="button" class="section-card-header">
+            <span class="section-badge-title">3. Typography</span>
+            <span class="section-arrow">&#9662;</span>
+          </button>
+          <div class="section-card-body">
+            <div class="ctrl-row">
+              <label class="ctrl-label" for="ctrl-font-family">Font Family</label>
+              <select id="ctrl-font-family" class="ctrl-select">
+                <option value="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" selected>Inter (Modern Clean)</option>
+                <option value="'Plus Jakarta Sans', -apple-system, sans-serif">Plus Jakarta Sans (SaaS)</option>
+                <option value="'Roboto', -apple-system, sans-serif">Roboto (Corporate standard)</option>
+                <option value="system-ui, -apple-system, BlinkMacSystemFont, sans-serif">System Native</option>
+              </select>
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label" for="ctrl-heading-size">Heading Size</label>
+                <span id="ctrl-heading-size-val" class="value-display">24px</span>
+              </div>
+              <input type="range" id="ctrl-heading-size" class="ctrl-slider" min="20" max="36" step="1" value="24">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Auth Settings & Methods -->
+        <div class="control-section-card">
+          <button type="button" class="section-card-header">
+            <span class="section-badge-title">4. Auth Settings &amp; Methods</span>
+            <span class="section-arrow">&#9662;</span>
+          </button>
+          <div class="section-card-body">
+            <label class="ctrl-checkbox-label">
+              <input type="checkbox" id="ctrl-enable-pwd" class="ctrl-checkbox" checked>
+              <span>Password Login</span>
+            </label>
+            <label class="ctrl-checkbox-label">
+              <input type="checkbox" id="ctrl-enable-otp" class="ctrl-checkbox" checked>
+              <span>Enable OTP Login</span>
+            </label>
+            <label class="ctrl-checkbox-label">
+              <input type="checkbox" id="ctrl-enable-email" class="ctrl-checkbox" checked>
+              <span>Email OTP Channel</span>
+            </label>
+            <label class="ctrl-checkbox-label">
+              <input type="checkbox" id="ctrl-enable-sms" class="ctrl-checkbox" checked>
+              <span>SMS OTP Channel</span>
+            </label>
+            <label class="ctrl-checkbox-label">
+              <input type="checkbox" id="ctrl-enable-whatsapp" class="ctrl-checkbox" checked>
+              <span>WhatsApp OTP Channel</span>
+            </label>
+            <div class="ctrl-divider-subtle"></div>
+            <label class="ctrl-checkbox-label">
+              <input type="checkbox" id="ctrl-remember-me" class="ctrl-checkbox" checked>
+              <span>Remember Me Checkbox</span>
+            </label>
+            <label class="ctrl-checkbox-label">
+              <input type="checkbox" id="ctrl-show-forgot" class="ctrl-checkbox" checked>
+              <span>Forgot Password Link</span>
+            </label>
+            <label class="ctrl-checkbox-label">
+              <input type="checkbox" id="ctrl-show-register" class="ctrl-checkbox" checked>
+              <span>Show "Create Account" Link</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Section 5: Card Dimensions -->
+        <div class="control-section-card">
+          <button type="button" class="section-card-header">
+            <span class="section-badge-title">5. Card Dimensions</span>
+            <span class="section-arrow">&#9662;</span>
+          </button>
+          <div class="section-card-body">
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label" for="ctrl-card-width">Container Width</label>
+                <span id="ctrl-card-width-val" class="value-display">420px</span>
+              </div>
+              <input type="range" id="ctrl-card-width" class="ctrl-slider" min="360" max="600" step="10" value="420">
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label" for="ctrl-card-radius">Border Radius</label>
+                <span id="ctrl-card-radius-val" class="value-display">12px</span>
+              </div>
+              <input type="range" id="ctrl-card-radius" class="ctrl-slider" min="0" max="24" step="2" value="12">
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label" for="ctrl-input-height">Input Height</label>
+                <span id="ctrl-input-height-val" class="value-display">42px</span>
+              </div>
+              <input type="range" id="ctrl-input-height" class="ctrl-slider" min="36" max="56" step="2" value="42">
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label" for="ctrl-btn-height">Button Height</label>
+                <span id="ctrl-btn-height-val" class="value-display">42px</span>
+              </div>
+              <input type="range" id="ctrl-btn-height" class="ctrl-slider" min="36" max="56" step="2" value="42">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 6: Inputs & Buttons (OTP) -->
+        <div class="control-section-card">
+          <button type="button" class="section-card-header">
+            <span class="section-badge-title">6. Inputs &amp; Buttons (OTP)</span>
+            <span class="section-arrow">&#9662;</span>
+          </button>
+          <div class="section-card-body">
+            <div class="ctrl-row">
+              <label class="ctrl-label">Button Width Mode</label>
+              <div class="ctrl-segmented-control" id="ctrl-otp-width-mode-group">
+                <button type="button" class="segmented-btn active" data-mode="auto">Auto (Pill)</button>
+                <button type="button" class="segmented-btn" data-mode="full">Full Width</button>
+                <button type="button" class="segmented-btn" data-mode="custom">Custom</button>
+              </div>
+            </div>
+
+            <div class="ctrl-row" id="ctrl-otp-custom-width-row" style="display: none;">
+              <label class="ctrl-label" for="ctrl-otp-custom-width">Custom Button Width</label>
+              <div class="ctrl-number-unit-wrapper">
+                <input type="number" id="ctrl-otp-custom-width" class="ctrl-input-number" min="60" max="200" step="5" value="100">
+                <span class="unit-tag">px</span>
+              </div>
+            </div>
+
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label" for="ctrl-otp-height">Button Height</label>
+                <span id="ctrl-otp-height-val" class="value-display">38px</span>
+              </div>
+              <div class="ctrl-number-unit-wrapper">
+                <input type="number" id="ctrl-otp-height" class="ctrl-input-number" min="30" max="54" step="1" value="38">
+                <span class="unit-tag">px</span>
+              </div>
+            </div>
+
+            <div class="ctrl-row">
+              <label class="ctrl-label">Icon Size</label>
+              <div class="ctrl-segmented-control" id="ctrl-otp-icon-size-group">
+                <button type="button" class="segmented-btn" data-size="14px">14px</button>
+                <button type="button" class="segmented-btn active" data-size="16px">16px</button>
+                <button type="button" class="segmented-btn" data-size="18px">18px</button>
+              </div>
+            </div>
+
+            <div class="ctrl-grid-2">
+              <div class="ctrl-row">
+                <label class="ctrl-label" for="ctrl-otp-font-size">Font Size</label>
+                <div class="ctrl-number-unit-wrapper">
+                  <input type="number" id="ctrl-otp-font-size" class="ctrl-input-number" min="10" max="16" step="1" value="12">
+                  <span class="unit-tag">px</span>
+                </div>
+              </div>
+              <div class="ctrl-row">
+                <label class="ctrl-label" for="ctrl-otp-radius">Corner Radius</label>
+                <div class="ctrl-number-unit-wrapper">
+                  <input type="number" id="ctrl-otp-radius" class="ctrl-input-number" min="0" max="24" step="1" value="8">
+                  <span class="unit-tag">px</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="ctrl-grid-2">
+              <div class="ctrl-row">
+                <label class="ctrl-label" for="ctrl-otp-gap">Button Gap</label>
+                <div class="ctrl-number-unit-wrapper">
+                  <input type="number" id="ctrl-otp-gap" class="ctrl-input-number" min="2" max="20" step="1" value="8">
+                  <span class="unit-tag">px</span>
+                </div>
+              </div>
+              <div class="ctrl-row">
+                <label class="ctrl-label">Border Width</label>
+                <div class="ctrl-segmented-control" id="ctrl-otp-border-width-group">
+                  <button type="button" class="segmented-btn active" data-border="1px">1px</button>
+                  <button type="button" class="segmented-btn" data-border="2px">2px</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 7: Base Template -->
+        <div class="control-section-card">
+          <button type="button" class="section-card-header">
+            <span class="section-badge-title">7. Base Template</span>
+            <span class="section-arrow">&#9662;</span>
+          </button>
+          <div class="section-card-body">
+            <div class="ctrl-row">
+              <label class="ctrl-label" for="ctrl-template-select">Template Architecture</label>
+              <select id="ctrl-template-select" class="ctrl-select">
+                <option value="modern" {% if selected_template == 'modern' %}selected{% endif %}>Modern Minimal (Stitch SaaS)</option>
+                <option value="split" {% if selected_template == 'split' %}selected{% endif %}>Split Screen (Side Hero)</option>
+                <option value="corporate" {% if selected_template == 'corporate' %}selected{% endif %}>Minimal Corporate</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="sidebar-footer-actions">
+        <button type="button" id="btn-reset-defaults" class="builder-btn builder-btn-ghost">Reset</button>
+        <button type="button" id="btn-sidebar-save" class="builder-btn builder-btn-primary" onclick="document.getElementById('btn-open-save-modal').click()">Save Config</button>
+      </div>
+    </aside>
+
+    <!-- Center Preview Stage -->
+    <main class="builder-preview-stage">
+      <!-- Ambient background glow from Stitch -->
+      <div class="ambient-glow" id="ambient-glow"></div>
+
+      <!-- Top State Simulator & Quick Viewport Bar -->
+      <div class="preview-stage-toolbar">
+        <span class="state-label">State Simulator:</span>
+        <button type="button" class="state-btn active" id="state-default">Default</button>
+        <button type="button" class="state-btn" id="state-loading">Loading</button>
+        <button type="button" class="state-btn" id="state-error">Error</button>
+        <button type="button" class="state-btn" id="state-success">Success</button>
+      </div>
+
+      <!-- Preview frame wrapper -->
+      <div id="preview-frame-wrapper" class="preview-frame-wrapper mode-desktop">
+        <iframe id="preview-iframe" class="preview-iframe" src="/login/?template={{ selected_template|default:'modern' }}&preview=1" title="Live Preview"></iframe>
+      </div>
+
+      <!-- Preview Helper Label from Stitch -->
+      <div class="preview-sync-badge">
+        <span class="pulse-dot"></span>
+        <span>Live Sync Active • Changes update instantly</span>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal: Save Configuration -->
+  <div id="save-modal" class="builder-modal-overlay">
+    <div class="builder-modal" role="dialog" aria-labelledby="modal-save-title">
+      <div class="modal-header">
+        <h3 id="modal-save-title" class="modal-title">Save Configuration</h3>
+        <button type="button" id="btn-close-save-modal" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="ctrl-row">
+          <label class="ctrl-label" for="save-config-name">Configuration Name</label>
+          <input type="text" id="save-config-name" class="ctrl-input-text" placeholder="e.g. Modern Minimal Silver" value="My Custom Auth Design">
+        </div>
+        <p class="modal-subtext">
+          Your configuration will be securely saved into your profile using the platform configuration schema.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="btn-cancel-save" class="builder-btn builder-btn-ghost">Cancel</button>
+        <button type="button" id="btn-confirm-save" class="builder-btn builder-btn-primary">Save Design</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Manage Configurations -->
+  <div id="manage-modal" class="builder-modal-overlay">
+    <div class="builder-modal" role="dialog" aria-labelledby="modal-manage-title">
+      <div class="modal-header">
+        <h3 id="modal-manage-title" class="modal-title">Saved Configurations</h3>
+        <button type="button" id="btn-close-manage-modal" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="saved-configs-list" class="saved-configs-container">
+          <!-- Populated dynamically via builder.js -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" onclick="document.getElementById('manage-modal').classList.remove('open')" class="builder-btn builder-btn-default">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="builder-toast" class="builder-toast" role="alert">Action completed</div>
+
+  <!-- Initial configuration serialized for builder.js -->
+  <script>
+    window.initialConfig = {{ initial_config_json|safe|default:"{}" }};
+    window.activeConfigId = {{ active_config_id|default:"null" }};
+  </script>
+  <script src="{% static 'accounts/js/builder.js' %}"></script>
+</body>
+</html>

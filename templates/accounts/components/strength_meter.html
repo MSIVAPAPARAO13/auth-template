@@ -1,0 +1,12 @@
+{% comment %}
+Shared Password Strength Meter Component
+{% endcomment %}
+<div class="strength-meter-box" id="password-strength-container" aria-live="polite">
+  <div class="strength-bar-track">
+    <div class="strength-bar-fill" id="strength-meter" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+  </div>
+  <div class="strength-meta">
+    <span>Password strength: <strong id="strength-text" style="color: var(--muted-color);">Too Weak</strong></span>
+    <span>Min 8 chars, 1 uppercase, 1 digit, 1 symbol</span>
+  </div>
+</div>
