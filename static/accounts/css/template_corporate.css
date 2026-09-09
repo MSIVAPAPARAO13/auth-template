@@ -1,133 +1,483 @@
 /* ==========================================================================
-   TEMPLATE 3: MINIMAL CORPORATE
-   Clean white/light background, compact card, refined typography, high contrast
+   TEMPLATE: CORPORATE ENTERPRISE
+   Structured enterprise layout: page header + compliance footer + form section
+   Clean light default, sharper radius, icon-prefixed inputs, underline tabs
+   Genuinely different composition from Modern (centered card) template
    ========================================================================== */
 
 :root {
-  --primary-color: #0f172a;
-  --primary-hover: #1e293b;
-  --background-color: #f8fafc;
-  --card-background: #ffffff;
-  --text-color: #0f172a;
-  --muted-color: #64748b;
-  --border-color: #e2e8f0;
-  --border-focus: #0f172a;
-  --input-bg: #ffffff;
-  --focus-ring: rgba(15, 23, 42, 0.15);
-  --card-width: 440px;
+  /* Corporate default palette — conservative, professional */
+  --corp-bg:            var(--auth-bg-color, #F4F6F9);
+  --corp-header-bg:     #FFFFFF;
+  --corp-card-bg:       var(--card-bg-color, #FFFFFF);
+  --corp-text:          var(--text-color, #0D1117);
+  --corp-text-muted:    var(--muted-color, #5A6475);
+  --corp-border:        var(--border-color, #D0D5DD);
+  --corp-primary:       var(--btn-primary-bg, #0F172A);
+  --corp-primary-hover: #1E293B;
+  --corp-primary-text:  var(--btn-primary-text, #FFFFFF);
+  --corp-input-bg:      var(--input-bg, #FFFFFF);
+  --corp-input-border:  var(--input-border, #C9CDD8);
+  --corp-focus-ring:    rgba(15, 23, 42, 0.15);
+  --corp-card-shadow:   0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+  --corp-radius-card:   var(--card-border-radius, 6px);
+  --corp-radius-input:  var(--radius-sm, 4px);
+  --corp-radius-btn:    var(--radius-sm, 4px);
 }
 
+/* ============================================================
+   FULL PAGE STRUCTURE
+   ============================================================ */
 body.template-corporate {
-  background-color: var(--background-color, #f8fafc);
-  background-image: 
-    linear-gradient(to right, #e2e8f0 1px, transparent 1px),
-    linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
-  background-size: 28px 28px;
-  color: var(--text-color, #0f172a);
+  background-color: var(--corp-bg);
+  background-image: var(--auth-bg-image, none);
+  background-position: var(--auth-bg-position, center center);
+  background-size: var(--auth-bg-size, cover);
+  background-repeat: var(--auth-bg-repeat, no-repeat);
+  background-attachment: fixed;
+  color: var(--corp-text);
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-family, 'Inter', sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+.corp-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ============================================================
+   PAGE HEADER — enterprise-style top bar (outside card)
+   ============================================================ */
+.corp-page-header {
+  background: var(--corp-header-bg, #FFFFFF);
+  border-bottom: 1px solid var(--corp-border);
+  padding: 0 2rem;
+  height: 56px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.corp-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.corp-brand-area {
+  display: flex;
+  align-items: center;
+}
+
+.corp-brand-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.corp-brand-emblem {
+  width: 30px;
+  height: 30px;
+  background: var(--corp-primary);
+  color: #fff;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.corp-brand-name {
+  font-size: 0.925rem;
+  font-weight: 700;
+  color: var(--corp-text);
+  letter-spacing: -0.01em;
+}
+
+.corp-header-security-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--corp-text-muted);
+  background: rgba(15, 23, 42, 0.05);
+  border: 1px solid var(--corp-border);
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  letter-spacing: 0.01em;
+}
+
+/* ============================================================
+   MAIN CONTENT AREA
+   ============================================================ */
+.corp-main-content {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2.5rem 1rem;
 }
 
-.template-corporate .auth-wrapper {
+.corp-form-section {
   width: 100%;
-  max-width: var(--card-width, 440px);
-  margin: 0 auto;
+  max-width: 460px;
 }
 
-.template-corporate .auth-card {
-  background: var(--card-background, #ffffff);
-  border: 1px solid var(--border-color, #e2e8f0);
-  border-radius: var(--radius-md, 10px);
-  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05), 0 0 0 1px rgba(15, 23, 42, 0.03);
-  overflow: hidden;
-  animation: fadeInScale 0.25s ease-out;
+/* ============================================================
+   PAGE-LEVEL FORM HEADING (outside card)
+   ============================================================ */
+.corp-form-heading {
+  margin-bottom: 1.25rem;
 }
 
-.template-corporate .auth-header {
-  padding: 2.25rem 2rem 1.25rem;
-  text-align: left;
-  border-bottom: 1px solid var(--border-color, #f1f5f9);
-}
-
-.template-corporate .brand-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  background: var(--primary-color, #0f172a);
-  color: #ffffff;
-  border-radius: var(--radius-sm, 6px);
-  margin-bottom: 0;
-}
-
-.template-corporate .auth-title {
-  font-size: 1.5rem;
+.corp-page-title {
+  font-size: 1.375rem;
   font-weight: 700;
-  color: var(--text-color, #0f172a);
-  letter-spacing: -0.02em;
-  margin-bottom: 0.35rem;
-  line-height: 1.25;
+  color: var(--corp-text);
+  letter-spacing: -0.025em;
+  margin: 0 0 0.3rem;
+  line-height: 1.2;
 }
 
-.template-corporate .auth-subtitle {
-  font-size: 0.875rem;
-  color: var(--muted-color, #64748b);
+.corp-page-desc {
+  font-size: 0.825rem;
+  color: var(--corp-text-muted);
+  margin: 0;
   line-height: 1.4;
 }
 
-.template-corporate .auth-body {
-  padding: 1.75rem 2rem 2.25rem;
+/* ============================================================
+   AUTH CARD — Compact, sharp, bordered enterprise card
+   ============================================================ */
+.corp-auth-card {
+  background: var(--card-bg-surface, var(--corp-card-bg));
+  opacity: 1 !important;
+  border: var(--card-border-width, 1px) solid var(--card-border-color, var(--corp-border));
+  border-radius: var(--card-border-radius, var(--corp-radius-card));
+  box-shadow: var(--card-shadow, var(--corp-card-shadow));
+  backdrop-filter: blur(var(--card-backdrop-blur, 0px));
+  -webkit-backdrop-filter: blur(var(--card-backdrop-blur, 0px));
+  overflow: hidden;
 }
 
-/* Tabs: Password vs OTP */
-.template-corporate .auth-mode-selector {
+/* ============================================================
+   MODE NAVIGATION — Underline tab style (NOT segmented pill)
+   ============================================================ */
+.corp-mode-nav {
   display: flex;
-  background: #f8fafc;
-  padding: 0.25rem;
-  border-radius: var(--radius-sm, 6px);
-  margin-bottom: 1.5rem;
-  border: 1px solid var(--border-color, #e2e8f0);
+  border-bottom: 1px solid var(--corp-border);
+  background: transparent;
+  padding: 0 1.5rem;
 }
 
-.template-corporate .mode-tab-btn {
-  flex: 1;
+.corp-mode-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.85rem 0;
+  margin-right: 1.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--corp-text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  margin-bottom: -1px; /* overlap the card border */
+}
+
+.corp-mode-tab:hover {
+  color: var(--corp-text);
+}
+
+.corp-mode-tab.active {
+  color: var(--corp-primary);
+  border-bottom-color: var(--corp-primary);
+}
+
+/* ============================================================
+   FORM SECTIONS (password / otp)
+   ============================================================ */
+#password-login-section,
+#otp-login-section {
+  padding: 1.5rem;
+}
+
+/* ============================================================
+   FORM FIELDS with ICON PREFIX
+   ============================================================ */
+.corp-form-field {
+  margin-bottom: 1rem;
+}
+
+.corp-field-label {
+  display: block;
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: var(--corp-text);
+  margin-bottom: 0.35rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.corp-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.corp-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Icon inside input on the left */
+.corp-input-icon {
+  position: absolute;
+  left: 0.75rem;
+  display: flex;
+  align-items: center;
+  color: var(--corp-text-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.corp-field-input {
+  width: 100%;
+  height: var(--input-height, 40px);
+  padding: 0 2.5rem 0 2.25rem; /* right for toggle, left for icon */
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: var(--input-text-color, var(--corp-text));
+  background: var(--corp-input-bg);
+  border: 1px solid var(--corp-input-border);
+  border-radius: var(--corp-radius-input);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+}
+
+.corp-field-input::placeholder {
+  color: var(--placeholder-color, #A0A8B8);
+}
+
+.corp-field-input:focus {
+  border-color: var(--corp-primary);
+  box-shadow: 0 0 0 3px var(--corp-focus-ring);
+}
+
+.corp-field-error {
+  display: block;
+  color: var(--color-error, #DC2626);
+  font-size: 0.775rem;
+  margin-top: 0.3rem;
+}
+
+/* Toggle password button */
+.toggle-password-btn {
+  position: absolute;
+  right: 0.65rem;
+  background: none;
+  border: none;
+  color: var(--corp-text-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s ease;
+}
+
+.toggle-password-btn:hover {
+  color: var(--corp-text);
+}
+
+/* ============================================================
+   OPTIONS ROW (Remember me)
+   ============================================================ */
+.corp-options-row {
+  margin-bottom: 1rem;
+}
+
+.corp-check-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.corp-checkbox {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--corp-primary);
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.corp-check-text {
+  font-size: 0.8rem;
+  color: var(--corp-text-muted);
+}
+
+/* ============================================================
+   PRIMARY BUTTON — Full-width, with arrow icon
+   ============================================================ */
+.corp-btn-primary {
+  width: 100%;
+  height: var(--button-height, 40px);
+  margin-top: 0.25rem;
+  padding: 0 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--corp-primary-text);
+  background: var(--corp-primary);
+  border: 1px solid var(--corp-primary);
+  border-radius: var(--corp-radius-btn);
+  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
-  padding: 0.55rem 0.75rem;
-  font-size: 0.825rem;
+  gap: 0.5rem;
+  transition: background 0.15s ease, opacity 0.15s ease;
+  letter-spacing: 0.01em;
+}
+
+.corp-btn-primary:hover:not(:disabled) {
+  background: var(--corp-primary-hover);
+  border-color: var(--corp-primary-hover);
+}
+
+.corp-btn-primary:focus-visible {
+  outline: 2px solid var(--corp-primary);
+  outline-offset: 2px;
+}
+
+.corp-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.corp-btn-arrow {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   LINKS
+   ============================================================ */
+.corp-link-action {
+  font-size: 0.775rem;
   font-weight: 600;
+  color: var(--corp-primary);
+  background: none;
   border: none;
-  background: transparent;
-  color: var(--muted-color, #64748b);
-  border-radius: 4px;
+  padding: 0;
   cursor: pointer;
-  transition: var(--transition-fast);
+  text-decoration: none;
+  transition: text-decoration 0.15s ease;
 }
 
-.template-corporate .mode-tab-btn:hover {
-  color: var(--text-color, #0f172a);
+.corp-link-action:hover {
+  text-decoration: underline;
 }
 
-.template-corporate .mode-tab-btn.active {
-  background: #ffffff;
-  color: var(--text-color, #0f172a);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+/* ============================================================
+   CARD FOOTER (register link)
+   ============================================================ */
+.corp-card-footer {
+  padding: 0.85rem 1.5rem;
+  border-top: 1px solid var(--corp-border);
+  font-size: 0.8rem;
+  color: var(--corp-text-muted);
+  text-align: center;
 }
 
-/* Sub-channel Selector */
-.template-corporate .sub-channel-selector {
+.corp-footer-link {
+  color: var(--corp-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.corp-footer-link:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================
+   COMPLIANCE NOTE (below card)
+   ============================================================ */
+.corp-compliance-note {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--otp-btn-gap, 8px);
-  margin-bottom: 1.25rem;
-  width: 100%;
+  gap: 0.35rem;
+  margin-top: 1rem;
+  font-size: 0.72rem;
+  color: var(--corp-text-muted);
+  opacity: 0.8;
+}
+
+/* ============================================================
+   OTP ELEMENTS
+   ============================================================ */
+.corp-otp-sent-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.85rem;
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid var(--corp-border);
+  border-radius: var(--corp-radius-input);
+  font-size: 0.8rem;
+  color: var(--corp-text-muted);
+  margin-bottom: 1rem;
+}
+
+.otp-target-value {
+  color: var(--corp-text);
+  font-weight: 600;
+}
+
+.corp-otp-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+}
+
+.corp-otp-timer {
+  color: var(--corp-text-muted);
+}
+
+.corp-otp-timer strong {
+  color: var(--corp-primary);
+  font-weight: 700;
+}
+
+/* ============================================================
+   OTP CHANNEL SELECTOR INSIDE CORPORATE
+   ============================================================ */
+.template-corporate .sub-channel-selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 1rem;
   flex-wrap: wrap;
 }
 
@@ -135,237 +485,62 @@ body.template-corporate {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
-  height: var(--otp-btn-height, 38px);
-  padding: var(--otp-btn-padding, 6px 14px);
+  gap: 0.4rem;
+  height: var(--otp-btn-height, 34px);
+  padding: var(--otp-btn-padding, 4px 12px);
   font-size: var(--otp-btn-font-size, 12px);
   font-weight: 600;
-  border: var(--otp-btn-border-width, 1px) solid var(--border-color, #e2e8f0);
-  background: #f8fafc;
-  color: #334155;
-  border-radius: var(--otp-btn-radius, 6px);
+  border: var(--otp-btn-border-width, 1px) solid var(--corp-border);
+  background: var(--corp-card-bg);
+  color: var(--corp-text-muted);
+  border-radius: var(--otp-btn-radius, 4px);
   cursor: pointer;
-  transition: var(--transition-fast);
+  transition: all 0.15s ease;
   box-sizing: border-box;
-  max-width: 100%;
-  min-width: 0;
-}
-
-.template-corporate .sub-channel-selector.width-mode-auto .sub-channel-btn,
-.template-corporate .sub-channel-selector:not(.width-mode-full):not(.width-mode-custom) .sub-channel-btn {
-  flex: 0 1 auto;
-  min-width: 75px;
-}
-
-.template-corporate .sub-channel-selector.width-mode-full .sub-channel-btn {
-  flex: 1 1 0;
-  min-width: 65px;
-}
-
-.template-corporate .sub-channel-selector.width-mode-custom .sub-channel-btn {
-  flex: 0 0 auto;
-  width: var(--otp-btn-custom-width, 100px);
-}
-
-.template-corporate .sub-channel-btn svg {
-  width: var(--otp-btn-icon-size, 16px) !important;
-  height: var(--otp-btn-icon-size, 16px) !important;
-  flex-shrink: 0 !important;
+  letter-spacing: 0.01em;
 }
 
 .template-corporate .sub-channel-btn:hover:not(:disabled) {
-  border-color: #94a3b8;
-  color: var(--text-color, #0f172a);
-  background: #ffffff;
+  border-color: var(--corp-primary);
+  color: var(--corp-text);
 }
 
 .template-corporate .sub-channel-btn.active {
-  border-color: var(--primary-color, #0f172a);
-  background: var(--primary-color, #0f172a);
-  color: #ffffff;
-}
-
-.template-corporate .sub-channel-btn.active svg {
-  stroke: #ffffff;
+  border-color: var(--corp-primary);
+  background: var(--corp-primary);
+  color: #fff;
 }
 
 .template-corporate .sub-channel-btn:disabled,
 .template-corporate .sub-channel-btn.is-disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
-  background: #f1f5f9;
   border-style: dashed;
-  color: #94a3b8;
+}
+
+.template-corporate .sub-channel-btn svg {
+  width: var(--otp-btn-icon-size, 14px) !important;
+  height: var(--otp-btn-icon-size, 14px) !important;
+  flex-shrink: 0 !important;
 }
 
 .template-corporate .channel-unavailable-tag {
   font-size: 0.65rem;
   background: #e2e8f0;
   color: #64748b;
-  padding: 1px 5px;
+  padding: 1px 4px;
   border-radius: 3px;
-  margin-left: 2px;
 }
 
-/* Form Controls */
-.template-corporate .form-group {
-  margin-bottom: 1.25rem;
-}
-
-.template-corporate .form-label {
-  display: block;
-  font-size: 0.825rem;
-  font-weight: 600;
-  color: var(--text-color, #1e293b);
-  margin-bottom: 0.4rem;
-}
-
-.template-corporate .input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.template-corporate .form-input {
-  width: 100%;
-  height: var(--input-height, 42px);
-  padding: 0 0.85rem;
-  font-size: 0.9rem;
-  font-family: inherit;
-  color: var(--text-color, #0f172a);
-  background: var(--input-bg, #ffffff);
-  border: 1px solid var(--border-color, #cbd5e1);
-  border-radius: var(--radius-sm, 6px);
-  outline: none;
-  transition: var(--transition-fast);
-}
-
-.template-corporate .form-input::placeholder {
-  color: #94a3b8;
-}
-
-.template-corporate .form-input:focus {
-  border-color: var(--primary-color, #0f172a);
-  box-shadow: 0 0 0 3px var(--focus-ring, rgba(15, 23, 42, 0.12));
-  background: #ffffff;
-}
-
-.template-corporate .toggle-password-btn {
-  position: absolute;
-  right: 0.75rem;
-  background: none;
-  border: none;
-  color: var(--muted-color, #64748b);
-  cursor: pointer;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.15s ease;
-}
-
-.template-corporate .toggle-password-btn:hover {
-  color: var(--text-color, #0f172a);
-}
-
-.template-corporate .toggle-password-btn svg {
-  width: 18px;
-  height: 18px;
-}
-
-.template-corporate .form-row-between {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.25rem;
-  font-size: 0.825rem;
-}
-
-.template-corporate .checkbox-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--text-color, #334155);
-  cursor: pointer;
-  font-size: 0.825rem;
-}
-
-.template-corporate .form-checkbox {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--primary-color, #0f172a);
-  cursor: pointer;
-}
-
-.template-corporate .link-subtle {
-  color: var(--primary-color, #0f172a);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.template-corporate .link-subtle:hover {
-  text-decoration: underline;
-}
-
-/* Primary Button */
-.template-corporate .btn-primary {
-  width: 100%;
-  height: var(--button-height, 44px);
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--btn-primary-text, #ffffff);
-  background: var(--btn-primary-bg, #0f172a);
-  border: 1px solid var(--btn-primary-bg, #0f172a);
-  border-radius: var(--radius-sm, 6px);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: var(--transition-fast);
-}
-
-.template-corporate .btn-primary:hover:not(:disabled) {
-  background: var(--primary-hover, #1e293b);
-  border-color: var(--primary-hover, #1e293b);
-}
-
-.template-corporate .btn-primary:focus-visible {
-  outline: 2px solid var(--primary-color, #0f172a);
-  outline-offset: 2px;
-}
-
-.template-corporate .btn-secondary {
-  width: 100%;
-  height: var(--button-height, 44px);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-color, #334155);
-  background: #ffffff;
-  border: 1px solid var(--border-color, #cbd5e1);
-  border-radius: var(--radius-sm, 6px);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: var(--transition-fast);
-}
-
-.template-corporate .btn-secondary:hover:not(:disabled) {
-  background: #f8fafc;
-  border-color: #94a3b8;
-  color: var(--text-color, #0f172a);
-}
-
-/* Strength Meter */
+/* ============================================================
+   STRENGTH METER
+   ============================================================ */
 .template-corporate .strength-bar-track {
-  height: 4px;
-  background: #e2e8f0;
+  height: 3px;
+  background: var(--corp-border);
   border-radius: 2px;
   overflow: hidden;
   margin-top: 0.4rem;
-  margin-bottom: 0.3rem;
 }
 
 .template-corporate .strength-bar-fill {
@@ -377,23 +552,344 @@ body.template-corporate {
 .template-corporate .strength-meta {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
-  color: var(--muted-color, #64748b);
-  margin-top: 0.25rem;
+  font-size: 0.72rem;
+  color: var(--corp-text-muted);
+  margin-top: 0.2rem;
 }
 
-/* Footer Navigation */
+/* ============================================================
+   PAGE FOOTER
+   ============================================================ */
+.corp-page-footer {
+  background: var(--corp-header-bg, #FFFFFF);
+  border-top: 1px solid var(--corp-border);
+  padding: 0.85rem 2rem;
+  flex-shrink: 0;
+}
+
+.corp-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-size: 0.75rem;
+  color: var(--corp-text-muted);
+}
+
+.corp-footer-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.corp-footer-nav .corp-footer-link {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--corp-text-muted);
+}
+
+.corp-footer-nav .corp-footer-link:hover {
+  color: var(--corp-text);
+  text-decoration: underline;
+}
+
+/* ============================================================
+   ALERT BOXES — Corporate palette
+   ============================================================ */
+.template-corporate .alert-box.alert-warning {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px dashed #f59e0b;
+  border-radius: var(--corp-radius-input);
+}
+
+.template-corporate .alert-box.alert-error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: var(--corp-radius-input);
+}
+
+.template-corporate .alert-box.alert-success {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--corp-radius-input);
+}
+
+/* ============================================================
+   FIELD ERROR
+   ============================================================ */
+.template-corporate .field-error-text {
+  display: block;
+  color: var(--color-error, #DC2626);
+  font-size: 0.775rem;
+  margin-top: 0.3rem;
+}
+
+/* ============================================================
+   SR-ONLY utility
+   ============================================================ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================================
+   OTP DIGIT INPUT COMPONENT
+   ============================================================ */
+.template-corporate .otp-digit-input {
+  font-size: 1.25rem;
+  text-align: center;
+  letter-spacing: 0.25em;
+  font-weight: 700;
+}
+
+/* ============================================================
+   SPINNER
+   ============================================================ */
+.spinner {
+  display: none;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: corp-spin 0.6s linear infinite;
+}
+
+.corp-btn-primary.loading .spinner {
+  display: block;
+}
+
+@keyframes corp-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 640px) {
+  .corp-page-header {
+    padding: 0 1rem;
+  }
+
+  .corp-header-security-badge {
+    display: none;
+  }
+
+  .corp-main-content {
+    padding: 1.5rem 1rem;
+    align-items: flex-start;
+  }
+
+  .corp-page-footer .corp-footer-nav {
+    display: none;
+  }
+
+  .corp-page-footer .corp-footer-inner {
+    justify-content: center;
+  }
+}
+
+/* ==========================================================================
+   BACKWARD-COMPATIBLE STYLES
+   For register, forgot_password, reset_password pages that use older markup
+   (auth-wrapper / auth-card / auth-body / auth-header) in corporate template
+   ========================================================================== */
+
+body.template-corporate:not(:has(.corp-page-wrapper)) {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
+
+.template-corporate .auth-wrapper {
+  width: 100%;
+  max-width: min(var(--card-width, 460px), calc(100% - 32px));
+  margin: 0 auto;
+}
+
+.template-corporate .auth-card {
+  background: var(--corp-card-bg, #ffffff);
+  border: 1px solid var(--corp-border, #D0D5DD);
+  border-radius: var(--corp-radius-card, 6px);
+  box-shadow: var(--corp-card-shadow, 0 1px 3px rgba(0,0,0,0.06));
+  overflow: hidden;
+}
+
+.template-corporate .auth-header {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--corp-border, #D0D5DD);
+}
+
+.template-corporate .auth-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--corp-text, #0D1117);
+  letter-spacing: -0.02em;
+  margin: 0.5rem 0 0.25rem;
+  line-height: 1.2;
+}
+
+.template-corporate .auth-subtitle {
+  font-size: 0.8rem;
+  color: var(--corp-text-muted, #5A6475);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.template-corporate .auth-body {
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.template-corporate .form-group {
+  margin-bottom: 0.85rem;
+}
+
+.template-corporate .form-label {
+  display: block;
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: var(--corp-text, #0D1117);
+  margin-bottom: 0.35rem;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.template-corporate .input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.template-corporate .form-input {
+  width: 100%;
+  height: var(--input-height, 40px);
+  padding: 0 0.85rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: var(--corp-text, #0D1117);
+  background: var(--corp-input-bg, #ffffff);
+  border: 1px solid var(--corp-input-border, #C9CDD8);
+  border-radius: var(--corp-radius-input, 4px);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+}
+
+.template-corporate .form-input::placeholder {
+  color: #A0A8B8;
+}
+
+.template-corporate .form-input:focus {
+  border-color: var(--corp-primary, #0F172A);
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.12);
+}
+
+.template-corporate .form-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+  font-size: 0.8rem;
+}
+
+.template-corporate .link-subtle {
+  color: var(--corp-primary, #0F172A);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.775rem;
+}
+
+.template-corporate .link-subtle:hover {
+  text-decoration: underline;
+}
+
+.template-corporate .btn-primary {
+  width: 100%;
+  height: var(--button-height, 40px);
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--corp-primary-text, #ffffff);
+  background: var(--corp-primary, #0F172A);
+  border: 1px solid var(--corp-primary, #0F172A);
+  border-radius: var(--corp-radius-btn, 4px);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background 0.15s ease;
+  letter-spacing: 0.01em;
+}
+
+.template-corporate .btn-primary:hover:not(:disabled) {
+  background: var(--corp-primary-hover, #1E293B);
+  border-color: var(--corp-primary-hover, #1E293B);
+}
+
+.template-corporate .btn-secondary {
+  width: 100%;
+  height: var(--button-height, 40px);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--corp-text, #0D1117);
+  background: #fff;
+  border: 1px solid var(--corp-border, #D0D5DD);
+  border-radius: var(--corp-radius-btn, 4px);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.15s ease;
+}
+
+.template-corporate .btn-secondary:hover:not(:disabled) {
+  background: #F4F6F9;
+  border-color: #94a3b8;
+}
+
+.template-corporate .checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  color: var(--corp-text-muted, #5A6475);
+}
+
+.template-corporate .form-checkbox {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--corp-primary, #0F172A);
+  cursor: pointer;
+}
+
 .template-corporate .auth-footer {
   text-align: center;
-  margin-top: 1.5rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--border-color, #f1f5f9);
-  font-size: 0.825rem;
-  color: var(--muted-color, #64748b);
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--corp-border, #D0D5DD);
+  font-size: 0.8rem;
+  color: var(--corp-text-muted, #5A6475);
 }
 
 .template-corporate .auth-footer a {
-  color: var(--primary-color, #0f172a);
+  color: var(--corp-primary, #0F172A);
   text-decoration: none;
   font-weight: 600;
 }
@@ -402,41 +898,21 @@ body.template-corporate {
   text-decoration: underline;
 }
 
-/* Demo banner & alert styling inside corporate card */
-.template-corporate .alert-box.alert-warning {
-  background: #fffbeb;
-  color: #92400e;
-  border: 1px dashed #f59e0b;
+.template-corporate .field-error-text {
+  display: block;
+  color: var(--color-error, #DC2626);
+  font-size: 0.775rem;
+  margin-top: 0.3rem;
 }
 
-.template-corporate .alert-box.alert-warning .demo-otp-badge {
-  background: #fef3c7;
-  color: #b45309;
-  border: 1px solid #fde68a;
-  font-weight: 700;
-}
-
-.template-corporate .alert-box.alert-error {
-  background: #fef2f2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
-}
-
-.template-corporate .alert-box.alert-success {
-  background: #f0fdf4;
-  color: #15803d;
-  border: 1px solid #bbf7d0;
-}
-
-@media (max-width: 480px) {
-  body.template-corporate {
-    padding: 1rem 0.75rem;
-    align-items: flex-start;
-  }
-  .template-corporate .auth-header {
-    padding: 1.5rem 1.25rem 1rem;
-  }
-  .template-corporate .auth-body {
-    padding: 1.25rem 1.25rem 1.5rem;
-  }
+.template-corporate .brand-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--corp-primary, #0F172A);
+  color: #fff;
+  border-radius: 5px;
+  margin-bottom: 0.75rem;
 }

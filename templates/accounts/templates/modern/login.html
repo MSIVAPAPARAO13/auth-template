@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Sign In | Auth Platform{% endblock %}
+{% block title %}Sign In | {{ branding.brand_name|default:"Auth Platform" }}{% endblock %}
 
 {% block body_class %}template-modern{% endblock %}
 
@@ -12,7 +12,7 @@
 
 {% block content %}
 <div class="auth-wrapper">
-  <main class="auth-card" id="main-auth-card">
+  <main class="auth-card card-style-{{ card_settings.preset|default:'default' }}" id="main-auth-card">
     <!-- Header -->
     <div class="auth-header">
       <div class="brand-header-logo-container align-{{ branding.logo_align|default:'center' }}" id="brand-header-container">
@@ -76,7 +76,7 @@
               <input type="text"
                      name="identifier"
                      id="password-identifier"
-                     class="form-input"
+                     class="form-input input-style-{{ inputs.preset|default:'minimal' }}"
                      placeholder="e.g. alex, alex@company.com"
                      autocomplete="username"
                      required
@@ -99,7 +99,7 @@
               <input type="password"
                      name="password"
                      id="password-input"
-                     class="form-input"
+                     class="form-input input-style-{{ inputs.preset|default:'minimal' }}"
                      placeholder="Enter your password"
                      autocomplete="current-password"
                      required>
@@ -126,7 +126,7 @@
           {% endif %}
 
           <!-- Submit Button -->
-          <button type="submit" class="btn-primary" id="password-submit-btn">
+          <button type="submit" class="btn-primary btn-style-{{ buttons.preset|default:'solid' }}" id="password-submit-btn">
             <span class="spinner" aria-hidden="true"></span>
             <span class="btn-text">Sign In</span>
           </button>
@@ -151,7 +151,7 @@
               <div class="input-wrapper">
                 <input type="text"
                        id="otp-request-identifier"
-                       class="form-input"
+                       class="form-input input-style-{{ inputs.preset|default:'minimal' }}"
                        placeholder="e.g. user@company.com or +919876543210"
                        autocomplete="email tel"
                        required>
@@ -203,7 +203,7 @@
             </div>
             {% endif %}
 
-            <button type="button" class="btn-primary" id="verify-otp-btn">
+            <button type="button" class="btn-primary btn-style-{{ buttons.preset|default:'solid' }}" id="verify-otp-btn">
               <span class="spinner" aria-hidden="true"></span>
               <span class="btn-text">Verify &amp; Sign In</span>
             </button>

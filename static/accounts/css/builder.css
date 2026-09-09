@@ -5,21 +5,34 @@
    ========================================================================== */
 
 :root {
-  --builder-bg: #131315;
-  --builder-sidebar-bg: #0e0e10;
-  --builder-surface: #201f22;
-  --builder-surface-low: #1c1b1d;
-  --builder-surface-high: #2a2a2c;
-  --builder-surface-highest: #353437;
-  --builder-border: rgba(76, 69, 70, 0.35);
-  --builder-border-ghost: rgba(255, 255, 255, 0.08);
-  --builder-text: #e5e1e4;
-  --builder-text-muted: #988e90;
-  --builder-text-variant: #cfc4c5;
-  --builder-primary: #c6c6c6;
-  --builder-primary-hover: #e2e2e2;
-  --builder-primary-contrast: #1b1b1b;
-  --builder-input-bg: #131315;
+  /* Level 1: App Canvas Base (clean dark neutral) */
+  --builder-bg: #0d0e12;
+
+  /* Level 2: Sidebar Base & Topbar */
+  --builder-sidebar-bg: #13141a;
+  --builder-topbar-bg: #13141a;
+
+  /* Level 3: Control Groups & Section Panels */
+  --builder-surface: #1a1c24;
+  --builder-surface-low: #15161d;
+  --builder-surface-high: #22242f;
+  --builder-surface-highest: #2b2e3c;
+
+  /* Borders & Dividers */
+  --builder-border: rgba(255, 255, 255, 0.08);
+  --builder-border-ghost: rgba(255, 255, 255, 0.05);
+  --builder-border-focus: rgba(255, 255, 255, 0.22);
+
+  /* Text & Accents */
+  --builder-text: #f0f1f4;
+  --builder-text-muted: #8c909f;
+  --builder-text-variant: #c0c3d2;
+  --builder-primary: #e2e4ec;
+  --builder-primary-hover: #ffffff;
+  --builder-primary-contrast: #101115;
+
+  /* Level 6: Form Controls & Inputs */
+  --builder-input-bg: #101116;
   --builder-radius: 8px;
   --builder-radius-lg: 12px;
 }
@@ -42,9 +55,7 @@ body.builder-body {
    ========================================================================== */
 .builder-topbar {
   height: 64px;
-  background: rgba(19, 19, 21, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: var(--builder-topbar-bg, #13141a);
   border-bottom: 1px solid var(--builder-border);
   display: flex;
   align-items: center;
@@ -449,6 +460,100 @@ body.builder-body {
   box-sizing: border-box;
 }
 
+.ctrl-select {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23988e90' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+}
+
+/* ==========================================================================
+   CARD 3x3 POSITION SELECTOR & FINE POSITION CONTROLS
+   ========================================================================== */
+.pos-matrix-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--builder-input-bg, #101116);
+  border: 1px solid var(--builder-border, rgba(255, 255, 255, 0.08));
+  border-radius: var(--builder-radius, 8px);
+  padding: 0.75rem 0.85rem;
+}
+
+.pos-matrix-3x3 {
+  display: grid;
+  grid-template-columns: repeat(3, 28px);
+  grid-template-rows: repeat(3, 28px);
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.pos-cell-btn {
+  width: 28px;
+  height: 28px;
+  background: var(--builder-surface, #1a1c24);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+
+.pos-cell-btn:hover {
+  background: var(--builder-surface-high, #22242f);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.pos-cell-btn .pos-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--builder-text-muted, #7e8395);
+  transition: all 0.15s ease;
+}
+
+.pos-cell-btn.active {
+  background: var(--builder-surface-highest, #2b2e3c);
+  border-color: var(--builder-primary, #e2e4ec);
+  box-shadow: 0 0 0 1px var(--builder-primary, #e2e4ec);
+}
+
+.pos-cell-btn.active .pos-dot {
+  background: #ffffff;
+  transform: scale(1.3);
+}
+
+.pos-sliders-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.ctrl-sublabel {
+  font-size: 0.72rem;
+  color: var(--builder-text-muted, #8c909f);
+  font-weight: 500;
+}
+
+.ctrl-select option {
+  background-color: #1c1b1d;
+  color: #e5e1e4;
+  padding: 8px 12px;
+}
+
 .ctrl-input-text:focus,
 .ctrl-select:focus {
   border-color: var(--builder-primary);
@@ -819,16 +924,20 @@ body.builder-body {
 
 /* ==========================================================================
    CENTER PREVIEW STAGE (Stitch Ambient Workspace)
+   Level 4: Separated Workspace with technical dot-grid canvas
    ========================================================================== */
 .builder-preview-stage {
   flex: 1;
-  background: var(--builder-bg);
+  background-color: var(--builder-bg, #0d0e12);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 4.25rem 2rem 3.25rem;
-  overflow: auto;
+  justify-content: flex-start;
+  padding: 1.5rem 1.5rem 2.5rem;
+  overflow-y: auto;
+  overflow-x: hidden;
   position: relative;
   box-sizing: border-box;
 }
@@ -846,10 +955,10 @@ body.builder-body {
   z-index: 1;
 }
 
-/* Top Floating State Simulator Bar */
+/* Top Floating State Simulator Bar — In-Flow to Guarantee Zero Preview Overlap */
 .preview-stage-toolbar {
-  position: absolute;
-  top: 1.25rem;
+  position: static;
+  margin-bottom: 1.25rem;
   z-index: 20;
   display: flex;
   align-items: center;
@@ -859,6 +968,7 @@ body.builder-body {
   border-radius: 9999px;
   border: 1px solid var(--builder-border);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  flex-shrink: 0;
 }
 
 .state-label {
@@ -899,17 +1009,18 @@ body.builder-body {
   align-items: center;
   gap: 0.85rem;
   width: 100%;
-  max-width: 1100px;
+  max-width: 1060px;
   position: relative;
   z-index: 10;
   flex-shrink: 0;
 }
 
-/* Stable Viewport with fixed layout dimensions */
+/* Stable Viewport with fixed layout dimensions & clear elevation */
 .preview-frame-wrapper {
-  background: #131315;
-  border-radius: 12px;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 12px 40px rgba(0, 0, 0, 0.6);
+  background: #14151b;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 24px 60px -12px rgba(0, 0, 0, 0.85);
   overflow: hidden;
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -917,27 +1028,28 @@ body.builder-body {
   position: relative;
   z-index: 10;
   width: 100%;
-  height: 640px;
-  max-height: 680px;
+  height: 700px;
+  max-height: 720px;
   box-sizing: border-box;
 }
 
 .preview-frame-wrapper.mode-desktop {
   width: 100%;
-  max-width: 1100px;
-  height: 640px;
+  max-width: 1040px;
+  height: 700px;
 }
 
 .preview-frame-wrapper.mode-tablet {
   width: 768px;
-  height: 640px;
+  height: 700px;
 }
 
 .preview-frame-wrapper.mode-mobile {
   width: 390px;
-  height: 640px;
-  border-radius: 28px;
-  border: 4px solid #201f22;
+  height: 700px;
+  border-radius: 36px;
+  border: 6px solid #201f22;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 25px 60px rgba(0, 0, 0, 0.8);
 }
 
 .preview-iframe {
@@ -1272,7 +1384,7 @@ body.builder-body {
     padding: 1rem 1.25rem 5.5rem;
   }
   .builder-preview-stage {
-    padding: 4rem 1rem 3rem;
+    padding: 1.5rem 1rem 2.5rem;
   }
 }
 
@@ -1321,7 +1433,7 @@ body.builder-body {
   }
   .builder-preview-stage {
     min-height: 550px;
-    padding: 4.5rem 1rem 3rem;
+    padding: 1.5rem 1rem 2.5rem;
   }
   .ctrl-grid-2 {
     grid-template-columns: 1fr;
@@ -1339,3 +1451,259 @@ body.builder-body {
   white-space: nowrap;
   border-width: 0;
 }
+
+/* ==========================================================================
+   DESIGN PRESET CARDS & COLOR PALETTE CONTROLS (PHASE 12 DESIGN SYSTEM)
+   ========================================================================== */
+.preset-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.preset-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--builder-surface-low);
+  border: 1px solid var(--builder-border);
+  border-radius: var(--builder-radius);
+  padding: 0.65rem 0.65rem 0.55rem;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+}
+
+.preset-card:hover {
+  background: var(--builder-surface);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.preset-card:focus-visible {
+  border-color: var(--builder-primary);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+.preset-card.active {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.08);
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.preset-card-swatches {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-bottom: 0.4rem;
+}
+
+.preset-swatch-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.preset-card-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--builder-text);
+  line-height: 1.2;
+}
+
+.preset-card-desc {
+  font-size: 0.68rem;
+  color: var(--builder-text-muted);
+  margin-top: 2px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preset-active-check {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: #ffffff;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: bold;
+}
+
+.preset-card.active .preset-active-check {
+  display: flex;
+}
+
+/* Color Palettes Grid */
+.palette-swatches-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.palette-swatch-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--builder-surface-low);
+  border: 1px solid var(--builder-border);
+  border-radius: 6px;
+  padding: 0.4rem 0.5rem;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  color: var(--builder-text);
+}
+
+.palette-swatch-btn:hover {
+  background: var(--builder-surface);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.palette-swatch-btn.active {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.palette-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.palette-name {
+  font-size: 0.74rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Gradient Preset Pills */
+.gradient-preset-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.65rem;
+}
+
+.gradient-pill-btn {
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid var(--builder-border);
+  background: var(--builder-surface-low);
+  color: var(--builder-text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.gradient-pill-btn:hover {
+  background: var(--builder-surface);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.gradient-pill-btn.active {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.15);
+  color: #ffffff;
+}
+
+/* Multi-choice Segmented Controls with Wrap */
+.ctrl-segmented-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  background: var(--builder-surface-low);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--builder-border);
+}
+
+.ctrl-segmented-wrap .segmented-btn {
+  flex: 1 1 auto;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.72rem;
+}
+
+/* Button Style Preset Grid — 4 equal columns for 7 presets, no awkward wrapping */
+#ctrl-button-preset-group {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+#ctrl-button-preset-group .segmented-btn {
+  flex: none;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  padding: 0.38rem 0.2rem;
+  font-size: 0.72rem;
+}
+
+/* Input Style Preset Grid — 3 columns for 5 presets */
+#ctrl-input-preset-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+#ctrl-input-preset-group .segmented-btn {
+  flex: none;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  padding: 0.38rem 0.2rem;
+  font-size: 0.72rem;
+}
+
+/* Background Type Segmented Control */
+#ctrl-bg-type-group {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+
+#ctrl-bg-type-group .segmented-btn {
+  flex: none;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  padding: 0.38rem 0.2rem;
+  font-size: 0.72rem;
+}
+
+/* Background Image Source Segmented Control */
+#ctrl-bg-image-source-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+#ctrl-bg-image-source-group .segmented-btn {
+  flex: none;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  padding: 0.45rem 0.5rem;
+  font-size: 0.76rem;
+  font-weight: 500;
+}
+
+

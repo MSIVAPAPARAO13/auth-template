@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="{{ theme_mode|default:'dark' }}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,12 +26,35 @@
   </style>
   {% endif %}
   <script>
-    if (window.self !== window.top || new URLSearchParams(window.location.search).has('preview')) {
-      document.documentElement.classList.add('is-preview');
-    }
+    (function() {
+      // Set system preference class if in system mode
+      function checkSystemTheme() {
+        var theme = document.documentElement.getAttribute('data-theme');
+        if (theme === 'system') {
+          var isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.classList.toggle('system-dark', isDark);
+          document.documentElement.classList.toggle('system-light', !isDark);
+        } else {
+          document.documentElement.classList.remove('system-dark', 'system-light');
+        }
+      }
+      checkSystemTheme();
+      if (window.matchMedia) {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', checkSystemTheme);
+      }
+
+      if (window.self !== window.top || new URLSearchParams(window.location.search).has('preview')) {
+        document.documentElement.classList.add('is-preview');
+        document.addEventListener('DOMContentLoaded', function() {
+          if (document.body) document.body.classList.add('is-preview');
+        });
+      }
+    })();
   </script>
 </head>
-<body class="{% block body_class %}{% endblock %} {% if request.GET.preview %}is-preview{% endif %}">
+<body class="{% block body_class %}{% endblock %} {% if request.GET.preview %}is-preview{% endif %} density-{{ spacing.density|default:'comfortable' }} type-scale-{{ typography.scale|default:'modern' }}" data-theme="{{ theme_mode|default:'dark' }}">
+  <div class="auth-bg-filter-layer" aria-hidden="true"></div>
+  <div class="auth-bg-overlay" aria-hidden="true"></div>
   {% block content %}{% endblock %}
   <script src="{% static 'accounts/js/auth_common.js' %}"></script>
   {% block extra_js %}{% endblock %}

@@ -8,7 +8,10 @@ from django.shortcuts import redirect
 from django.conf import settings
 from django.conf.urls.static import static
 
+from django.http import HttpResponse
+
 urlpatterns = [
+    path("favicon.ico", lambda req: HttpResponse(status=204)),
     path("admin/", admin.site.urls),
     path("", lambda req: redirect("login"), name="root"),
     path("", include("accounts.urls")),

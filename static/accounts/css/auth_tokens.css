@@ -79,6 +79,197 @@
   --logo-scale: 1;
   --logo-align: center;
   --logo-object-fit: contain;
+
+  /* Background Customization Tokens */
+  --auth-bg-color: #131315;
+  --auth-bg-image: none;
+  --auth-bg-position: center center;
+  --auth-bg-size: cover;
+  --auth-bg-repeat: no-repeat;
+  --auth-bg-overlay-color: rgba(0, 0, 0, 0.4);
+  --auth-bg-filter-blur: 0px;
+  --auth-bg-filter-brightness: 100%;
+  --auth-bg-filter-saturation: 100%;
+
+  /* Card Customization Tokens */
+  --card-width: 420px;
+  --card-max-width: 100%;
+  --card-padding: 32px;
+  --card-appearance: opaque;
+  --card-bg-color: #201f22;
+  --card-bg-surface: #201f22;
+  --card-surface-alpha: 1;
+  --card-opacity: 1;
+  --card-border-radius: 12px;
+  --card-border-width: 1px;
+  --card-border-opacity: 0.3;
+  --card-border-color: rgba(76, 69, 70, 0.4);
+  --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  --card-backdrop-blur: 0px;
+  --card-align: center;
+
+  /* Card Entrance Animation Tokens */
+  --card-animation-name: none;
+  --card-animation-duration: 250ms;
+  --card-animation-delay: 0ms;
+
+  /* Input & Button Customization Tokens */
+  --input-bg-custom: var(--input-bg, #131315);
+  --input-text-color: var(--text-color, #e5e1e4);
+  --input-border-color: var(--border-color, rgba(76, 69, 70, 0.4));
+  --input-radius-custom: var(--radius-sm, 4px);
+  --button-font-size: 14px;
+  --button-border-width: 0px;
+  --button-border-color: transparent;
+  --button-radius-custom: var(--radius-sm, 4px);
+}
+
+/* ==========================================================================
+   THEME MODE TOKENS (Dark / Light / System)
+   ========================================================================== */
+
+/* Dark Mode (Default) */
+:root[data-theme="dark"],
+body[data-theme="dark"],
+.system-dark {
+  --theme-mode: dark;
+  --background-color: #111214;
+  --card-background: #1B1D21;
+  --text-color: #F5F5F5;
+  --muted-color: #A7A7A7;
+  --input-bg: #15171A;
+  --input-border: #34373C;
+  --input-text-color: #F5F5F5;
+  --btn-primary-bg: #FFFFFF;
+  --btn-primary-text: #111111;
+  --primary-contrast: #111111;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --focus-ring: rgba(255, 255, 255, 0.2);
+  --tab-bg: #15171A;
+  --tab-border: #34373C;
+  --tab-active-bg: #2A2C30;
+  --tab-active-text: #F5F5F5;
+  --otp-channel-bg: #15171A;
+  --otp-channel-border: #34373C;
+  --otp-channel-text: #F5F5F5;
+  --otp-channel-active-bg: #2A2C30;
+  --otp-channel-active-border: #FFFFFF;
+  --badge-surface: #15171A;
+  --badge-border: #34373C;
+  --badge-color: #F5F5F5;
+  --card-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --placeholder-color: #757575;
+}
+
+/* Light Mode */
+:root[data-theme="light"],
+body[data-theme="light"],
+.system-light {
+  --theme-mode: light;
+  --background-color: #F5F6F8;
+  --card-background: #FFFFFF;
+  --text-color: #17181A;
+  --muted-color: #656970;
+  --input-bg: #FFFFFF;
+  --input-border: #D7DADF;
+  --input-text-color: #17181A;
+  --btn-primary-bg: #17181A;
+  --btn-primary-text: #FFFFFF;
+  --primary-contrast: #FFFFFF;
+  --border-color: #E2E5EA;
+  --focus-ring: rgba(23, 24, 26, 0.15);
+  --tab-bg: #EDEFF2;
+  --tab-border: #D7DADF;
+  --tab-active-bg: #FFFFFF;
+  --tab-active-text: #17181A;
+  --otp-channel-bg: #FFFFFF;
+  --otp-channel-border: #D7DADF;
+  --otp-channel-text: #17181A;
+  --otp-channel-active-bg: #EDEFF2;
+  --otp-channel-active-border: #17181A;
+  --badge-surface: #EDEFF2;
+  --badge-border: #D7DADF;
+  --badge-color: #17181A;
+  --card-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  --placeholder-color: #9CA3AF;
+}
+
+/* System Mode with OS Preferences */
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="system"],
+  body[data-theme="system"] {
+    --theme-mode: dark;
+    --background-color: #111214;
+    --card-background: #1B1D21;
+    --text-color: #F5F5F5;
+    --muted-color: #A7A7A7;
+    --input-bg: #15171A;
+    --input-border: #34373C;
+    --input-text-color: #F5F5F5;
+    --btn-primary-bg: #FFFFFF;
+    --btn-primary-text: #111111;
+    --primary-contrast: #111111;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --focus-ring: rgba(255, 255, 255, 0.2);
+    --tab-bg: #15171A;
+    --tab-border: #34373C;
+    --tab-active-bg: #2A2C30;
+    --tab-active-text: #F5F5F5;
+    --otp-channel-bg: #15171A;
+    --otp-channel-border: #34373C;
+    --otp-channel-text: #F5F5F5;
+    --otp-channel-active-bg: #2A2C30;
+    --otp-channel-active-border: #FFFFFF;
+    --badge-surface: #15171A;
+    --badge-border: #34373C;
+    --badge-color: #F5F5F5;
+    --card-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.06);
+    --placeholder-color: #757575;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"],
+  body[data-theme="system"] {
+    --theme-mode: light;
+    --background-color: #F5F6F8;
+    --card-background: #FFFFFF;
+    --text-color: #17181A;
+    --muted-color: #656970;
+    --input-bg: #FFFFFF;
+    --input-border: #D7DADF;
+    --input-text-color: #17181A;
+    --btn-primary-bg: #17181A;
+    --btn-primary-text: #FFFFFF;
+    --primary-contrast: #FFFFFF;
+    --border-color: #E2E5EA;
+    --focus-ring: rgba(23, 24, 26, 0.15);
+    --tab-bg: #EDEFF2;
+    --tab-border: #D7DADF;
+    --tab-active-bg: #FFFFFF;
+    --tab-active-text: #17181A;
+    --otp-channel-bg: #FFFFFF;
+    --otp-channel-border: #D7DADF;
+    --otp-channel-text: #17181A;
+    --otp-channel-active-bg: #EDEFF2;
+    --otp-channel-active-border: #17181A;
+    --badge-surface: #EDEFF2;
+    --badge-border: #D7DADF;
+    --badge-color: #17181A;
+    --card-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    --placeholder-color: #9CA3AF;
+  }
+}
+
+body,
+.auth-card,
+.form-input,
+.btn-primary,
+.mode-tab-btn,
+.sub-channel-btn,
+.brand-badge,
+.brand-default-badge {
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -120,6 +311,110 @@ html, body {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
+}
+
+@keyframes animFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes animSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes animSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes animScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes animFloat {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Background Layers (Filter Layer & Overlay Layer) */
+.auth-bg-filter-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  background-color: var(--auth-bg-color, transparent);
+  background-image: var(--auth-bg-image, none);
+  background-position: var(--auth-bg-position, center center);
+  background-size: var(--auth-bg-size, cover);
+  background-repeat: var(--auth-bg-repeat, no-repeat);
+  background-attachment: scroll;
+  filter: blur(var(--auth-bg-filter-blur, 0px)) brightness(var(--auth-bg-filter-brightness, 100%)) saturate(var(--auth-bg-filter-saturation, 100%));
+  transition: filter 0.2s ease, background-color 0.2s ease;
+}
+
+.auth-bg-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  background-color: var(--auth-bg-overlay-color, transparent);
+  transition: background-color 0.2s ease;
+}
+
+body.templates-preview-body .auth-bg-overlay,
+body.templates-preview-body .auth-bg-filter-layer,
+body.dashboard-body .auth-bg-overlay,
+body.dashboard-body .auth-bg-filter-layer {
+  display: none !important;
+}
+
+/* Auth card universal styling hook */
+.auth-wrapper {
+  position: relative;
+  z-index: 2;
+}
+
+.auth-card {
+  animation-name: var(--card-animation-name, none) !important;
+  animation-duration: var(--card-animation-duration, 250ms) !important;
+  animation-delay: var(--card-animation-delay, 0ms) !important;
+  animation-fill-mode: both !important;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+  backdrop-filter: blur(var(--card-backdrop-blur, 0px));
+  -webkit-backdrop-filter: blur(var(--card-backdrop-blur, 0px));
+  opacity: 1 !important;
 }
 
 @keyframes spin {
@@ -186,22 +481,26 @@ html, body {
 
 .alert-box.demo-banner {
   border-style: dashed !important;
-  font-size: 0.825rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
+  font-size: 0.75rem !important;
+  padding: 0.35rem 0.65rem !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  margin-bottom: 0.85rem !important;
+  border-radius: var(--radius-sm, 6px) !important;
+  line-height: 1.25 !important;
+  box-sizing: border-box;
 }
 
 .alert-box.demo-banner .demo-otp-badge {
   font-weight: 700;
   background: rgba(245, 158, 11, 0.22);
   color: inherit;
-  padding: 3px 8px;
+  padding: 2px 6px;
   border-radius: 4px;
   white-space: nowrap;
-  font-size: 0.775rem;
+  font-size: 0.72rem;
   letter-spacing: 0.02em;
 }
 
@@ -431,6 +730,457 @@ html.is-preview .floating-template-switcher,
 [data-preview="1"] .floating-template-switcher {
   display: none !important;
 }
+
+/* ==========================================================================
+   UNIVERSAL AUTH MODE SELECTOR (Password vs OTP)
+   Balanced segmented tabs across all templates & preview
+   ========================================================================== */
+.auth-mode-selector {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box;
+  width: auto;
+}
+
+.mode-tab-btn {
+  flex: 1 1 50% !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   STUDIO PREVIEW VIEWPORT RESETS & CUSTOM SCROLLBAR
+   Ensures preview viewport never clips and never displays heavy OS scrollbars
+   ========================================================================== */
+html.is-preview {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  display: block !important;
+}
+
+body.is-preview {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  overflow: hidden !important;
+  display: block !important;
+}
+
+html.is-preview::-webkit-scrollbar,
+body.is-preview::-webkit-scrollbar {
+  width: 5px;
+}
+html.is-preview::-webkit-scrollbar-track,
+body.is-preview::-webkit-scrollbar-track {
+  background: transparent;
+}
+html.is-preview::-webkit-scrollbar-thumb,
+body.is-preview::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+html.is-preview::-webkit-scrollbar-thumb:hover,
+body.is-preview::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Stacking Hierarchy within Preview */
+body.is-preview .auth-bg-filter-layer {
+  position: absolute !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  background-color: var(--auth-bg-color, transparent);
+  background-image: var(--auth-bg-image, none);
+  background-position: var(--auth-bg-position, center center);
+  background-size: var(--auth-bg-size, cover);
+  background-repeat: var(--auth-bg-repeat, no-repeat);
+  filter: blur(var(--auth-bg-filter-blur, 0px)) brightness(var(--auth-bg-filter-brightness, 100%)) saturate(var(--auth-bg-filter-saturation, 100%));
+}
+
+body.is-preview .auth-bg-overlay {
+  position: absolute !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+  background-color: var(--auth-bg-overlay-color, transparent);
+}
+
+body.is-preview .split-container,
+body.is-preview .corp-page-wrapper {
+  position: relative !important;
+  z-index: 2 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+}
+
+body.is-preview .auth-wrapper,
+body.is-preview:not(.template-corporate) .auth-container {
+  position: absolute !important;
+  z-index: 3 !important;
+  left: clamp(1rem, var(--card-x, 50%), calc(100% - 1rem)) !important;
+  top: clamp(1rem, var(--card-y, 50%), calc(100% - 1rem)) !important;
+  transform: translate(calc(-1 * clamp(0%, var(--card-x, 50%), 100%)), calc(-1 * clamp(0%, var(--card-y, 50%), 100%))) !important;
+  width: min(var(--card-width, 420px), calc(100% - 2rem)) !important;
+  max-width: calc(100% - 2rem) !important;
+  margin: 0 !important;
+  transition: left 0.18s cubic-bezier(0.16, 1, 0.3, 1), top 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+body.is-preview .auth-card,
+body.is-preview .corp-auth-card {
+  position: relative !important;
+  z-index: 4 !important;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Split screen template containment within preview */
+body.is-preview.template-split,
+body.is-preview .split-container {
+  min-height: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: row !important;
+}
+
+body.is-preview.template-split .split-hero,
+body.is-preview .split-container .split-hero {
+  flex: 0 0 44% !important;
+  max-width: 44% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 2.5rem 2rem !important;
+  box-sizing: border-box !important;
+}
+
+body.is-preview.template-split .split-auth,
+body.is-preview .split-container .split-auth {
+  flex: 1 1 56% !important;
+  position: relative !important;
+  overflow: hidden !important;
+  padding: 1.5rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+}
+
+body.is-preview .split-auth .auth-wrapper {
+  position: absolute !important;
+  left: clamp(1rem, var(--card-x, 50%), calc(100% - 1rem)) !important;
+  top: clamp(1rem, var(--card-y, 50%), calc(100% - 1rem)) !important;
+  transform: translate(calc(-1 * clamp(0%, var(--card-x, 50%), 100%)), calc(-1 * clamp(0%, var(--card-y, 50%), 100%))) !important;
+  width: min(var(--card-width, 460px), calc(100% - 2rem)) !important;
+  max-width: calc(100% - 2rem) !important;
+  margin: 0 !important;
+}
+
+body.is-preview.mode-mobile .split-container {
+  flex-direction: column !important;
+  overflow-y: auto !important;
+}
+body.is-preview.mode-mobile .split-hero {
+  flex: none !important;
+  max-width: 100% !important;
+  padding: 1.5rem 1rem !important;
+}
+body.is-preview.mode-mobile .split-auth {
+  flex: none !important;
+  width: 100% !important;
+}
+body.is-preview.mode-mobile .split-auth .auth-wrapper {
+  position: static !important;
+  transform: none !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Corporate template containment within preview */
+body.is-preview.template-corporate,
+body.is-preview .corp-page-wrapper {
+  min-height: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+}
+
+body.is-preview .corp-main-content {
+  position: relative !important;
+  overflow: hidden !important;
+  flex: 1 1 auto !important;
+}
+
+body.is-preview .corp-main-content .corp-form-section,
+body.is-preview .corp-main-content .auth-wrapper {
+  position: absolute !important;
+  left: clamp(1rem, var(--card-x, 50%), calc(100% - 1rem)) !important;
+  top: clamp(1rem, var(--card-y, 50%), calc(100% - 1rem)) !important;
+  transform: translate(calc(-1 * clamp(0%, var(--card-x, 50%), 100%)), calc(-1 * clamp(0%, var(--card-y, 50%), 100%))) !important;
+  width: min(var(--card-width, 460px), calc(100% - 2rem)) !important;
+  max-width: calc(100% - 2rem) !important;
+  margin: 0 !important;
+}
+
+/* Live Page Card Positioning */
+body:not(.is-preview).template-modern {
+  position: relative;
+  min-height: 100vh;
+}
+
+@media (min-width: 641px) {
+  body:not(.is-preview).template-modern .auth-wrapper {
+    position: absolute;
+    left: clamp(1.5rem, var(--card-x, 50%), calc(100% - 1.5rem));
+    top: clamp(1.5rem, var(--card-y, 50%), calc(100% - 1.5rem));
+    transform: translate(calc(-1 * clamp(0%, var(--card-x, 50%), 100%)), calc(-1 * clamp(0%, var(--card-y, 50%), 100%)));
+    margin: 0;
+  }
+}
+
+/* ==========================================================================
+   COMPONENT STYLE PRESETS & DENSITY ENGINE
+   ========================================================================== */
+
+/* 1. Card Style Presets */
+.card-style-minimal .auth-card,
+.card-style-minimal.auth-card {
+  box-shadow: none !important;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08)) !important;
+  backdrop-filter: none !important;
+}
+
+.card-style-soft .auth-card,
+.card-style-soft.auth-card {
+  border-radius: 18px !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.25) !important;
+}
+
+.card-style-elevated .auth-card,
+.card-style-elevated.auth-card {
+  box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--border-color, rgba(255, 255, 255, 0.08)) !important;
+}
+
+.card-style-glass .auth-card,
+.card-style-glass.auth-card {
+  background: rgba(27, 29, 33, 0.72) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+:root[data-theme="light"] .card-style-glass .auth-card,
+:root[data-theme="light"].card-style-glass .auth-card {
+  background: rgba(255, 255, 255, 0.82) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.card-style-bordered .auth-card,
+.card-style-bordered.auth-card {
+  border: 2px solid var(--primary-color, #3b82f6) !important;
+  box-shadow: none !important;
+}
+
+/* 2. Button Style Presets */
+.btn-style-soft .btn-primary,
+.btn-style-soft#password-submit-btn,
+.btn-style-soft#send-otp-btn,
+.btn-style-soft#verify-otp-btn {
+  background: rgba(59, 130, 246, 0.14) !important;
+  color: var(--primary-color, #3b82f6) !important;
+  border: 1px solid rgba(59, 130, 246, 0.28) !important;
+}
+.btn-style-soft .btn-primary:hover {
+  background: rgba(59, 130, 246, 0.22) !important;
+}
+
+.btn-style-outline .btn-primary,
+.btn-style-outline#password-submit-btn,
+.btn-style-outline#send-otp-btn,
+.btn-style-outline#verify-otp-btn {
+  background: transparent !important;
+  color: var(--btn-primary-bg, var(--primary-color, #ffffff)) !important;
+  border: 1.5px solid var(--btn-primary-bg, var(--primary-color, #ffffff)) !important;
+}
+.btn-style-outline .btn-primary:hover {
+  background: var(--btn-primary-bg, var(--primary-color, #ffffff)) !important;
+  color: var(--btn-primary-text, #111111) !important;
+}
+
+.btn-style-ghost .btn-primary,
+.btn-style-ghost#password-submit-btn,
+.btn-style-ghost#send-otp-btn,
+.btn-style-ghost#verify-otp-btn {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: var(--primary-color, #3b82f6) !important;
+}
+.btn-style-ghost .btn-primary:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.btn-style-gradient .btn-primary,
+.btn-style-gradient#password-submit-btn,
+.btn-style-gradient#send-otp-btn,
+.btn-style-gradient#verify-otp-btn {
+  background: linear-gradient(135deg, var(--primary-color, #3b82f6) 0%, var(--primary-hover, #1d4ed8) 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.btn-style-pill .btn-primary,
+.btn-style-pill#password-submit-btn,
+.btn-style-pill#send-otp-btn,
+.btn-style-pill#verify-otp-btn {
+  border-radius: 9999px !important;
+}
+
+.btn-style-sharp .btn-primary,
+.btn-style-sharp#password-submit-btn,
+.btn-style-sharp#send-otp-btn,
+.btn-style-sharp#verify-otp-btn {
+  border-radius: 2px !important;
+}
+
+/* 3. Input Style Presets */
+.input-style-minimal .form-input,
+.input-style-minimal .otp-digit {
+  background: transparent !important;
+  border-width: 0 0 2px 0 !important;
+  border-radius: 0 !important;
+  padding-left: 0.15rem !important;
+}
+
+.input-style-filled .form-input,
+.input-style-filled .otp-digit {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid transparent !important;
+}
+
+.input-style-soft .form-input,
+.input-style-soft .otp-digit {
+  border-radius: 12px !important;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08)) !important;
+}
+
+.input-style-glass .form-input,
+.input-style-glass .otp-digit {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+
+/* 4. Density / Spacing Presets */
+.density-compact {
+  --card-padding: 1.25rem !important;
+  --input-height: 36px !important;
+  --button-height: 36px !important;
+  --heading-size: 1.25rem !important;
+  --body-size: 0.85rem !important;
+}
+.density-compact .form-group {
+  margin-bottom: 0.65rem !important;
+}
+.density-compact .auth-header {
+  padding: 1rem 1.25rem 0.5rem !important;
+}
+.density-compact .auth-body {
+  padding: 0 1.25rem 1rem !important;
+}
+
+.density-spacious {
+  --card-padding: 2.75rem !important;
+  --input-height: 48px !important;
+  --button-height: 48px !important;
+  --heading-size: 1.65rem !important;
+  --body-size: 0.95rem !important;
+}
+.density-spacious .form-group {
+  margin-bottom: 1.25rem !important;
+}
+.density-spacious .auth-header {
+  padding: 2rem 2.25rem 1.25rem !important;
+}
+.density-spacious .auth-body {
+  padding: 0 2.25rem 2rem !important;
+}
+
+/* 5. Typography Presets */
+.type-scale-minimal {
+  --heading-size: 1.25rem !important;
+  --body-size: 0.825rem !important;
+}
+.type-scale-compact {
+  --heading-size: 1.15rem !important;
+  --body-size: 0.8rem !important;
+}
+.type-scale-editorial {
+  --heading-size: 1.75rem !important;
+  --body-size: 0.95rem !important;
+  font-family: 'Inter', Georgia, serif !important;
+}
+.type-scale-enterprise {
+  --heading-size: 1.4rem !important;
+  --body-size: 0.875rem !important;
+  letter-spacing: -0.015em !important;
+}
+
+/* 6. Micro-interaction Transitions */
+.auth-card,
+.btn-primary,
+.form-input,
+.mode-tab-btn,
+.sub-channel-btn,
+.otp-digit {
+  transition: background-color var(--transition-fast, 150ms),
+              border-color var(--transition-fast, 150ms),
+              color var(--transition-fast, 150ms),
+              box-shadow var(--transition-fast, 150ms),
+              transform var(--transition-fast, 150ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+
 
 
 

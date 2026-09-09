@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Custom Auth Builder — Google Stitch Design System</title>
+  <title>Authentication Builder — Auth Platform Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
@@ -18,7 +18,10 @@
   <!-- Topbar: Google Stitch AuthPlatform Navigation -->
   <header class="builder-topbar">
     <div class="builder-nav-left">
-      <span class="builder-brand-title">AuthPlatform <span class="sr-only">Auth Studio</span></span>
+      <a href="/dashboard/" class="builder-brand-header-link" style="display: inline-flex; align-items: center; gap: 0.65rem; text-decoration: none;">
+        <img src="{% static 'accounts/img/brand-logo.png' %}" alt="Brand Logo" class="builder-nav-logo" style="height: 24px; width: auto; max-width: 90px; object-fit: contain; border-radius: 4px; display: inline-block; vertical-align: middle;">
+        <span class="builder-brand-title">AuthPlatform <span class="sr-only">Auth Studio</span></span>
+      </a>
       <div class="builder-nav-divider"></div>
       <nav class="builder-main-nav">
         <a href="/dashboard/" class="nav-link">Dashboard</a>
@@ -89,10 +92,37 @@
       </div>
 
       <div class="sidebar-scroll-content">
-        <!-- Section 1: Branding & Identity -->
+        <!-- Section 1: Design Presets (1-Click Complete Styles) -->
+        <div class="control-section-card">
+          <button type="button" class="section-card-header" aria-expanded="true">
+            <span class="section-badge-title">1. Design Presets</span>
+            <span class="section-arrow">&#9662;</span>
+          </button>
+          <div class="section-card-body">
+            <p class="ctrl-helper-text" style="font-size:0.75rem; color: var(--builder-text-muted); margin-bottom: 0.5rem;">
+              One-click cohesive design systems. Applies matching palette, typography, card elevation, inputs, and buttons.
+            </p>
+            <div class="preset-cards-grid" id="design-presets-container">
+              {% for key, preset in design_presets.items %}
+              <button type="button" class="preset-card {% if initial_config.design_preset == key or not initial_config.design_preset and key == 'midnight_saas' %}active{% endif %}" data-preset="{{ key }}" title="{{ preset.name }} — {{ preset.description }}">
+                <div class="preset-active-check">✓</div>
+                <div class="preset-card-swatches">
+                  <span class="preset-swatch-dot" style="background: {{ preset.swatches.0 }};"></span>
+                  <span class="preset-swatch-dot" style="background: {{ preset.swatches.1 }};"></span>
+                  <span class="preset-swatch-dot" style="background: {{ preset.swatches.2 }};"></span>
+                </div>
+                <div class="preset-card-name">{{ preset.name }}</div>
+                <div class="preset-card-desc">{{ preset.description }}</div>
+              </button>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Branding & Identity -->
         <div class="control-section-card">
           <button type="button" class="section-card-header">
-            <span class="section-badge-title">1. Branding &amp; Identity</span>
+            <span class="section-badge-title">2. Branding &amp; Identity</span>
             <span class="section-arrow">&#9662;</span>
           </button>
           <div class="section-card-body">
@@ -185,31 +215,275 @@
           </div>
         </div>
 
-        <!-- Section 2: Color Palette -->
+        <!-- Section 2: Background -->
         <div class="control-section-card">
           <button type="button" class="section-card-header">
-            <span class="section-badge-title">2. Color Palette</span>
+            <span class="section-badge-title">3. Background (Image, URL, Color)</span>
             <span class="section-arrow">&#9662;</span>
           </button>
           <div class="section-card-body">
-            <!-- Quick Swatches & Primary Picker -->
+            <!-- Background Type -->
             <div class="ctrl-row">
-              <div class="ctrl-label-row">
-                <label class="ctrl-label">Primary Accent</label>
-                <div class="color-swatches">
-                  <button type="button" class="swatch-btn" data-color="#c6c6c6" style="background:#c6c6c6;" title="Stitch Silver"></button>
-                  <button type="button" class="swatch-btn" data-color="#3b82f6" style="background:#3b82f6;" title="Tech Blue"></button>
-                  <button type="button" class="swatch-btn" data-color="#10b981" style="background:#10b981;" title="Emerald"></button>
-                  <button type="button" class="swatch-btn" data-color="#8b5cf6" style="background:#8b5cf6;" title="Violet"></button>
-                </div>
-              </div>
-              <div class="ctrl-color-wrapper">
-                <input type="color" id="ctrl-color-primary" class="ctrl-input-color" value="#c6c6c6">
-                <input type="text" id="ctrl-color-primary-text" class="ctrl-input-text" value="#c6c6c6">
+              <label class="ctrl-label">Background Type</label>
+              <div class="ctrl-segmented-wrap" id="ctrl-bg-type-group">
+                <button type="button" class="segmented-btn active" data-bg-type="color">Solid</button>
+                <button type="button" class="segmented-btn" data-bg-type="gradient">Gradient</button>
+                <button type="button" class="segmented-btn" data-bg-type="image" id="ctrl-bg-type-upload-btn">📁 Upload</button>
+                <button type="button" class="segmented-btn" data-bg-type="image-url" id="ctrl-bg-type-url-btn">🔗 Image URL</button>
               </div>
             </div>
 
-            <!-- Card Surface Preset Selector -->
+            <!-- Solid Color Controls -->
+            <div class="ctrl-row" id="ctrl-bg-color-row">
+              <label class="ctrl-label">Background Color</label>
+              <div class="ctrl-color-wrapper">
+                <input type="color" id="ctrl-bg-color" class="ctrl-input-color" value="#131315">
+                <input type="text" id="ctrl-bg-color-text" class="ctrl-input-text" value="#131315">
+              </div>
+            </div>
+
+            <!-- Gradient Controls -->
+            <div id="ctrl-bg-gradient-container" style="display: none;">
+              <div class="ctrl-row">
+                <label class="ctrl-label">Gradient Presets</label>
+                <div class="gradient-preset-pills" id="gradient-presets-container">
+                  {% for g_key, g in gradient_presets.items %}
+                  <button type="button" class="gradient-pill-btn" data-grad-key="{{ g_key }}" data-start="{{ g.start_color }}" data-end="{{ g.end_color }}" data-angle="{{ g.angle }}" data-type="{{ g.type }}">{{ g.name }}</button>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="ctrl-row">
+                <label class="ctrl-label" for="ctrl-bg-gradient-type">Gradient Type</label>
+                <select id="ctrl-bg-gradient-type" class="ctrl-select">
+                  <option value="linear" selected>Linear Gradient</option>
+                  <option value="radial">Radial Gradient</option>
+                </select>
+              </div>
+              <div class="ctrl-grid-2">
+                <div class="ctrl-row">
+                  <label class="ctrl-label">Start Color</label>
+                  <div class="ctrl-color-wrapper">
+                    <input type="color" id="ctrl-bg-grad-start" class="ctrl-input-color" value="#0f172a">
+                    <input type="text" id="ctrl-bg-grad-start-text" class="ctrl-input-text" value="#0f172a">
+                  </div>
+                </div>
+                <div class="ctrl-row">
+                  <label class="ctrl-label">End Color</label>
+                  <div class="ctrl-color-wrapper">
+                    <input type="color" id="ctrl-bg-grad-end" class="ctrl-input-color" value="#1e1b4b">
+                    <input type="text" id="ctrl-bg-grad-end-text" class="ctrl-input-text" value="#1e1b4b">
+                  </div>
+                </div>
+              </div>
+              <div class="ctrl-row" id="ctrl-bg-grad-angle-row">
+                <div class="ctrl-label-row">
+                  <label class="ctrl-label" for="ctrl-bg-grad-angle">Direction / Angle</label>
+                  <span id="ctrl-bg-grad-angle-val" class="value-display">135°</span>
+                </div>
+                <input type="range" id="ctrl-bg-grad-angle" class="ctrl-slider" min="0" max="360" step="15" value="135">
+              </div>
+            </div>
+
+            <!-- Image Upload & Positioning Controls -->
+            <div id="ctrl-bg-image-container" style="display: none;">
+              <!-- Image Source Selector: Upload vs Image URL -->
+              <div class="ctrl-row">
+                <div class="ctrl-label-row">
+                  <label class="ctrl-label">Image Source</label>
+                  <span class="ctrl-helper-badge" style="font-size: 0.68rem; color: #38bdf8; background: rgba(56, 189, 248, 0.1); padding: 1px 6px; border-radius: 4px;">Upload or URL</span>
+                </div>
+                <div class="ctrl-segmented-wrap" id="ctrl-bg-image-source-group">
+                  <button type="button" class="segmented-btn active" data-source="upload" id="ctrl-bg-src-upload-btn">📁 Upload File</button>
+                  <button type="button" class="segmented-btn" data-source="url" id="ctrl-bg-src-url-btn">🔗 Direct Image URL</button>
+                </div>
+              </div>
+
+              <!-- Upload Source Section -->
+              <div id="ctrl-bg-source-upload-wrap">
+                <div class="ctrl-row">
+                  <label class="ctrl-label">Background Image File</label>
+                  <input type="file" id="ctrl-bg-file" accept="image/png,image/jpeg,image/webp" style="display: none;">
+                  <div class="ctrl-dropzone" id="ctrl-bg-dropzone" title="Click or Drag & Drop PNG, JPG, WebP">
+                    <div class="dropzone-prompt" id="dropzone-bg-prompt">
+                      <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                      </svg>
+                      <span>Drag &amp; drop background or <span class="dropzone-browse">browse</span></span>
+                      <span class="dropzone-hint">PNG, JPG, or WEBP (max 1.5 MB)</span>
+                    </div>
+                    <div class="logo-preview-box" id="dropzone-bg-preview-box" style="display: none;">
+                      <img id="bg-preview-img" class="logo-preview-thumb" src="" alt="Background Preview">
+                      <div class="logo-meta">
+                        <span id="bg-preview-name" class="logo-filename">background.jpg</span>
+                        <span id="bg-preview-size" class="logo-filesize">0 KB</span>
+                        <div class="logo-actions">
+                          <button type="button" id="btn-replace-bg" class="builder-btn builder-btn-default btn-xs">Replace</button>
+                          <button type="button" id="btn-remove-bg" class="builder-btn builder-btn-default btn-xs btn-danger">Remove</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Image URL Section -->
+              <div id="ctrl-bg-source-url-wrap" style="display: none;">
+                <div class="ctrl-row">
+                  <div class="ctrl-label-row">
+                    <label class="ctrl-label" for="ctrl-bg-image-url">Direct Image URL</label>
+                    <span class="ctrl-helper-badge" style="font-size: 0.68rem; color: #10b981; background: rgba(16, 185, 129, 0.1); padding: 1px 6px; border-radius: 4px;">Auto-loads on Paste</span>
+                  </div>
+                  <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.25rem;">
+                    <input type="url" id="ctrl-bg-image-url" class="ctrl-input-text" placeholder="https://example.com/photo.jpg" style="flex: 1;">
+                    <button type="button" id="btn-apply-bg-url" class="builder-btn builder-btn-primary btn-xs" style="white-space: nowrap; padding: 0.45rem 0.85rem; font-size: 0.76rem; font-weight: 600;">Apply URL</button>
+                  </div>
+                  <span class="ctrl-helper-text" style="font-size: 0.72rem; color: var(--muted-color, #988e90); margin-top: 0.35rem; display: block;">
+                    Paste any direct public image URL (JPG, PNG, WebP). Enter or click Apply to load into the preview immediately.
+                  </span>
+                  <div id="ctrl-bg-url-status" class="ctrl-helper-text" style="font-size: 0.72rem; margin-top: 0.4rem; display: none;"></div>
+                  <div class="logo-preview-box" id="bg-url-preview-box" style="display: none; margin-top: 0.5rem;">
+                    <img id="bg-url-preview-thumb" class="logo-preview-thumb" src="" alt="Background Preview">
+                    <div class="logo-meta">
+                      <span id="bg-url-preview-name" class="logo-filename" style="max-width: 170px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">External Image</span>
+                      <span id="bg-url-preview-status" class="logo-filesize" style="color: #10b981;">✓ Loaded</span>
+                      <div class="logo-actions">
+                        <button type="button" id="btn-remove-bg-url" class="builder-btn builder-btn-default btn-xs btn-danger">Remove</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="restore-logo-row">
+                <button type="button" id="btn-restore-default-bg" class="builder-btn-link">
+                  ↺ Restore Default Background
+                </button>
+              </div>
+
+              <!-- Positioning & Size -->
+              <div class="ctrl-grid-2">
+                <div class="ctrl-row">
+                  <label class="ctrl-label" for="ctrl-bg-position">Position</label>
+                  <select id="ctrl-bg-position" class="ctrl-select">
+                    <option value="center" selected>Center</option>
+                    <option value="top">Top</option>
+                    <option value="bottom">Bottom</option>
+                    <option value="left">Left</option>
+                    <option value="right">Right</option>
+                    <option value="top-left">Top Left</option>
+                    <option value="top-right">Top Right</option>
+                    <option value="bottom-left">Bottom Left</option>
+                    <option value="bottom-right">Bottom Right</option>
+                  </select>
+                </div>
+                <div class="ctrl-row">
+                  <label class="ctrl-label" for="ctrl-bg-size">Size</label>
+                  <select id="ctrl-bg-size" class="ctrl-select">
+                    <option value="cover" selected>Cover</option>
+                    <option value="contain">Contain</option>
+                    <option value="auto">Auto</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Repeat -->
+              <div class="ctrl-row">
+                <label class="ctrl-label" for="ctrl-bg-repeat">Repeat Mode</label>
+                <select id="ctrl-bg-repeat" class="ctrl-select">
+                  <option value="no-repeat" selected>No Repeat</option>
+                  <option value="repeat">Repeat</option>
+                  <option value="repeat-x">Repeat X</option>
+                  <option value="repeat-y">Repeat Y</option>
+                </select>
+              </div>
+
+              <!-- Overlay & Opacity -->
+              <div class="ctrl-divider-subtle"></div>
+              <div class="ctrl-row">
+                <label class="ctrl-label">Overlay Color</label>
+                <div class="ctrl-color-wrapper">
+                  <input type="color" id="ctrl-bg-overlay-color" class="ctrl-input-color" value="#000000">
+                  <input type="text" id="ctrl-bg-overlay-color-text" class="ctrl-input-text" value="#000000">
+                </div>
+              </div>
+              <div class="ctrl-row">
+                <div class="ctrl-label-row">
+                  <label class="ctrl-label" for="ctrl-bg-overlay-opacity">Overlay Opacity</label>
+                  <span id="ctrl-bg-overlay-opacity-val" class="value-display">40%</span>
+                </div>
+                <input type="range" id="ctrl-bg-overlay-opacity" class="ctrl-slider" min="0" max="100" step="5" value="40">
+              </div>
+
+              <!-- Effects: Blur, Brightness, Saturation -->
+              <div class="ctrl-divider-subtle"></div>
+              <div class="ctrl-row">
+                <div class="ctrl-label-row">
+                  <label class="ctrl-label" for="ctrl-bg-blur">Background Blur</label>
+                  <span id="ctrl-bg-blur-val" class="value-display">0px</span>
+                </div>
+                <input type="range" id="ctrl-bg-blur" class="ctrl-slider" min="0" max="20" step="1" value="0">
+              </div>
+              <div class="ctrl-grid-2">
+                <div class="ctrl-row">
+                  <div class="ctrl-label-row">
+                    <label class="ctrl-label" for="ctrl-bg-brightness">Brightness</label>
+                    <span id="ctrl-bg-brightness-val" class="value-display">100%</span>
+                  </div>
+                  <input type="range" id="ctrl-bg-brightness" class="ctrl-slider" min="50" max="150" step="5" value="100">
+                </div>
+                <div class="ctrl-row">
+                  <div class="ctrl-label-row">
+                    <label class="ctrl-label" for="ctrl-bg-saturation">Saturation</label>
+                    <span id="ctrl-bg-saturation-val" class="value-display">100%</span>
+                  </div>
+                  <input type="range" id="ctrl-bg-saturation" class="ctrl-slider" min="50" max="150" step="5" value="100">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Theme Mode & Color Palettes -->
+        <div class="control-section-card">
+          <button type="button" class="section-card-header">
+            <span class="section-badge-title">4. Theme Mode &amp; Color Palettes</span>
+            <span class="section-arrow">&#9662;</span>
+          </button>
+          <div class="section-card-body">
+            <div class="ctrl-row">
+              <label class="ctrl-label" id="lbl-theme-mode">Theme Mode</label>
+              <div class="ctrl-segmented-control" id="ctrl-theme-mode-group" role="group" aria-labelledby="lbl-theme-mode">
+                <button type="button" class="segmented-btn active" data-mode="dark" data-theme="dark" aria-pressed="true">☾ Dark</button>
+                <button type="button" class="segmented-btn" data-mode="light" data-theme="light" aria-pressed="false">☀ Light</button>
+                <button type="button" class="segmented-btn" data-mode="system" data-theme="system" aria-pressed="false">◐ System</button>
+              </div>
+              <span class="ctrl-helper-text" style="font-size:0.75rem; color: var(--muted-color, #988e90); margin-top: 0.35rem; display: block;">Instant live preview in Dark, Light, or System OS theme.</span>
+            </div>
+
+            <div class="ctrl-subheading" style="margin-top: 0.85rem; font-size: 0.8rem; font-weight: 600;">Curated Color Palettes</div>
+            <div class="palette-swatches-grid" id="color-palettes-container">
+              {% for key, pal in color_palettes.items %}
+              <button type="button" class="palette-swatch-btn {% if initial_config.palette.preset == key or not initial_config.palette and key == 'indigo' %}active{% endif %}" data-palette="{{ key }}" title="{{ pal.name }}">
+                <span class="palette-color-dot" style="background: {{ pal.dark.primary }};"></span>
+                <span class="palette-name">{{ pal.name }}</span>
+              </button>
+              {% endfor %}
+            </div>
+
+            <div class="ctrl-subheading" style="margin-top: 0.85rem; font-size: 0.8rem; font-weight: 600;">Custom Color Editor</div>
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label">Primary Accent</label>
+                <button type="button" id="btn-reset-palette-primary" class="builder-btn-link" title="Reset primary accent to active palette default" style="font-size: 0.72rem; padding: 0;">↺ Reset to Palette</button>
+              </div>
+              <div class="ctrl-color-wrapper">
+                <input type="color" id="ctrl-color-primary" class="ctrl-input-color" value="#6366f1">
+                <input type="text" id="ctrl-color-primary-text" class="ctrl-input-text" value="#6366f1">
+              </div>
+            </div>
+
             <div class="ctrl-row">
               <label class="ctrl-label" for="card-surface-select">Card Surface Preset</label>
               <select id="card-surface-select" class="ctrl-select">
@@ -220,15 +494,7 @@
             </div>
 
             <div class="ctrl-row">
-              <label class="ctrl-label">Secondary Accent</label>
-              <div class="ctrl-color-wrapper">
-                <input type="color" id="ctrl-color-secondary" class="ctrl-input-color" value="#c7c6c6">
-                <input type="text" id="ctrl-color-secondary-text" class="ctrl-input-text" value="#c7c6c6">
-              </div>
-            </div>
-
-            <div class="ctrl-row">
-              <label class="ctrl-label">Canvas Background</label>
+              <label class="ctrl-label">Background Base Color</label>
               <div class="ctrl-color-wrapper">
                 <input type="color" id="ctrl-color-background" class="ctrl-input-color" value="#131315">
                 <input type="text" id="ctrl-color-background-text" class="ctrl-input-text" value="#131315">
@@ -236,10 +502,18 @@
             </div>
 
             <div class="ctrl-row">
-              <label class="ctrl-label">Card Background</label>
+              <label class="ctrl-label">Card Surface Color</label>
               <div class="ctrl-color-wrapper">
                 <input type="color" id="ctrl-color-card_bg" class="ctrl-input-color" value="#201f22">
                 <input type="text" id="ctrl-color-card_bg-text" class="ctrl-input-text" value="#201f22">
+              </div>
+            </div>
+
+            <div class="ctrl-row">
+              <label class="ctrl-label">Secondary Accent</label>
+              <div class="ctrl-color-wrapper">
+                <input type="color" id="ctrl-color-secondary" class="ctrl-input-color" value="#c7c6c6">
+                <input type="text" id="ctrl-color-secondary-text" class="ctrl-input-text" value="#c7c6c6">
               </div>
             </div>
 
@@ -269,19 +543,268 @@
           </div>
         </div>
 
-        <!-- Section 3: Typography -->
+        <!-- Section 4: Card Style & Transparency -->
         <div class="control-section-card">
           <button type="button" class="section-card-header">
-            <span class="section-badge-title">3. Typography</span>
+            <span class="section-badge-title">5. Card Style &amp; Transparency</span>
             <span class="section-arrow">&#9662;</span>
           </button>
           <div class="section-card-body">
+            <!-- Card Appearance (Opaque / Translucent / Glass) -->
+            <div class="ctrl-row">
+              <label class="ctrl-label">Card Appearance</label>
+              <div class="ctrl-segmented-control" id="ctrl-card-appearance-group">
+                <button type="button" class="segmented-btn active" data-appearance="opaque">Opaque</button>
+                <button type="button" class="segmented-btn" data-appearance="translucent">Translucent</button>
+                <button type="button" class="segmented-btn" data-appearance="glass">Glass</button>
+              </div>
+            </div>
+
+            <!-- Card Style Preset -->
+            <div class="ctrl-row">
+              <label class="ctrl-label">Card Style Preset</label>
+              <div class="ctrl-segmented-wrap" id="ctrl-card-preset-group">
+                <button type="button" class="segmented-btn active" data-preset="default">Default</button>
+                <button type="button" class="segmented-btn" data-preset="minimal">Minimal</button>
+                <button type="button" class="segmented-btn" data-preset="soft">Soft</button>
+                <button type="button" class="segmented-btn" data-preset="elevated">Elevated</button>
+                <button type="button" class="segmented-btn" data-preset="glass">Glass</button>
+                <button type="button" class="segmented-btn" data-preset="bordered">Bordered</button>
+              </div>
+            </div>
+
+            <!-- Card Position & Fine Tuning (Requirement 1) -->
+            <div class="ctrl-subheading" style="margin-top: 0.5rem;">Card Position &amp; Placement</div>
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label">Position Anchor</label>
+                <span id="ctrl-card-pos-name" class="value-display">Center (50%, 50%)</span>
+              </div>
+              <div class="pos-matrix-row">
+                <div class="pos-matrix-3x3" id="ctrl-card-pos-matrix" role="radiogroup" aria-label="3x3 Card Position Selector">
+                  <button type="button" class="pos-cell-btn" data-pos="top-left" data-x="0" data-y="0" title="Top Left" aria-label="Top Left"><span class="pos-dot"></span></button>
+                  <button type="button" class="pos-cell-btn" data-pos="top-center" data-x="50" data-y="0" title="Top Center" aria-label="Top Center"><span class="pos-dot"></span></button>
+                  <button type="button" class="pos-cell-btn" data-pos="top-right" data-x="100" data-y="0" title="Top Right" aria-label="Top Right"><span class="pos-dot"></span></button>
+                  <button type="button" class="pos-cell-btn" data-pos="center-left" data-x="0" data-y="50" title="Center Left" aria-label="Center Left"><span class="pos-dot"></span></button>
+                  <button type="button" class="pos-cell-btn active" data-pos="center" data-x="50" data-y="50" title="Center" aria-label="Center"><span class="pos-dot"></span></button>
+                  <button type="button" class="pos-cell-btn" data-pos="center-right" data-x="100" data-y="50" title="Center Right" aria-label="Center Right"><span class="pos-dot"></span></button>
+                  <button type="button" class="pos-cell-btn" data-pos="bottom-left" data-x="0" data-y="100" title="Bottom Left" aria-label="Bottom Left"><span class="pos-dot"></span></button>
+                  <button type="button" class="pos-cell-btn" data-pos="bottom-center" data-x="50" data-y="100" title="Bottom Center" aria-label="Bottom Center"><span class="pos-dot"></span></button>
+                  <button type="button" class="pos-cell-btn" data-pos="bottom-right" data-x="100" data-y="100" title="Bottom Right" aria-label="Bottom Right"><span class="pos-dot"></span></button>
+                </div>
+                <div class="pos-sliders-column">
+                  <div class="ctrl-row" style="margin-bottom: 0.35rem;">
+                    <div class="ctrl-label-row">
+                      <label class="ctrl-sublabel" for="ctrl-card-x">Horizontal</label>
+                      <span id="ctrl-card-x-val" class="value-display">50%</span>
+                    </div>
+                    <input type="range" id="ctrl-card-x" class="ctrl-slider" min="0" max="100" step="1" value="50">
+                  </div>
+                  <div class="ctrl-row">
+                    <div class="ctrl-label-row">
+                      <label class="ctrl-sublabel" for="ctrl-card-y">Vertical</label>
+                      <span id="ctrl-card-y-val" class="value-display">50%</span>
+                    </div>
+                    <input type="range" id="ctrl-card-y" class="ctrl-slider" min="0" max="100" step="1" value="50">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Surface, Transparency & Blur -->
+            <div class="ctrl-subheading">Surface &amp; Transparency</div>
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label">Card Background Color</label>
+                <button type="button" id="btn-reset-card-bg" class="builder-btn-link" title="Reset card background to current theme default" style="font-size: 0.72rem; padding: 0;">↺ Reset to Theme Default</button>
+              </div>
+              <div class="ctrl-color-wrapper">
+                <input type="color" id="ctrl-card-bg-color" class="ctrl-input-color" value="#1B1D21">
+                <input type="text" id="ctrl-card-bg-color-text" class="ctrl-input-text" value="#1B1D21">
+              </div>
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label" for="ctrl-card-opacity">Card Transparency (Surface Alpha)</label>
+                <span id="ctrl-card-opacity-val" class="value-display">100%</span>
+              </div>
+              <input type="range" id="ctrl-card-opacity" class="ctrl-slider" min="0" max="100" step="1" value="100">
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label" for="ctrl-card-backdrop-blur">Card Backdrop Blur</label>
+                <span id="ctrl-card-backdrop-blur-val" class="value-display">0px</span>
+              </div>
+              <input type="range" id="ctrl-card-backdrop-blur" class="ctrl-slider" min="0" max="30" step="1" value="0">
+            </div>
+
+            <!-- Border & Shape -->
+            <div class="ctrl-subheading">Border &amp; Shape</div>
+            <div class="ctrl-row">
+              <div class="ctrl-toggle-wrapper">
+                <span class="ctrl-label" style="margin: 0;">Card Border</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="ctrl-card-border-toggle" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            <div id="ctrl-card-border-controls">
+              <div class="ctrl-grid-2">
+                <div class="ctrl-row">
+                  <label class="ctrl-label" for="ctrl-card-border-width">Border Width</label>
+                  <div class="ctrl-number-unit-wrapper">
+                    <input type="number" id="ctrl-card-border-width" class="ctrl-input-number" min="1" max="3" step="1" value="1">
+                    <span class="unit-tag">px</span>
+                  </div>
+                </div>
+                <div class="ctrl-row">
+                  <div class="ctrl-label-row">
+                    <label class="ctrl-label" for="ctrl-card-border-opacity">Border Opacity</label>
+                    <span id="ctrl-card-border-opacity-val" class="value-display">30%</span>
+                  </div>
+                  <input type="range" id="ctrl-card-border-opacity" class="ctrl-slider" min="0" max="100" step="5" value="30">
+                </div>
+              </div>
+              <div class="ctrl-row">
+                <label class="ctrl-label">Border Color</label>
+                <div class="ctrl-color-wrapper">
+                  <input type="color" id="ctrl-card-border-color" class="ctrl-input-color" value="#ffffff">
+                  <input type="text" id="ctrl-card-border-color-text" class="ctrl-input-text" value="#ffffff">
+                </div>
+              </div>
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label" for="ctrl-card-radius">Border Radius</label>
+                <span id="ctrl-card-radius-val" class="value-display">12px</span>
+              </div>
+              <input type="range" id="ctrl-card-radius" class="ctrl-slider" min="0" max="32" step="2" value="12">
+            </div>
+
+            <!-- Card Dimensions & Shadow -->
+            <div class="ctrl-subheading">Dimensions &amp; Elevation</div>
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label" for="ctrl-card-width">Card Width</label>
+                <span id="ctrl-card-width-val" class="value-display">420px</span>
+              </div>
+              <input type="range" id="ctrl-card-width" class="ctrl-slider" min="320" max="600" step="10" value="420">
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label" for="ctrl-card-padding">Card Padding</label>
+                <span id="ctrl-card-padding-val" class="value-display">32px</span>
+              </div>
+              <input type="range" id="ctrl-card-padding" class="ctrl-slider" min="16" max="48" step="2" value="32">
+            </div>
+            <div class="ctrl-row">
+              <label class="ctrl-label">Card Shadow</label>
+              <div class="ctrl-segmented-control" id="ctrl-card-shadow-group">
+                <button type="button" class="segmented-btn" data-shadow="none">None</button>
+                <button type="button" class="segmented-btn" data-shadow="subtle">Subtle</button>
+                <button type="button" class="segmented-btn active" data-shadow="medium">Medium</button>
+              </div>
+            </div>
+            <div class="ctrl-row">
+              <label class="ctrl-label">Card Alignment</label>
+              <div class="ctrl-segmented-control" id="ctrl-card-align-group">
+                <button type="button" class="segmented-btn" data-align="left">Left</button>
+                <button type="button" class="segmented-btn active" data-align="center">Center</button>
+                <button type="button" class="segmented-btn" data-align="right">Right</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 5: Animations -->
+        <div class="control-section-card">
+          <button type="button" class="section-card-header">
+            <span class="section-badge-title">6. Animations</span>
+            <span class="section-arrow">&#9662;</span>
+          </button>
+          <div class="section-card-body">
+            <!-- Motion Preset -->
+            <div class="ctrl-row">
+              <label class="ctrl-label">Motion Preset</label>
+              <div class="ctrl-segmented-control" id="ctrl-anim-preset-group">
+                <button type="button" class="segmented-btn" data-preset="none">None</button>
+                <button type="button" class="segmented-btn active" data-preset="subtle">Subtle</button>
+                <button type="button" class="segmented-btn" data-preset="smooth">Smooth</button>
+                <button type="button" class="segmented-btn" data-preset="expressive">Expressive</button>
+              </div>
+            </div>
+
+            <div class="ctrl-row">
+              <label class="ctrl-label" for="ctrl-anim-type">Entrance Animation</label>
+              <select id="ctrl-anim-type" class="ctrl-select">
+                <option value="none">None (Instant)</option>
+                <option value="fade" selected>Fade</option>
+                <option value="slide_up">Slide Up</option>
+                <option value="slide_down">Slide Down</option>
+                <option value="scale">Scale</option>
+                <option value="float">Subtle Float</option>
+              </select>
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label" for="ctrl-anim-duration">Animation Duration</label>
+                <span id="ctrl-anim-duration-val" class="value-display">250ms</span>
+              </div>
+              <input type="range" id="ctrl-anim-duration" class="ctrl-slider" min="100" max="800" step="50" value="250">
+            </div>
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label" for="ctrl-anim-delay">Animation Delay</label>
+                <span id="ctrl-anim-delay-val" class="value-display">0ms</span>
+              </div>
+              <input type="range" id="ctrl-anim-delay" class="ctrl-slider" min="0" max="500" step="50" value="0">
+            </div>
+            <div class="ctrl-row">
+              <label class="ctrl-label">Motion Intensity</label>
+              <div class="ctrl-segmented-control" id="ctrl-anim-intensity-group">
+                <button type="button" class="segmented-btn active" data-intensity="subtle">Subtle</button>
+                <button type="button" class="segmented-btn" data-intensity="normal">Normal</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 7: Typography -->
+        <div class="control-section-card">
+          <button type="button" class="section-card-header">
+            <span class="section-badge-title">7. Typography &amp; Spacing</span>
+            <span class="section-arrow">&#9662;</span>
+          </button>
+          <div class="section-card-body">
+            <!-- Density / Spacing Preset -->
+            <div class="ctrl-row">
+              <label class="ctrl-label">Layout Density / Spacing</label>
+              <div class="ctrl-segmented-control" id="ctrl-density-group">
+                <button type="button" class="segmented-btn" data-density="compact">Compact</button>
+                <button type="button" class="segmented-btn active" data-density="comfortable">Comfortable</button>
+                <button type="button" class="segmented-btn" data-density="spacious">Spacious</button>
+              </div>
+            </div>
+
+            <!-- Type Scale Preset -->
+            <div class="ctrl-row">
+              <label class="ctrl-label">Type Scale Preset</label>
+              <div class="ctrl-segmented-wrap" id="ctrl-type-scale-group">
+                <button type="button" class="segmented-btn active" data-scale="modern">Modern</button>
+                <button type="button" class="segmented-btn" data-scale="minimal">Minimal</button>
+                <button type="button" class="segmented-btn" data-scale="compact">Compact</button>
+                <button type="button" class="segmented-btn" data-scale="editorial">Editorial</button>
+                <button type="button" class="segmented-btn" data-scale="enterprise">Enterprise</button>
+              </div>
+            </div>
+
             <div class="ctrl-row">
               <label class="ctrl-label" for="ctrl-font-family">Font Family</label>
               <select id="ctrl-font-family" class="ctrl-select">
-                <option value="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" selected>Inter (Modern Clean)</option>
-                <option value="'Plus Jakarta Sans', -apple-system, sans-serif">Plus Jakarta Sans (SaaS)</option>
-                <option value="'Roboto', -apple-system, sans-serif">Roboto (Corporate standard)</option>
+                <option value="Inter, -apple-system, sans-serif" selected>Inter (Modern Clean)</option>
+                <option value="Plus Jakarta Sans, -apple-system, sans-serif">Plus Jakarta Sans (SaaS)</option>
+                <option value="Roboto, -apple-system, sans-serif">Roboto (Corporate standard)</option>
                 <option value="system-ui, -apple-system, BlinkMacSystemFont, sans-serif">System Native</option>
               </select>
             </div>
@@ -292,13 +815,28 @@
               </div>
               <input type="range" id="ctrl-heading-size" class="ctrl-slider" min="20" max="36" step="1" value="24">
             </div>
+            <div class="ctrl-row">
+              <div class="ctrl-label-row">
+                <label class="ctrl-label" for="ctrl-body-size">Body Font Size</label>
+                <span id="ctrl-body-size-val" class="value-display">14px</span>
+              </div>
+              <input type="range" id="ctrl-body-size" class="ctrl-slider" min="12" max="18" step="1" value="14">
+            </div>
+            <div class="ctrl-row">
+              <label class="ctrl-label">Text Alignment</label>
+              <div class="ctrl-segmented-control" id="ctrl-typography-align-group">
+                <button type="button" class="segmented-btn" data-align="left">Left</button>
+                <button type="button" class="segmented-btn active" data-align="center">Center</button>
+                <button type="button" class="segmented-btn" data-align="right">Right</button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- Section 4: Auth Settings & Methods -->
+        <!-- Section 8: Auth Settings & Methods -->
         <div class="control-section-card">
           <button type="button" class="section-card-header">
-            <span class="section-badge-title">4. Auth Settings &amp; Methods</span>
+            <span class="section-badge-title">8. Auth Settings &amp; Methods</span>
             <span class="section-arrow">&#9662;</span>
           </button>
           <div class="section-card-body">
@@ -338,27 +876,39 @@
           </div>
         </div>
 
-        <!-- Section 5: Card Dimensions -->
+        <!-- Section 9: Inputs & Buttons (OTP) -->
         <div class="control-section-card">
           <button type="button" class="section-card-header">
-            <span class="section-badge-title">5. Card Dimensions</span>
+            <span class="section-badge-title">9. Inputs, Buttons &amp; OTP</span>
             <span class="section-arrow">&#9662;</span>
           </button>
           <div class="section-card-body">
+            <!-- Button Preset -->
             <div class="ctrl-row">
-              <div class="ctrl-label-row">
-                <label class="ctrl-label" for="ctrl-card-width">Container Width</label>
-                <span id="ctrl-card-width-val" class="value-display">420px</span>
+              <label class="ctrl-label">Button Style Preset</label>
+              <div class="ctrl-segmented-wrap" id="ctrl-button-preset-group">
+                <button type="button" class="segmented-btn active" data-preset="solid">Solid</button>
+                <button type="button" class="segmented-btn" data-preset="soft">Soft</button>
+                <button type="button" class="segmented-btn" data-preset="outline">Outline</button>
+                <button type="button" class="segmented-btn" data-preset="ghost">Ghost</button>
+                <button type="button" class="segmented-btn" data-preset="gradient">Gradient</button>
+                <button type="button" class="segmented-btn" data-preset="pill">Pill</button>
+                <button type="button" class="segmented-btn" data-preset="sharp">Sharp</button>
               </div>
-              <input type="range" id="ctrl-card-width" class="ctrl-slider" min="360" max="600" step="10" value="420">
             </div>
+
+            <!-- Input Preset -->
             <div class="ctrl-row">
-              <div class="ctrl-label-row">
-                <label class="ctrl-label" for="ctrl-card-radius">Border Radius</label>
-                <span id="ctrl-card-radius-val" class="value-display">12px</span>
+              <label class="ctrl-label">Input Style Preset</label>
+              <div class="ctrl-segmented-wrap" id="ctrl-input-preset-group">
+                <button type="button" class="segmented-btn active" data-preset="minimal">Minimal</button>
+                <button type="button" class="segmented-btn" data-preset="bordered">Bordered</button>
+                <button type="button" class="segmented-btn" data-preset="filled">Filled</button>
+                <button type="button" class="segmented-btn" data-preset="soft">Soft</button>
+                <button type="button" class="segmented-btn" data-preset="glass">Glass</button>
               </div>
-              <input type="range" id="ctrl-card-radius" class="ctrl-slider" min="0" max="24" step="2" value="12">
             </div>
+
             <div class="ctrl-row">
               <div class="ctrl-label-row">
                 <label class="ctrl-label" for="ctrl-input-height">Input Height</label>
@@ -368,23 +918,15 @@
             </div>
             <div class="ctrl-row">
               <div class="ctrl-label-row">
-                <label class="ctrl-label" for="ctrl-btn-height">Button Height</label>
+                <label class="ctrl-label" for="ctrl-btn-height">Primary Button Height</label>
                 <span id="ctrl-btn-height-val" class="value-display">42px</span>
               </div>
               <input type="range" id="ctrl-btn-height" class="ctrl-slider" min="36" max="56" step="2" value="42">
             </div>
-          </div>
-        </div>
 
-        <!-- Section 6: Inputs & Buttons (OTP) -->
-        <div class="control-section-card">
-          <button type="button" class="section-card-header">
-            <span class="section-badge-title">6. Inputs &amp; Buttons (OTP)</span>
-            <span class="section-arrow">&#9662;</span>
-          </button>
-          <div class="section-card-body">
+            <div class="ctrl-divider-subtle"></div>
             <div class="ctrl-row">
-              <label class="ctrl-label">Button Width Mode</label>
+              <label class="ctrl-label">OTP Button Width Mode</label>
               <div class="ctrl-segmented-control" id="ctrl-otp-width-mode-group">
                 <button type="button" class="segmented-btn active" data-mode="auto">Auto (Pill)</button>
                 <button type="button" class="segmented-btn" data-mode="full">Full Width</button>
@@ -393,7 +935,7 @@
             </div>
 
             <div class="ctrl-row" id="ctrl-otp-custom-width-row" style="display: none;">
-              <label class="ctrl-label" for="ctrl-otp-custom-width">Custom Button Width</label>
+              <label class="ctrl-label" for="ctrl-otp-custom-width">Custom OTP Button Width</label>
               <div class="ctrl-number-unit-wrapper">
                 <input type="number" id="ctrl-otp-custom-width" class="ctrl-input-number" min="60" max="200" step="5" value="100">
                 <span class="unit-tag">px</span>
@@ -402,7 +944,7 @@
 
             <div class="ctrl-row">
               <div class="ctrl-label-row">
-                <label class="ctrl-label" for="ctrl-otp-height">Button Height</label>
+                <label class="ctrl-label" for="ctrl-otp-height">OTP Button Height</label>
                 <span id="ctrl-otp-height-val" class="value-display">38px</span>
               </div>
               <div class="ctrl-number-unit-wrapper">
@@ -412,7 +954,7 @@
             </div>
 
             <div class="ctrl-row">
-              <label class="ctrl-label">Icon Size</label>
+              <label class="ctrl-label">OTP Icon Size</label>
               <div class="ctrl-segmented-control" id="ctrl-otp-icon-size-group">
                 <button type="button" class="segmented-btn" data-size="14px">14px</button>
                 <button type="button" class="segmented-btn active" data-size="16px">16px</button>
@@ -456,10 +998,10 @@
           </div>
         </div>
 
-        <!-- Section 7: Base Template -->
+        <!-- Section 9: Base Template -->
         <div class="control-section-card">
           <button type="button" class="section-card-header">
-            <span class="section-badge-title">7. Base Template</span>
+            <span class="section-badge-title">10. Base Template</span>
             <span class="section-arrow">&#9662;</span>
           </button>
           <div class="section-card-body">
@@ -578,6 +1120,8 @@
   <script>
     window.initialConfig = {{ initial_config_json|safe|default:"{}" }};
     window.activeConfigId = {{ active_config_id|default:"null" }};
+    window.colorPalettes = {{ color_palettes_json|safe|default:"{}" }};
+    window.designPresets = {{ design_presets_json|safe|default:"{}" }};
   </script>
   <script src="{% static 'accounts/js/builder.js' %}"></script>
 </body>

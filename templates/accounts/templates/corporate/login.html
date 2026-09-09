@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% load static %}{% block title %}Sign In | Auth Platform{% endblock %}
+{% load static %}
+{% block title %}Sign In | {{ branding.brand_name|default:"Auth Platform" }}{% endblock %}
 
 {% block body_class %}template-corporate{% endblock %}
 
@@ -9,218 +10,270 @@
 {% endblock %}
 
 {% block content %}
-<div class="auth-wrapper">
-  <main class="auth-card" id="main-auth-card">
-    <!-- Header -->
-    <div class="auth-header">
-      <div class="brand-header-logo-container align-{{ branding.logo_align|default:'center' }}" id="brand-header-container">
-        <img src="{{ branding.logo_url|default:'' }}"
-             alt="{{ branding.brand_name|default:'Platform' }} Logo"
-             class="brand-custom-logo"
-             id="brand-header-logo"
-             style="{% if not branding.logo_url %}display: none;{% endif %} max-width: calc(var(--logo-width, 120px) * var(--logo-scale, 1)); max-height: calc(var(--logo-height, 36px) * var(--logo-scale, 1)); object-fit: var(--logo-object-fit, contain);">
-        <div class="brand-badge brand-default-badge" id="brand-header-default-badge" aria-hidden="true" style="{% if branding.logo_url %}display: none;{% endif %}">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
+<div class="corp-page-wrapper">
+
+  <!-- Corporate: Structured Page Header (NOT inside card) -->
+  <header class="corp-page-header">
+    <div class="corp-header-inner">
+      <div class="corp-brand-area">
+        <div class="corp-brand-logo-wrap">
+          <img src="{{ branding.logo_url|default:'' }}"
+               alt="{{ branding.brand_name|default:'Platform' }} Logo"
+               class="brand-custom-logo"
+               id="brand-header-logo"
+               style="{% if not branding.logo_url %}display: none;{% endif %} max-width: calc(var(--logo-width, 120px) * var(--logo-scale, 1)); max-height: calc(var(--logo-height, 36px) * var(--logo-scale, 1)); object-fit: var(--logo-object-fit, contain);">
+          <div class="corp-brand-emblem brand-default-badge brand-badge" id="brand-header-default-badge" aria-hidden="true" style="{% if branding.logo_url %}display: none;{% endif %}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <span class="corp-brand-name" id="brand-header-name">{{ branding.brand_name|default:"Auth Platform" }}</span>
         </div>
       </div>
-      <div class="brand-name-container align-{{ branding.logo_align|default:'center' }}" id="brand-name-container"{% if not branding.brand_name %} style="display: none;"{% endif %}>
-        <span class="brand-name" id="brand-header-name">{{ branding.brand_name|default:"Auth Platform" }}</span>
+      <div class="corp-header-security-badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>Secure Connection</span>
       </div>
-      <h1 class="auth-title">Welcome Back</h1>
-      <p class="auth-subtitle">Sign in to your organization account</p>
     </div>
+  </header>
 
-    <!-- Body -->
-    <div class="auth-body">
-      <!-- Mode Selector -->
-      {% if auth_settings.enable_password != False and auth_settings.enable_otp != False %}
-      <div class="auth-mode-selector" role="tablist" aria-label="Authentication Method">
-        <button type="button" class="mode-tab-btn active" id="mode-password-btn" role="tab" aria-selected="true" aria-controls="password-login-section">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
-          <span>Password</span>
-        </button>
-        <button type="button" class="mode-tab-btn" id="mode-otp-btn" role="tab" aria-selected="false" aria-controls="otp-login-section">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/>
-          </svg>
-          <span>One-Time Password</span>
-        </button>
+  <!-- Corporate: Central Content Area -->
+  <main class="corp-main-content">
+    <div class="corp-form-section">
+
+      <!-- Page Title (outside card, structured heading) -->
+      <div class="corp-form-heading">
+        <h1 class="corp-page-title">Welcome Back</h1>
+        <p class="corp-page-desc">Enter your organization credentials to access the platform</p>
       </div>
-      {% endif %}
 
-      <!-- Shared Alerts -->
-      {% include "accounts/components/alerts.html" %}
+      <!-- Auth Card: Compact, enterprise-styled -->
+      <div class="corp-auth-card" id="main-auth-card">
 
-      <!-- MODE 1: PASSWORD LOGIN -->
-      {% if auth_settings.enable_password != False %}
-      <section id="password-login-section" role="tabpanel" aria-labelledby="mode-password-btn">
-        <form method="POST" action="{% url 'login' %}" id="password-login-form">
-          {% csrf_token %}
-          <input type="hidden" name="action" value="password_login">
-          <input type="hidden" name="next" value="{{ next }}">
-
-          <!-- Identifier -->
-          <div class="form-group">
-            <label class="form-label" for="password-identifier">Username, Email, or Mobile</label>
-            <div class="input-wrapper">
-              <input type="text"
-                     name="identifier"
-                     id="password-identifier"
-                     class="form-input"
-                     placeholder="name@company.com"
-                     autocomplete="username"
-                     required
-                     value="{{ password_form.identifier.value|default:'' }}">
-            </div>
-            {% if password_form.identifier.errors %}
-              <span class="field-error-text" style="color: var(--color-error); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
-                {{ password_form.identifier.errors.0 }}
-              </span>
-            {% endif %}
-          </div>
-
-          <!-- Password -->
-          <div class="form-group">
-            <div class="form-row-between">
-              <label class="form-label" for="password-input" style="margin-bottom: 0;">Password</label>
-              {% if auth_settings.show_forgot != False %}
-              <a href="{% url 'forgot_password' %}" class="link-subtle" tabindex="0">Forgot password?</a>
-              {% endif %}
-            </div>
-            <div class="input-wrapper">
-              <input type="password"
-                     name="password"
-                     id="password-input"
-                     class="form-input"
-                     placeholder="Enter password"
-                     autocomplete="current-password"
-                     required>
-              <button type="button" class="toggle-password-btn" id="toggle-password-btn" aria-label="Show password">
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-              </button>
-            </div>
-            {% if password_form.password.errors %}
-              <span class="field-error-text" style="color: var(--color-error); font-size: 0.8rem; margin-top: 0.25rem; display: block;">
-                {{ password_form.password.errors.0 }}
-              </span>
-            {% endif %}
-          </div>
-
-          <!-- Remember Me -->
-          {% if auth_settings.remember_me != False %}
-          <div class="form-row-between">
-            <label class="checkbox-label" for="remember-me">
-              <input type="checkbox" name="remember_me" id="remember-me" class="form-checkbox" {% if password_form.remember_me.value %}checked{% endif %}>
-              <span>Remember this device</span>
-            </label>
-          </div>
-          {% endif %}
-
-          <button type="submit" class="btn-primary" id="password-submit-btn">
-            <span class="spinner" aria-hidden="true"></span>
-            <span class="btn-text">Sign In</span>
+        <!-- Mode Selector (above form, underline style) -->
+        {% if auth_settings.enable_password != False and auth_settings.enable_otp != False %}
+        <div class="corp-mode-nav" role="tablist" aria-label="Authentication Method">
+          <button type="button" class="corp-mode-tab active" id="mode-password-btn" role="tab" aria-selected="true" aria-controls="password-login-section">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            Password Login
           </button>
-        </form>
-      </section>
-      {% endif %}
-
-      <!-- MODE 2: OTP LOGIN -->
-      {% if auth_settings.enable_otp != False %}
-      <section id="otp-login-section" role="tabpanel" aria-labelledby="mode-otp-btn" {% if auth_settings.enable_password != False %}style="display: none;"{% endif %}>
-        <!-- Step 1: Request OTP -->
-        <div id="otp-step-1" class="otp-screen-step active">
-          <label class="form-label" style="margin-bottom: 0.4rem;">Verification Method</label>
-          {% include "accounts/components/channel_selector.html" with input_id="otp-channel-input" %}
-
-          <form id="otp-request-form">
-            <div class="form-group">
-              <label class="form-label" for="otp-request-identifier">Email or Mobile Number</label>
-              <div class="input-wrapper">
-                <input type="text"
-                       id="otp-request-identifier"
-                       class="form-input"
-                       placeholder="e.g. user@company.com or +919876543210"
-                       autocomplete="email tel"
-                       required>
-              </div>
-            </div>
-            <button type="button" class="btn-primary" id="send-otp-btn">
-              <span class="spinner" aria-hidden="true"></span>
-              <span class="btn-text">Send Verification Code</span>
-            </button>
-          </form>
+          <button type="button" class="corp-mode-tab" id="mode-otp-btn" role="tab" aria-selected="false" aria-controls="otp-login-section">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/>
+            </svg>
+            One-Time Password
+          </button>
         </div>
+        {% endif %}
 
-        <!-- Step 2: Verify OTP -->
-        <div id="otp-step-2" class="otp-screen-step" style="display: none;">
-          <div class="otp-change-identifier" style="margin-bottom: 1rem; font-size: 0.85rem; color: var(--muted-color);">
-            <span>Code sent to <strong id="otp-target-display" style="color: var(--text-color);"></strong></span>
-            <button type="button" id="otp-change-identifier-btn" class="link-subtle" style="background:none; border:none; cursor:pointer; font-size: 0.825rem; margin-left: 0.5rem;">Edit</button>
-          </div>
+        <!-- Shared Alerts -->
+        {% include "accounts/components/alerts.html" %}
 
-          <form id="otp-verify-form" method="POST" action="{% url 'login' %}">
+        <!-- MODE 1: PASSWORD LOGIN -->
+        {% if auth_settings.enable_password != False %}
+        <section id="password-login-section" role="tabpanel" aria-labelledby="mode-password-btn">
+          <form method="POST" action="{% url 'login' %}" id="password-login-form">
             {% csrf_token %}
-            <input type="hidden" name="action" value="verify_otp">
-            <input type="hidden" name="identifier" id="otp-verify-identifier">
+            <input type="hidden" name="action" value="password_login">
             <input type="hidden" name="next" value="{{ next }}">
 
-            <div class="form-group">
-              <label class="form-label" for="otp-verify-code">Enter 6-Digit Code</label>
-              <div class="input-wrapper">
+            <!-- Identifier -->
+            <div class="corp-form-field">
+              <label class="corp-field-label" for="password-identifier">Username, Email, or Mobile Number</label>
+              <div class="corp-input-wrap">
+                <div class="corp-input-icon" aria-hidden="true">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </div>
                 <input type="text"
-                       name="otp_code"
-                       id="otp-verify-code"
-                       class="form-input"
-                       style="font-size: 1.4rem; letter-spacing: 0.35em; text-align: center; font-family: var(--font-mono); font-weight: 700;"
-                       placeholder="000000"
-                       maxlength="6"
-                       inputmode="numeric"
-                       pattern="[0-9]*"
-                       autocomplete="one-time-code"
-                       required>
+                       name="identifier"
+                       id="password-identifier"
+                       class="corp-field-input"
+                       placeholder="name@organisation.com"
+                       autocomplete="username"
+                       required
+                       value="{{ password_form.identifier.value|default:'' }}">
               </div>
+              {% if password_form.identifier.errors %}
+                <span class="corp-field-error">{{ password_form.identifier.errors.0 }}</span>
+              {% endif %}
             </div>
 
-            <div class="form-row-between" style="margin-bottom: 1.25rem;">
-              <span style="font-size: 0.825rem; color: var(--muted-color);">Expires in <strong id="otp-countdown-val" style="color: var(--primary-color);">05:00</strong></span>
-              <button type="button" id="resend-otp-btn" class="link-subtle" style="background:none; border:none; cursor:pointer; font-size: 0.825rem;" disabled>Resend Code</button>
+            <!-- Password -->
+            <div class="corp-form-field">
+              <div class="corp-label-row">
+                <label class="corp-field-label" for="password-input">Password</label>
+                {% if auth_settings.show_forgot != False %}
+                <a href="{% url 'forgot_password' %}" class="corp-link-action" tabindex="0">Forgot password?</a>
+                {% endif %}
+              </div>
+              <div class="corp-input-wrap">
+                <div class="corp-input-icon" aria-hidden="true">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </div>
+                <input type="password"
+                       name="password"
+                       id="password-input"
+                       class="corp-field-input"
+                       placeholder="Enter your password"
+                       autocomplete="current-password"
+                       required>
+                <button type="button" class="toggle-password-btn" id="toggle-password-btn" aria-label="Show password">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+              </div>
+              {% if password_form.password.errors %}
+                <span class="corp-field-error">{{ password_form.password.errors.0 }}</span>
+              {% endif %}
             </div>
 
+            <!-- Remember Me -->
             {% if auth_settings.remember_me != False %}
-            <div class="form-row-between">
-              <label class="checkbox-label" for="otp-remember-me">
-                <input type="checkbox" name="remember_me" id="otp-remember-me" class="form-checkbox">
-                <span>Remember this device</span>
+            <div class="corp-options-row">
+              <label class="corp-check-label" for="remember-me">
+                <input type="checkbox" name="remember_me" id="remember-me" class="corp-checkbox" {% if password_form.remember_me.value %}checked{% endif %}>
+                <span class="corp-check-text">Remember this device for 30 days</span>
               </label>
             </div>
             {% endif %}
 
-            <button type="button" class="btn-primary" id="verify-otp-btn">
+            <!-- Submit -->
+            <button type="submit" class="corp-btn-primary" id="password-submit-btn">
               <span class="spinner" aria-hidden="true"></span>
-              <span class="btn-text">Verify &amp; Sign In</span>
+              <span class="btn-text">Sign In to Platform</span>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true" class="corp-btn-arrow">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
             </button>
           </form>
-        </div>
-      </section>
-      {% endif %}
+        </section>
+        {% endif %}
 
-      {% if auth_settings.show_register != False %}
-      <!-- Footer navigation -->
-      <div class="auth-footer">
-        <span>New to platform? <a href="{% url 'register' %}">Create account</a></span>
+        <!-- MODE 2: OTP LOGIN -->
+        {% if auth_settings.enable_otp != False %}
+        <section id="otp-login-section" role="tabpanel" aria-labelledby="mode-otp-btn" {% if auth_settings.enable_password != False %}style="display: none;"{% endif %}>
+          <!-- Step 1: Request OTP -->
+          <div id="otp-step-1" class="otp-screen-step active">
+            <label class="corp-field-label" style="margin-bottom: 0.5rem;">Verification Channel</label>
+            {% include "accounts/components/channel_selector.html" with input_id="otp-channel-input" %}
+
+            <form id="otp-request-form">
+              <div class="corp-form-field">
+                <label class="corp-field-label" id="otp-identifier-label" for="otp-request-identifier">Email Address or Mobile Number</label>
+                <div class="corp-input-wrap">
+                  <div class="corp-input-icon" aria-hidden="true">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                      <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                  </div>
+                  <input type="text"
+                         id="otp-request-identifier"
+                         class="corp-field-input"
+                         placeholder="user@organisation.com"
+                         autocomplete="email tel"
+                         required>
+                </div>
+              </div>
+              <button type="button" class="corp-btn-primary" id="send-otp-btn">
+                <span class="spinner" aria-hidden="true"></span>
+                <span class="btn-text">Send Verification Code</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Step 2: Verify OTP -->
+          <div id="otp-step-2" class="otp-screen-step" style="display: none;">
+            <div class="corp-otp-sent-notice">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              <span>Code sent to <strong id="otp-target-display" class="otp-target-value"></strong></span>
+              <button type="button" id="otp-change-identifier-btn" class="corp-link-action otp-edit-btn">Change</button>
+            </div>
+
+            <form id="otp-verify-form" method="POST" action="{% url 'login' %}">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="verify_otp">
+              <input type="hidden" name="identifier" id="otp-verify-identifier">
+              <input type="hidden" name="next" value="{{ next }}">
+
+              <div class="corp-form-field">
+                <label class="corp-field-label" for="otp-inputs">Enter 6-Digit Verification Code</label>
+                {% include "accounts/components/otp_input.html" %}
+              </div>
+
+              <div class="corp-otp-meta">
+                <span class="corp-otp-timer">Expires in <strong id="otp-countdown-val">05:00</strong></span>
+                <button type="button" id="resend-otp-btn" class="corp-link-action" disabled>Resend Code</button>
+              </div>
+
+              {% if auth_settings.remember_me != False %}
+              <div class="corp-options-row">
+                <label class="corp-check-label" for="otp-remember-me">
+                  <input type="checkbox" name="remember_me" id="otp-remember-me" class="corp-checkbox">
+                  <span class="corp-check-text">Remember this device for 30 days</span>
+                </label>
+              </div>
+              {% endif %}
+
+              <button type="button" class="corp-btn-primary" id="verify-otp-btn">
+                <span class="spinner" aria-hidden="true"></span>
+                <span class="btn-text">Verify &amp; Sign In</span>
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true" class="corp-btn-arrow">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </form>
+          </div>
+        </section>
+        {% endif %}
+
+        <!-- Footer: Register link + legal -->
+        {% if auth_settings.show_register != False %}
+        <div class="corp-card-footer">
+          <span>New to the platform? <a href="{% url 'register' %}" class="corp-footer-link">Create an account</a></span>
+        </div>
+        {% endif %}
       </div>
-      {% endif %}
+
+      <!-- Below-card: Compliance / Legal note -->
+      <div class="corp-compliance-note">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>Protected by enterprise-grade TLS encryption. Access is logged for compliance.</span>
+      </div>
     </div>
   </main>
+
+  <!-- Corporate: Structured page footer -->
+  <footer class="corp-page-footer">
+    <div class="corp-footer-inner">
+      <span>&copy; {{ branding.brand_name|default:"Auth Platform" }}. All rights reserved.</span>
+      <nav class="corp-footer-nav" aria-label="Footer links">
+        <a href="#" class="corp-footer-link">Privacy Policy</a>
+        <a href="#" class="corp-footer-link">Terms of Service</a>
+        <a href="#" class="corp-footer-link">Support</a>
+      </nav>
+    </div>
+  </footer>
+
 </div>
 
 <!-- Floating Template Switcher -->

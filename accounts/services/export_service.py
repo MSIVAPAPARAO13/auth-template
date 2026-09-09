@@ -107,11 +107,6 @@ class ExportService:
             )
             zf.writestr("custom-auth-platform/requirements.txt", requirements)
 
-            # 4. Customized tokens CSS (with user's custom design tokens pre-baked)
-            css_vars = TemplateRegistry.generate_css_variables(merged_config)
-            custom_tokens_css = cls._generate_custom_tokens_css(css_vars)
-            zf.writestr("custom-auth-platform/static/accounts/css/auth_tokens.css", custom_tokens_css)
-
             # 4b. Extract custom logo from base64 data URI into static asset if present
             logo_url = merged_config.get("branding", {}).get("logo_url", "")
             if logo_url and logo_url.startswith("data:image/"):
@@ -128,6 +123,28 @@ class ExportService:
                     merged_config["branding"]["logo_url"] = f"/static/accounts/images/brand_logo.{ext}"
                 except Exception:
                     pass
+
+            # 4c. Extract custom background image from base64 data URI into static asset if present
+            bg_url = merged_config.get("background", {}).get("image_url", "")
+            if bg_url and bg_url.startswith("data:image/"):
+                try:
+                    header, b64_data = bg_url.split(",", 1)
+                    raw_bytes = base64.b64decode(b64_data, validate=False)
+                    ext = "png"
+                    if "jpeg" in header or "jpg" in header:
+                        ext = "jpg"
+                    elif "webp" in header:
+                        ext = "webp"
+                    bg_arcname = f"custom-auth-platform/static/accounts/images/background_image.{ext}"
+                    zf.writestr(bg_arcname, raw_bytes)
+                    merged_config["background"]["image_url"] = f"/static/accounts/images/background_image.{ext}"
+                except Exception:
+                    pass
+
+            # 4d. Customized tokens CSS (with user's custom design tokens pre-baked)
+            css_vars = TemplateRegistry.generate_css_variables(merged_config)
+            custom_tokens_css = cls._generate_custom_tokens_css(css_vars)
+            zf.writestr("custom-auth-platform/static/accounts/css/auth_tokens.css", custom_tokens_css)
 
             # 5. Core files and directories to bundle
             bundle_dirs = [

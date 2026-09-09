@@ -32,6 +32,13 @@
     min-height: 100vh !important;
     -webkit-font-smoothing: antialiased;
   }
+  .auth-bg-filter-layer, .auth-bg-overlay {
+    display: none !important;
+  }
+  .dash-main {
+    position: relative;
+    z-index: 2;
+  }
   a { color: inherit; text-decoration: none; }
   button { font-family: inherit; border: none; background: transparent; cursor: pointer; }
 
@@ -363,7 +370,10 @@
 <header class="dash-topbar">
   <div class="dash-topbar-inner">
     <div class="dash-nav-left">
-      <span class="dash-brand-title">AuthPlatform</span>
+      <a href="/dashboard/" style="display: inline-flex; align-items: center; gap: 0.65rem; text-decoration: none;">
+        <img src="{% static 'accounts/img/brand-logo.png' %}" alt="Brand Logo" class="dash-nav-logo" style="height: 24px; width: auto; max-width: 90px; object-fit: contain; border-radius: 4px; display: inline-block; vertical-align: middle;">
+        <span class="dash-brand-title">AuthPlatform</span>
+      </a>
       <div class="dash-nav-divider"></div>
       <nav class="dash-main-nav">
         <a href="/dashboard/" class="dash-nav-link active" aria-current="page">Dashboard</a>

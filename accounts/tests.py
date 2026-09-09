@@ -1,4 +1,5 @@
 from django.test import TestCase, RequestFactory, Client
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 from datetime import timedelta
 from django.db import connection
@@ -3985,9 +3986,1102 @@ class LogoAndOTPBuilderRegressionTests(TestCase):
         self.assertIn('data-template="split"', content)
         self.assertIn('data-template="corporate"', content)
 
+    def test_templates_gallery_visible_after_login(self):
+        """Verify that an authenticated user navigating to /templates/ sees the gallery with user profile pill and no redirect."""
+        # 1. Log user in
+        self.client.force_login(self.user)
+        # 2. Access /templates/
+        res = self.client.get("/templates/")
+        self.assertEqual(res.status_code, 200)
+        content = res.content.decode("utf-8")
+        self.assertIn("Authentication Template System", content)
+        self.assertIn("Modern Minimal", content)
+        self.assertIn("Split Screen", content)
+        self.assertIn("Minimal Corporate", content)
+        self.assertIn("Sign Out", content)
+        # Quick preview links should have preview=1
+        self.assertIn("preview=1", content)
+
+    def test_authenticated_user_can_access_preview_mode_without_dashboard_redirect(self):
+        """Verify authenticated users can view auth templates in preview mode (?preview=1) without getting redirected to /dashboard/."""
+        self.client.force_login(self.user)
+        # Without preview flag, redirected to dashboard
+        res_normal = self.client.get("/login/")
+        self.assertEqual(res_normal.status_code, 302)
+        self.assertEqual(res_normal.url, "/dashboard/")
+
+        # With preview=1 flag, 200 OK rendered
+        res_preview = self.client.get("/login/?template=modern&preview=1")
+        self.assertEqual(res_preview.status_code, 200)
+        self.assertIn("template-modern", res_preview.content.decode("utf-8"))
+
+        res_split_preview = self.client.get("/login/?template=split&preview=1")
+        self.assertEqual(res_split_preview.status_code, 200)
+        self.assertIn("template-split", res_split_preview.content.decode("utf-8"))
+
+    def test_background_configuration_sanitization_and_validation(self):
+        """Verify background data is properly sanitized and invalid SVGs are rejected."""
+        from accounts.services.config_service import sanitize_config_data
+
+        # 1. Valid background colors and gradients
+        config_in = {
+            "background": {
+                "type": "gradient",
+                "color": "#112233",
+                "gradient": {
+                    "type": "linear",
+                    "start_color": "#123456",
+                    "end_color": "#654321",
+                    "angle": 90,
+                },
+                "position": "center",
+                "size": "cover",
+                "repeat": "no-repeat",
+                "overlay": {"color": "#000000", "opacity": 50},
+                "blur": 5,
+                "brightness": 110,
+                "saturation": 90,
+            }
+        }
+        sanitized = sanitize_config_data(config_in)
+        bg = sanitized["background"]
+        self.assertEqual(bg["type"], "gradient")
+        self.assertEqual(bg["color"], "#112233")
+        self.assertEqual(bg["gradient"]["start_color"], "#123456")
+        self.assertEqual(bg["gradient"]["angle"], 90)
+        self.assertEqual(bg["overlay"]["opacity"], 50)
+        self.assertEqual(bg["blur"], 5)
+        self.assertEqual(bg["brightness"], 110)
+
+        # 2. Reject SVG data URI in background image
+        svg_data = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxzY3JpcHQ+YWxlcnQoMSk8L3NjcmlwdD48L3N2Zz4="
+        config_svg = {
+            "background": {
+                "type": "image",
+                "image_url": svg_data,
+            }
+        }
+        sanitized_svg = sanitize_config_data(config_svg)
+        self.assertEqual(sanitized_svg["background"]["image_url"], "")
+
+        # 3. Accept valid PNG 1x1 base64
+        png_1x1 = (
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        )
+        config_png = {
+            "background": {
+                "type": "image",
+                "image_url": png_1x1,
+            }
+        }
+        sanitized_png = sanitize_config_data(config_png)
+        self.assertTrue(sanitized_png["background"]["image_url"].startswith("data:image/png;base64,"))
+
+    def test_card_and_animation_sanitization_and_persistence(self):
+        """Verify card styling and entrance animation settings persist and clamp to limits."""
+        from accounts.services.config_service import sanitize_config_data
+
+        config_in = {
+            "card": {
+                "width": "800px",  # Clamped to max 600px
+                "padding": "60px", # Clamped to max 48px
+                "background_color": "#abcdef",
+                "opacity": 85,
+                "border_radius": "40px", # Clamped to max 32px
+                "border_width": 2,
+                "border_color": "#123456",
+                "shadow": "strong",
+                "blur": 10,
+                "alignment": "left",
+            },
+            "animations": {
+                "type": "slide_up",
+                "duration": 400,
+                "delay": 100,
+                "intensity": "normal",
+            },
+        }
+        sanitized = sanitize_config_data(config_in)
+        card = sanitized["card"]
+        self.assertEqual(card["width"], "600px")
+        self.assertEqual(card["padding"], "48px")
+        self.assertEqual(card["border_radius"], "32px")
+        self.assertEqual(card["opacity"], 85)
+        self.assertEqual(card["shadow"], "strong")
+        self.assertEqual(card["alignment"], "left")
+
+        anims = sanitized["animations"]
+        self.assertEqual(anims["type"], "slide_up")
+        self.assertEqual(anims["duration"], 400)
+        self.assertEqual(anims["delay"], 100)
+
+    def test_template_registry_generates_background_and_card_css_variables(self):
+        """Verify TemplateRegistry generate_css_variables outputs all background, card, and animation variables."""
+        from accounts.services.template_registry import TemplateRegistry
+
+        config = {
+            "background": {
+                "type": "color",
+                "color": "#232323",
+                "blur": 4,
+            },
+            "card": {
+                "width": "480px",
+                "border_radius": "16px",
+                "background_color": "#18181b",
+                "opacity": 95,
+            },
+            "animations": {
+                "type": "fade",
+                "duration": 300,
+            },
+        }
+        css_vars = TemplateRegistry.generate_css_variables("modern", config)
+        self.assertIn("--auth-bg-color: #232323;", css_vars)
+        self.assertIn("--auth-bg-filter-blur: 4px;", css_vars)
+        self.assertIn("--card-width: 480px;", css_vars)
+        self.assertIn("--card-border-radius: 16px;", css_vars)
+        self.assertIn("--card-bg-color: #18181b;", css_vars)
+        self.assertIn("--card-opacity: 0.95;", css_vars)
+        self.assertIn("--card-animation-name: animFade;", css_vars)
+        self.assertIn("--card-animation-duration: 300ms;", css_vars)
 
 
+class TestLivePreviewLayoutAndTemplatesGallery(TestCase):
+    """Automated test suite verifying Live Preview container architecture, demo banner, and Templates Gallery."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        setup_test_sqlite_tables()
+
+    def setUp(self):
+        super().setUp()
+        self.client = Client()
+        self.user = AuthUser(
+            username="previewtester",
+            email="previewtester@company.com",
+            full_name="Preview Tester",
+        )
+        PasswordService.apply_password_to_user(self.user, "SecurePassword123!")
+        self.user.save()
+
+    def test_builder_live_preview_stage_and_viewport_markup(self):
+        """Verify builder page renders the proper preview stage, toolbar, shell, and viewport elements."""
+        response = self.client.get("/builder/")
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode("utf-8")
+        self.assertIn("builder-preview-stage", content)
+        self.assertIn("preview-stage-toolbar", content)
+        self.assertIn("preview-shell", content)
+        self.assertIn("preview-frame-wrapper", content)
+        self.assertIn("preview-viewport", content)
+        self.assertIn("preview-iframe", content)
+        self.assertIn("State Simulator:", content)
+
+    def test_auth_pages_render_preview_mode_cleanly(self):
+        """Verify all authentication screens load with preview=1 and render without error."""
+        templates = ["modern", "split", "corporate"]
+        screens = [
+            ("/login/", "Sign In"),
+            ("/register/", "Create Account"),
+            ("/forgot-password/", "Forgot"),
+        ]
+        for tpl in templates:
+            for url, expected_text in screens:
+                resp = self.client.get(f"{url}?template={tpl}&preview=1")
+                self.assertEqual(resp.status_code, 200)
+                body = resp.content.decode("utf-8")
+                self.assertIn("is-preview", body)
+                self.assertIn(tpl, body)
+
+    @patch.object(
+        OTPDeliveryRouter,
+        "get_channel_status",
+        return_value={
+            "email": {"available": True, "label": "Email", "is_demo": True},
+            "sms": {"available": True, "label": "SMS", "is_demo": True},
+            "whatsapp": {"available": True, "label": "WhatsApp", "is_demo": True},
+        },
+    )
+    def test_compact_demo_banner_preserves_demo_otp(self, mock_status):
+        """Verify demo banner retains the required DEVELOPMENT / DEMO MODE notice and 123456 OTP."""
+        resp = self.client.get("/login/?template=modern")
+        self.assertEqual(resp.status_code, 200)
+        body = resp.content.decode("utf-8")
+        self.assertIn("DEVELOPMENT / DEMO MODE", body)
+        self.assertIn("Demo OTP: 123456", body)
+        self.assertIn("demo-banner", body)
+
+    def test_dashboard_templates_gallery_access_after_login(self):
+        """Verify logged in user can access dashboard and navigate to the real Templates Gallery."""
+        # Log in
+        login_success = self.client.login(username="previewtester", password="SecurePassword123!")
+        self.assertTrue(login_success)
+
+        # Dashboard contains Templates link
+        dash_resp = self.client.get("/dashboard/")
+        self.assertEqual(dash_resp.status_code, 200)
+        dash_body = dash_resp.content.decode("utf-8")
+        self.assertIn('href="/templates/"', dash_body)
+
+        # Navigate to /templates/
+        gallery_resp = self.client.get("/templates/")
+        self.assertEqual(gallery_resp.status_code, 200)
+        gallery_body = gallery_resp.content.decode("utf-8")
+        self.assertIn("templates-preview-body", gallery_body)
+        self.assertIn("Modern Minimal", gallery_body)
+        self.assertIn("Split Screen", gallery_body)
+        self.assertIn("Minimal Corporate", gallery_body)
+        self.assertIn("Preview Tester", gallery_body)
 
 
+class TestThemeModeArchitecture(TestCase):
+    """
+    Comprehensive automated test suite for Theme Mode (Dark, Light, System) architecture.
+    Verifies default dark mode, light mode, system mode, design tokens, backward compatibility,
+    Apply / Reset APIs, Live Preview synchronization, contrast, and auth pages.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        setup_test_sqlite_tables()
+
+    def setUp(self):
+        super().setUp()
+        self.client = Client()
+        self.user = AuthUser(
+            username="themetester",
+            email="themetester@company.com",
+            full_name="Theme Tester",
+        )
+        PasswordService.apply_password_to_user(self.user, "SecurePass123!")
+        self.user.save()
+
+    def test_default_theme_mode_is_dark_across_templates(self):
+        """Verify TemplateRegistry defaults specify dark theme mode for modern, split, and corporate."""
+        for tpl in ["modern", "split", "corporate"]:
+            defaults = TemplateRegistry.get_default_config(tpl)
+            self.assertIn("theme", defaults, f"Template {tpl} missing 'theme' object")
+            self.assertEqual(
+                defaults["theme"].get("mode"),
+                "dark",
+                f"Template {tpl} default theme mode should be 'dark'",
+            )
+
+    def test_config_service_sanitize_theme_mode(self):
+        """Verify ConfigService sanitizes theme mode and defaults missing or invalid values to 'dark'."""
+        # Valid values
+        self.assertEqual(ConfigService.sanitize_theme({"mode": "dark"}), {"mode": "dark"})
+        self.assertEqual(ConfigService.sanitize_theme({"mode": "light"}), {"mode": "light"})
+        self.assertEqual(ConfigService.sanitize_theme({"mode": "system"}), {"mode": "system"})
+
+        # Case normalization and invalid values fallback
+        self.assertEqual(ConfigService.sanitize_theme({"mode": "DARK"}), {"mode": "dark"})
+        self.assertEqual(ConfigService.sanitize_theme({"mode": "invalid"}), {"mode": "dark"})
+        self.assertEqual(ConfigService.sanitize_theme({}), {"mode": "dark"})
+        self.assertEqual(ConfigService.sanitize_theme(None), {"mode": "dark"})
+
+    def test_backward_compatibility_missing_theme_in_config(self):
+        """Verify existing saved configurations without a 'theme' field automatically default to dark."""
+        legacy_config = {
+            "template": "modern",
+            "colors": {"primary": "#2563eb"},
+        }
+        sanitized = ConfigService.sanitize_config_data(legacy_config)
+        self.assertIn("theme", sanitized)
+        self.assertEqual(sanitized["theme"]["mode"], "dark")
+
+    def test_generate_css_variables_dark_theme(self):
+        """Verify generate_css_variables outputs the professional dark theme tokens."""
+        config = {
+            "template": "modern",
+            "theme": {"mode": "dark"},
+            "colors": {},
+            "card": {},
+            "inputs": {},
+            "buttons": {},
+        }
+        css = TemplateRegistry.generate_css_variables(config)
+        self.assertIn("--theme-mode: dark;", css)
+        self.assertIn("--card-background: #1B1D21;", css)
+        self.assertIn("--background-color: #111214;", css)
+        self.assertIn("--text-color: #F5F5F5;", css)
+        self.assertIn("--muted-color: #A7A7A7;", css)
+        self.assertIn("--input-bg: #15171A;", css)
+        self.assertIn("--input-border: #34373C;", css)
+        self.assertIn("--btn-primary-bg: #FFFFFF;", css)
+        self.assertIn("--btn-primary-text: #111111;", css)
+        self.assertIn("--tab-bg: #15171A;", css)
+        self.assertIn("--tab-active-bg: #2A2C30;", css)
+        self.assertIn("--otp-channel-bg: #15171A;", css)
+
+    def test_generate_css_variables_light_theme(self):
+        """Verify generate_css_variables outputs the professional light theme tokens."""
+        config = {
+            "template": "modern",
+            "theme": {"mode": "light"},
+            "colors": {},
+            "card": {},
+            "inputs": {},
+            "buttons": {},
+        }
+        css = TemplateRegistry.generate_css_variables(config)
+        self.assertIn("--theme-mode: light;", css)
+        self.assertIn("--card-background: #FFFFFF;", css)
+        self.assertIn("--background-color: #F5F6F8;", css)
+        self.assertIn("--text-color: #17181A;", css)
+        self.assertIn("--muted-color: #656970;", css)
+        self.assertIn("--input-bg: #FFFFFF;", css)
+        self.assertIn("--input-border: #D7DADF;", css)
+        self.assertIn("--btn-primary-bg: #17181A;", css)
+        self.assertIn("--btn-primary-text: #FFFFFF;", css)
+        self.assertIn("--tab-bg: #EDEFF2;", css)
+        self.assertIn("--tab-active-bg: #FFFFFF;", css)
+        self.assertIn("--otp-channel-bg: #FFFFFF;", css)
+        self.assertIn("--otp-channel-active-border: #17181A;", css)
+
+    def test_generate_css_variables_system_theme(self):
+        """Verify generate_css_variables outputs system mode identifier for CSS media queries."""
+        config = {
+            "template": "modern",
+            "theme": {"mode": "system"},
+            "colors": {},
+            "card": {},
+            "inputs": {},
+            "buttons": {},
+        }
+        css = TemplateRegistry.generate_css_variables(config)
+        self.assertIn("--theme-mode: system;", css)
+
+    def test_custom_card_background_overrides_theme_default(self):
+        """Verify custom card background color takes priority over theme default."""
+        config = {
+            "template": "modern",
+            "theme": {"mode": "dark"},
+            "card": {"background_color": "#242424"},
+        }
+        css = TemplateRegistry.generate_css_variables(config)
+        self.assertIn("--card-background: #242424;", css)
+        self.assertIn("--card-bg-color: #242424;", css)
+
+    def test_builder_markup_includes_theme_mode_controls(self):
+        """Verify builder page renders the Theme Mode section and segmented buttons."""
+        response = self.client.get("/builder/")
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode("utf-8")
+        self.assertIn("Theme Mode", content)
+        self.assertIn("ctrl-theme-mode-group", content)
+        self.assertIn('data-mode="dark"', content)
+        self.assertIn('data-mode="light"', content)
+        self.assertIn('data-mode="system"', content)
+        self.assertIn("btn-reset-card-bg", content)
+
+    def test_apply_theme_mode_updates_actual_auth_pages(self):
+        """Verify applying a light theme updates /login/, /register/, /forgot-password/, /reset-password/."""
+        # 1. Apply light theme via API
+        apply_payload = {
+            "template": "modern",
+            "theme": {"mode": "light"},
+            "branding": {"brand_name": "Acme Theme Test"},
+        }
+        apply_resp = self.client.post(
+            "/api/builder/configurations/apply/",
+            data=json.dumps(apply_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(apply_resp.status_code, 200)
+        self.assertTrue(apply_resp.json().get("success"))
+
+        # 2. Check all 4 actual auth pages reflect data-theme="light"
+        session = self.client.session
+        session["password_reset_authorized"] = {
+            "user_id": self.user.id,
+            "identifier": self.user.email,
+            "token": "test-reset-token-abc",
+            "created_at": timezone.now().isoformat(),
+            "expires_at": (timezone.now() + timedelta(minutes=15)).isoformat(),
+        }
+        session.save()
+
+        auth_pages = ["/login/", "/register/", "/forgot-password/", "/reset-password/"]
+        for url in auth_pages:
+            resp = self.client.get(url)
+            self.assertEqual(resp.status_code, 200, f"Page {url} failed to render")
+            body = resp.content.decode("utf-8")
+            self.assertIn('data-theme="light"', body, f"Page {url} did not render data-theme='light'")
+            self.assertIn("--theme-mode: light;", body, f"Page {url} missing --theme-mode: light dynamic CSS")
+
+    def test_reset_api_restores_default_dark_mode(self):
+        """Verify resetting via /api/builder/configurations/reset/ restores default dark mode."""
+        # First set light
+        self.client.post(
+            "/api/builder/configurations/apply/",
+            data=json.dumps({"template": "modern", "theme": {"mode": "light"}}),
+            content_type="application/json",
+        )
+        # Then reset
+        reset_resp = self.client.post("/api/builder/configurations/reset/")
+        self.assertEqual(reset_resp.status_code, 200)
+        self.assertTrue(reset_resp.json().get("success"))
+
+        # Login page should now render with data-theme="dark"
+        resp = self.client.get("/login/")
+        self.assertEqual(resp.status_code, 200)
+        body = resp.content.decode("utf-8")
+        self.assertIn('data-theme="dark"', body)
+
+    def test_all_templates_render_with_each_theme_mode(self):
+        """Verify Modern, Split, and Corporate templates all render properly with dark, light, and system."""
+        templates = ["modern", "split", "corporate"]
+        modes = ["dark", "light", "system"]
+
+        for tpl in templates:
+            for mode in modes:
+                self.client.post(
+                    "/api/builder/configurations/apply/",
+                    data=json.dumps({"template": tpl, "theme": {"mode": mode}}),
+                    content_type="application/json",
+                )
+                resp = self.client.get(f"/login/?template={tpl}")
+                self.assertEqual(resp.status_code, 200, f"Template {tpl} with mode {mode} returned {resp.status_code}")
+                body = resp.content.decode("utf-8")
+                self.assertIn(f'data-theme="{mode}"', body)
+                self.assertIn(f"--theme-mode: {mode};", body)
 
 
+class TestDesignSystemAndPresets(TestCase):
+    """
+    Test suite for Phase 12: Next-Level Professional Authentication Design System & Presets.
+    Covers 10 color palettes, 10 design presets, component presets, density, SEO, and backward compatibility.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        setup_test_sqlite_tables()
+
+    def setUp(self):
+        super().setUp()
+        self.client = Client()
+
+    def test_ten_curated_color_palettes_registered(self):
+        """Verify all 10 coordinated color palettes are registered with dark & light tokens."""
+        palettes = TemplateRegistry.get_color_palettes()
+        expected = [
+            "midnight", "ocean", "indigo", "violet", "emerald",
+            "teal", "rose", "amber", "slate", "graphite"
+        ]
+        self.assertEqual(len(palettes), 10)
+        for key in expected:
+            self.assertIn(key, palettes)
+            pal = palettes[key]
+            self.assertIn("name", pal)
+            self.assertIn("dark", pal)
+            self.assertIn("light", pal)
+            for mode in ("dark", "light"):
+                tokens = pal[mode]
+                self.assertIn("primary", tokens)
+                self.assertIn("bg", tokens)
+                self.assertIn("surface", tokens)
+                self.assertIn("text", tokens)
+                self.assertIn("border", tokens)
+
+    def test_ten_design_presets_registered(self):
+        """Verify all 10 complete 1-click design presets are registered with swatches and metadata."""
+        presets = TemplateRegistry.get_design_presets()
+        expected = [
+            "midnight_saas", "ocean_pro", "indigo_modern", "emerald_finance",
+            "violet_creative", "clean_light", "executive", "minimal_mono",
+            "soft_modern", "dark_enterprise"
+        ]
+        self.assertEqual(len(presets), 10)
+        for key in expected:
+            self.assertIn(key, presets)
+            preset = presets[key]
+            self.assertIn("name", preset)
+            self.assertIn("description", preset)
+            self.assertIn("swatches", preset)
+            self.assertIn("theme_mode", preset)
+            self.assertIn("palette", preset)
+            self.assertIn("card", preset)
+            self.assertIn("buttons", preset)
+            self.assertIn("inputs", preset)
+            self.assertIn("density", preset.get("spacing", {}))
+
+    def test_generate_css_variables_emits_design_tokens(self):
+        """Verify generate_css_variables outputs modern design system tokens."""
+        cfg = {
+            "template": "modern",
+            "theme": {"mode": "dark"},
+            "palette": {"preset": "emerald"},
+            "spacing": {"density": "compact"},
+            "card": {"preset": "glass"},
+        }
+        css = TemplateRegistry.generate_css_variables(cfg)
+        self.assertIn("--color-primary: #10b981;", css)
+        self.assertIn("--color-bg: #061a14;", css)
+        self.assertIn("--color-surface: #0b2e24;", css)
+        self.assertIn("--density-card-padding: 20px;", css)
+
+    def test_config_service_sanitizes_palette_and_presets(self):
+        """Verify ConfigService properly sanitizes palette, presets, and density."""
+        raw = {
+            "template": "modern",
+            "palette": {"preset": "emerald", "custom_colors": {"primary": "#123456"}},
+            "design_preset": "midnight_saas",
+            "spacing": {"density": "spacious"},
+            "buttons": {"preset": "pill", "border_radius": "99px"},
+            "inputs": {"preset": "bordered"},
+            "card": {"preset": "elevated"},
+        }
+        clean = ConfigService.sanitize_config_data(raw)
+        self.assertEqual(clean["palette"]["preset"], "emerald")
+        self.assertEqual(clean["palette"]["custom_colors"]["primary"], "#123456")
+        self.assertEqual(clean["design_preset"], "midnight_saas")
+        self.assertEqual(clean["spacing"]["density"], "spacious")
+        self.assertEqual(clean["buttons"]["preset"], "pill")
+        self.assertEqual(clean["inputs"]["preset"], "bordered")
+        self.assertEqual(clean["card"]["preset"], "elevated")
+
+        # Invalid values fallback to safe defaults
+        invalid_raw = {
+            "template": "modern",
+            "palette": {"preset": "INVALID_PALETTE"},
+            "design_preset": "HACK_PRESET",
+            "spacing": {"density": "HUGE"},
+            "buttons": {"preset": "UNKNOWN"},
+            "inputs": {"preset": "UNKNOWN"},
+            "card": {"preset": "UNKNOWN"},
+        }
+        clean_inv = ConfigService.sanitize_config_data(invalid_raw)
+        self.assertEqual(clean_inv["palette"]["preset"], "indigo")
+        self.assertEqual(clean_inv["design_preset"], "")
+        self.assertEqual(clean_inv["spacing"]["density"], "comfortable")
+        self.assertEqual(clean_inv["buttons"]["preset"], "solid")
+        self.assertEqual(clean_inv["inputs"]["preset"], "minimal")
+        self.assertEqual(clean_inv["card"]["preset"], "default")
+
+    def test_apply_config_and_render_login_with_design_system(self):
+        """Apply a complete design system preset and verify login page reflects the tokens and classes."""
+        cfg = {
+            "template": "modern",
+            "theme": {"mode": "dark"},
+            "palette": {"preset": "violet"},
+            "design_preset": "violet_creative",
+            "spacing": {"density": "spacious"},
+            "card": {"preset": "soft"},
+            "buttons": {"preset": "pill"},
+            "inputs": {"preset": "bordered"},
+        }
+        apply_resp = self.client.post(
+            "/api/builder/configurations/apply/",
+            data=json.dumps(cfg),
+            content_type="application/json",
+        )
+        self.assertEqual(apply_resp.status_code, 200)
+
+        login_resp = self.client.get("/login/?template=modern")
+        self.assertEqual(login_resp.status_code, 200)
+        body = login_resp.content.decode("utf-8")
+        self.assertIn("--color-primary: #8b5cf6;", body)
+        self.assertIn("density-spacious", body)
+        self.assertIn("card-style-soft", body)
+        self.assertIn("btn-style-pill", body)
+
+    def test_templates_gallery_view_has_seo_and_filter_features(self):
+        """Verify templates preview gallery includes SEO JSON-LD and category filter controls."""
+        resp = self.client.get("/templates-preview/")
+        self.assertEqual(resp.status_code, 200)
+        body = resp.content.decode("utf-8")
+        self.assertIn('application/ld+json', body)
+        self.assertIn('Auth Studio Template Gallery', body)
+        self.assertIn('data-filter="minimal"', body)
+        self.assertIn('data-filter="business"', body)
+        self.assertIn('data-filter="creative"', body)
+        self.assertIn('gallery-search-input', body)
+
+    def test_builder_view_passes_palettes_and_presets_context(self):
+        """Verify builder view passes color_palettes and design_presets to template context."""
+        resp = self.client.get("/builder/")
+        self.assertEqual(resp.status_code, 200)
+        body = resp.content.decode("utf-8")
+        self.assertIn("design_presets", resp.context)
+        self.assertIn("color_palettes", resp.context)
+        self.assertIn("window.colorPalettes =", body)
+        self.assertIn("window.designPresets =", body)
+
+    def test_backward_compatibility_legacy_config_payload(self):
+        """Verify old configs without design_preset or palette merge cleanly without errors."""
+        legacy_cfg = {
+            "template": "split",
+            "authentication": {"enable_otp": True},
+            "branding": {"brand_name": "Legacy Corp"},
+        }
+        merged = TemplateRegistry.merge_config("split", legacy_cfg)
+        self.assertEqual(merged["template"], "split")
+        self.assertEqual(merged["branding"]["brand_name"], "Legacy Corp")
+        # Default palette and spacing must be populated safely
+        self.assertIn("palette", merged)
+        self.assertIn("spacing", merged)
+        css = TemplateRegistry.generate_css_variables(merged)
+        self.assertIn("--color-primary:", css)
+
+
+class CardPositionAndBackgroundEnhancementTests(TestCase):
+    """
+    Verification suite for Login Card Position / Movement and Background Handling enhancements.
+    Validates:
+      - Default card position (center, 50%, 50%) across all three templates
+      - Custom card position and fine horizontal/vertical coordinate persistence
+      - Background fit options (cover, contain, auto) and all 9 position options
+      - Backward compatibility with old configurations
+      - Exported ZIP contains pre-baked card position and background CSS tokens
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        setup_test_sqlite_tables()
+
+    def setUp(self):
+        super().setUp()
+        self.client = Client()
+
+    def test_default_card_position_across_all_templates(self):
+        """Verify Modern, Split, and Corporate all have valid default card position tokens."""
+        for tpl_id in ("modern", "split", "corporate"):
+            defaults = TemplateRegistry.get_default_configuration(tpl_id)
+            self.assertEqual(defaults["layout"]["card_position"], "center")
+            self.assertEqual(defaults["layout"]["card_horizontal_position"], 50)
+            self.assertEqual(defaults["layout"]["card_vertical_position"], 50)
+            self.assertEqual(defaults["card"]["position"], "center")
+            self.assertEqual(defaults["card"]["horizontal_position"], 50)
+            self.assertEqual(defaults["card"]["vertical_position"], 50)
+
+            css = TemplateRegistry.generate_css_variables(tpl_id, defaults)
+            self.assertIn("--card-position: center;", css)
+            self.assertIn("--card-x: 50%;", css)
+            self.assertIn("--card-y: 50%;", css)
+            self.assertIn("--card-x-pct: 50;", css)
+            self.assertIn("--card-y-pct: 50;", css)
+
+    def test_custom_card_position_and_fine_coordinates_css_generation(self):
+        """Verify custom 3x3 positions and fine sliders generate exact CSS variables."""
+        test_positions = [
+            ("top-left", 0, 0),
+            ("top-center", 50, 0),
+            ("top-right", 100, 0),
+            ("center-left", 0, 50),
+            ("center", 50, 50),
+            ("center-right", 100, 50),
+            ("bottom-left", 0, 100),
+            ("bottom-center", 50, 100),
+            ("bottom-right", 100, 100),
+            ("custom", 25, 75),
+        ]
+        for pos_name, h_val, v_val in test_positions:
+            cfg = {
+                "template": "modern",
+                "layout": {
+                    "card_position": pos_name,
+                    "card_horizontal_position": h_val,
+                    "card_vertical_position": v_val,
+                },
+            }
+            css = TemplateRegistry.generate_css_variables("modern", cfg)
+            self.assertIn(f"--card-position: {pos_name};", css)
+            self.assertIn(f"--card-x: {h_val}%;", css)
+            self.assertIn(f"--card-y: {v_val}%;", css)
+            self.assertIn(f"--card-x-pct: {h_val};", css)
+            self.assertIn(f"--card-y-pct: {v_val};", css)
+
+    def test_background_fit_and_9_positions_css_generation(self):
+        """Verify background size (cover, contain, auto) and all 9 position choices resolve cleanly."""
+        bg_positions = [
+            ("center", "center center"),
+            ("top", "center top"),
+            ("bottom", "center bottom"),
+            ("left", "left center"),
+            ("right", "right center"),
+            ("top-left", "left top"),
+            ("top-right", "right top"),
+            ("bottom-left", "left bottom"),
+            ("bottom-right", "right bottom"),
+        ]
+        for raw_pos, expected_css in bg_positions:
+            for size_choice in ("cover", "contain", "auto"):
+                cfg = {
+                    "template": "modern",
+                    "background": {
+                        "type": "image",
+                        "size": size_choice,
+                        "position": raw_pos,
+                        "repeat": "no-repeat",
+                    },
+                }
+                css = TemplateRegistry.generate_css_variables("modern", cfg)
+                self.assertIn(f"--auth-bg-size: {size_choice};", css)
+                self.assertIn(f"--auth-bg-position: {expected_css};", css)
+
+    def test_config_service_sanitizes_and_persists_card_position(self):
+        """Verify ConfigService sanitizes and persists card position and coordinates."""
+        raw_data = {
+            "template": "split",
+            "layout": {
+                "card_position": "top-right",
+                "card_horizontal_position": 95,
+                "card_vertical_position": 10,
+            },
+            "card": {
+                "position": "top-right",
+                "horizontal_position": 95,
+                "vertical_position": 10,
+            },
+            "background": {
+                "position": "bottom-left",
+                "size": "contain",
+            },
+        }
+        sanitized = ConfigService.sanitize_config_data(raw_data)
+        self.assertEqual(sanitized["layout"]["card_position"], "top-right")
+        self.assertEqual(sanitized["layout"]["card_horizontal_position"], 95)
+        self.assertEqual(sanitized["layout"]["card_vertical_position"], 10)
+        self.assertEqual(sanitized["card"]["position"], "top-right")
+        self.assertEqual(sanitized["card"]["horizontal_position"], 95)
+        self.assertEqual(sanitized["card"]["vertical_position"], 10)
+        self.assertEqual(sanitized["background"]["position"], "bottom-left")
+        self.assertEqual(sanitized["background"]["size"], "contain")
+
+    def test_config_save_and_load_api_card_position(self):
+        """Test full save and load API preserves card position and background choices."""
+        save_payload = {
+            "configuration_name": "Position Test Config",
+            "configuration_data": {
+                "template": "corporate",
+                "layout": {
+                    "card_position": "bottom-right",
+                    "card_horizontal_position": 85,
+                    "card_vertical_position": 90,
+                },
+                "background": {
+                    "type": "color",
+                    "color": "#111827",
+                    "position": "top-left",
+                    "size": "cover",
+                },
+            },
+        }
+        save_resp = self.client.post(
+            "/api/builder/configurations/save/",
+            data=json.dumps(save_payload),
+            content_type="application/json",
+        )
+        self.assertEqual(save_resp.status_code, 200)
+        save_data = save_resp.json()
+        self.assertTrue(save_data["success"])
+        config_id = save_data["config"]["id"]
+
+        # Load back
+        load_resp = self.client.get(f"/api/builder/configurations/{config_id}/load/")
+        self.assertEqual(load_resp.status_code, 200)
+        loaded = load_resp.json()
+        self.assertTrue(loaded["success"])
+        loaded_cfg = loaded["configuration"]["data"]
+        self.assertEqual(loaded_cfg["layout"]["card_position"], "bottom-right")
+        self.assertEqual(loaded_cfg["layout"]["card_horizontal_position"], 85)
+        self.assertEqual(loaded_cfg["layout"]["card_vertical_position"], 90)
+        self.assertEqual(loaded_cfg["background"]["position"], "top-left")
+        self.assertEqual(loaded_cfg["background"]["size"], "cover")
+
+    def test_backward_compatibility_with_legacy_configs_without_position(self):
+        """Verify legacy configs without card_position default gracefully to center (50%, 50%)."""
+        legacy_cfg = {
+            "template": "modern",
+            "card": {"width": "420px", "alignment": "center"},
+            "background": {"type": "color", "color": "#000000"},
+        }
+        sanitized = ConfigService.sanitize_config_data(legacy_cfg)
+        css = TemplateRegistry.generate_css_variables("modern", sanitized)
+        self.assertIn("--card-position: center;", css)
+        self.assertIn("--card-x: 50%;", css)
+        self.assertIn("--card-y: 50%;", css)
+
+    def test_export_zip_includes_card_position_and_background_tokens(self):
+        """Verify export ZIP contains pre-baked card position and background custom properties."""
+        export_cfg = {
+            "template": "split",
+            "layout": {
+                "card_position": "top-left",
+                "card_horizontal_position": 15,
+                "card_vertical_position": 20,
+            },
+            "background": {
+                "type": "image",
+                "size": "contain",
+                "position": "top-right",
+            },
+        }
+        zip_bytes = ExportService.generate_project_zip(export_cfg, "split")
+        self.assertTrue(len(zip_bytes) > 1000)
+
+        with zipfile.ZipFile(io.BytesIO(zip_bytes), "r") as zf:
+            self.assertIn("custom-auth-platform/static/accounts/css/auth_tokens.css", zf.namelist())
+            tokens_content = zf.read("custom-auth-platform/static/accounts/css/auth_tokens.css").decode("utf-8")
+            self.assertIn("--card-position: top-left;", tokens_content)
+            self.assertIn("--card-x: 15%;", tokens_content)
+            self.assertIn("--card-y: 20%;", tokens_content)
+            self.assertIn("--auth-bg-size: contain;", tokens_content)
+            self.assertIn("--auth-bg-position: right top;", tokens_content)
+
+
+class CardTransparencyAndGlassEffectTests(TestCase):
+    """
+    Focused test suite verifying:
+    - Opaque mode behavior (solid surface, 100% content opacity)
+    - Translucent mode behavior (surface alpha 0.45, content 100% opaque)
+    - Glass mode behavior (surface alpha 0.25, backdrop blur 14px, subtle border)
+    - Transparency & blur persistence in ConfigService
+    - Backward compatibility with legacy configs
+    - Token generation across all 3 templates (modern, split, corporate)
+    - Export ZIP includes surface transparency and backdrop filter tokens
+    """
+
+    def setUp(self):
+        self.client = Client()
+
+    def test_card_appearance_defaults_across_all_templates(self):
+        """Verify default template configs have appearance='opaque', backdrop_blur=0, border_enabled=True."""
+        for tpl_id in ("modern", "split", "corporate"):
+            cfg = TemplateRegistry.get_default_config(tpl_id)
+            card = cfg.get("card", {})
+            self.assertEqual(card.get("appearance"), "opaque")
+            self.assertEqual(card.get("opacity"), 100)
+            self.assertEqual(card.get("backdrop_blur"), 0)
+            self.assertTrue(card.get("border_enabled"))
+
+    def test_opaque_mode_css_tokens(self):
+        """Verify opaque mode generates 100% surface alpha, 0px blur, and --card-opacity: 1."""
+        config = {
+            "template": "modern",
+            "card": {
+                "appearance": "opaque",
+                "background_color": "#1b1d21",
+                "opacity": 100,
+                "backdrop_blur": 0,
+                "border_enabled": True,
+            },
+        }
+        css = TemplateRegistry.generate_css_variables("modern", config)
+        self.assertIn("--card-appearance: opaque;", css)
+        self.assertIn("--card-bg-surface: rgba(27, 29, 33, 1.00);", css)
+        self.assertIn("--card-opacity: 1.00;", css)
+        self.assertIn("--card-surface-alpha: 1.00;", css)
+        self.assertIn("--card-backdrop-blur: 0px;", css)
+
+    def test_translucent_mode_css_tokens(self):
+        """Verify translucent mode generates semi-transparent surface (e.g. 0.45) with 100% DOM element opacity."""
+        config = {
+            "template": "split",
+            "card": {
+                "appearance": "translucent",
+                "background_color": "#ffffff",
+                "opacity": 45,
+                "backdrop_blur": 0,
+                "border_enabled": True,
+                "border_opacity": 30,
+            },
+        }
+        css = TemplateRegistry.generate_css_variables("split", config)
+        self.assertIn("--card-appearance: translucent;", css)
+        self.assertIn("--card-bg-surface: rgba(255, 255, 255, 0.45);", css)
+        self.assertIn("--card-opacity: 0.45;", css)
+        self.assertIn("--card-surface-alpha: 0.45;", css)
+        self.assertIn("--card-backdrop-blur: 0px;", css)
+
+    def test_glass_mode_css_tokens_and_backdrop_blur(self):
+        """Verify glass mode generates frosted glass surface (0.25 alpha), 14px backdrop blur, and restrained border."""
+        config = {
+            "template": "corporate",
+            "card": {
+                "appearance": "glass",
+                "background_color": "#ffffff",
+                "opacity": 25,
+                "backdrop_blur": 14,
+                "border_enabled": True,
+                "border_opacity": 25,
+                "border_color": "#ffffff",
+                "border_width": 1,
+                "shadow": "medium",
+            },
+        }
+        css = TemplateRegistry.generate_css_variables("corporate", config)
+        self.assertIn("--card-appearance: glass;", css)
+        self.assertIn("--card-bg-surface: rgba(255, 255, 255, 0.25);", css)
+        self.assertIn("--card-opacity: 0.25;", css)
+        self.assertIn("--card-surface-alpha: 0.25;", css)
+        self.assertIn("--card-backdrop-blur: 14px;", css)
+        self.assertIn("--card-border-width: 1px;", css)
+        self.assertIn("--card-border-color: rgba(255, 255, 255, 0.25);", css)
+
+    def test_border_enabled_toggle(self):
+        """Verify toggling card border off sets width 0px and transparent color."""
+        config = {
+            "template": "modern",
+            "card": {
+                "appearance": "glass",
+                "border_enabled": False,
+            },
+        }
+        css = TemplateRegistry.generate_css_variables("modern", config)
+        self.assertIn("--card-border-width: 0px;", css)
+        self.assertIn("--card-border-color: transparent;", css)
+
+    def test_config_service_sanitizes_card_transparency_fields(self):
+        """Verify ConfigService properly sanitizes appearance, border_enabled, border_opacity, and backdrop_blur."""
+        raw_card = {
+            "appearance": "GLASS",
+            "opacity": "35",
+            "backdrop_blur": "18px",
+            "border_enabled": "true",
+            "border_opacity": "40",
+            "border_width": 2,
+        }
+        clean = ConfigService.sanitize_card(raw_card)
+        self.assertEqual(clean["appearance"], "glass")
+        self.assertEqual(clean["opacity"], 35)
+        self.assertEqual(clean["backdrop_blur"], 18)
+        self.assertTrue(clean["border_enabled"])
+        self.assertEqual(clean["border_opacity"], 40)
+        self.assertEqual(clean["border_width"], 2)
+
+    def test_backward_compatibility_legacy_config(self):
+        """Verify legacy configs without appearance field gracefully default to opaque and full surface opacity."""
+        legacy_cfg = {
+            "template": "modern",
+            "card": {
+                "width": "420px",
+                "background_color": "#201f22",
+            },
+        }
+        sanitized = ConfigService.sanitize_config_data(legacy_cfg)
+        css = TemplateRegistry.generate_css_variables("modern", sanitized)
+        self.assertIn("--card-appearance: opaque;", css)
+        self.assertIn("--card-opacity: 1.00;", css)
+        self.assertIn("--card-bg-surface: rgba(32, 31, 34, 1.00);", css)
+
+    def test_export_zip_includes_card_transparency_tokens(self):
+        """Verify export ZIP contains pre-baked card transparency and glass tokens."""
+        export_cfg = {
+            "template": "split",
+            "card": {
+                "appearance": "glass",
+                "background_color": "#ffffff",
+                "opacity": 25,
+                "backdrop_blur": 16,
+                "border_enabled": True,
+                "border_opacity": 25,
+            },
+        }
+        zip_bytes = ExportService.generate_project_zip(export_cfg, "split")
+        self.assertTrue(len(zip_bytes) > 1000)
+
+        with zipfile.ZipFile(io.BytesIO(zip_bytes), "r") as zf:
+            tokens_content = zf.read("custom-auth-platform/static/accounts/css/auth_tokens.css").decode("utf-8")
+            self.assertIn("--card-appearance: glass;", tokens_content)
+            self.assertIn("--card-bg-surface: rgba(255, 255, 255, 0.25);", tokens_content)
+            self.assertIn("--card-backdrop-blur: 16px;", tokens_content)
+
+
+class BackgroundImageUrlAndPreviewStackingTests(TestCase):
+    """Unit and integration tests for background image URL validation, sanitization, and preview stacking order."""
+
+    def test_valid_https_image_url_accepted(self):
+        url = "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1600"
+        validated = ConfigService.validate_background_data_uri(url, raise_exception=True)
+        self.assertEqual(validated, url)
+
+    def test_valid_http_image_url_accepted(self):
+        url = "http://example.com/assets/background.jpg"
+        validated = ConfigService.validate_background_data_uri(url, raise_exception=True)
+        self.assertEqual(validated, url)
+
+    def test_unsafe_schemes_rejected(self):
+        unsafe = [
+            "javascript:alert(1)",
+            "vbscript:msgbox",
+            "file:///etc/passwd",
+            "data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==",
+        ]
+        for bad_uri in unsafe:
+            with self.assertRaises(ValidationError):
+                ConfigService.validate_background_data_uri(bad_uri, raise_exception=True)
+
+    def test_svg_image_rejected(self):
+        svg_uri = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'></svg>"
+        with self.assertRaises(ValidationError):
+            ConfigService.validate_background_data_uri(svg_uri, raise_exception=True)
+
+    def test_characters_injection_rejected(self):
+        bad_urls = [
+            'https://example.com/image.jpg"; evil-css;',
+            "https://example.com/image.jpg'; evil-css;",
+            "https://example.com/image.jpg<script>",
+        ]
+        for bad in bad_urls:
+            with self.assertRaises(ValidationError):
+                ConfigService.validate_background_data_uri(bad, raise_exception=True)
+
+    def test_sanitize_background_source_and_url(self):
+        raw_bg = {
+            "type": "image",
+            "source": "url",
+            "image_url": "https://images.unsplash.com/photo-test.jpg",
+            "size": "contain",
+            "position": "top-right",
+            "repeat": "repeat-x",
+            "overlay": {"color": "#111111", "opacity": 50},
+        }
+        clean = ConfigService.sanitize_background(raw_bg)
+        self.assertEqual(clean["type"], "image")
+        self.assertEqual(clean["source"], "url")
+        self.assertEqual(clean["image_url"], "https://images.unsplash.com/photo-test.jpg")
+        self.assertEqual(clean["size"], "contain")
+        self.assertEqual(clean["position"], "top-right")
+        self.assertEqual(clean["repeat"], "repeat-x")
+        self.assertEqual(clean["overlay"]["opacity"], 50)
+
+    def test_template_registry_emits_bg_image_url(self):
+        cfg = {
+            "template": "modern",
+            "background": {
+                "type": "image",
+                "source": "url",
+                "image_url": "https://images.unsplash.com/photo-office.jpg",
+                "size": "cover",
+                "position": "center",
+            }
+        }
+        css = TemplateRegistry.generate_css_variables("modern", cfg)
+        self.assertIn('--auth-bg-image: url("https://images.unsplash.com/photo-office.jpg");', css)
+        self.assertIn('--auth-bg-size: cover;', css)
+
+    def test_preview_layer_stacking_css_rules_in_auth_tokens(self):
+        import os
+        css_path = os.path.join(os.path.dirname(__file__), "..", "static", "accounts", "css", "auth_tokens.css")
+        with open(css_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        self.assertIn("html.is-preview {", content)
+        self.assertIn("width: 100% !important;", content)
+        self.assertIn("display: block !important;", content)
+
+        self.assertIn("body.is-preview .auth-bg-filter-layer", content)
+        self.assertIn("z-index: 0 !important;", content)
+        self.assertIn("body.is-preview .auth-bg-overlay", content)
+        self.assertIn("z-index: 1 !important;", content)
+        self.assertIn("body.is-preview .auth-wrapper", content)
+        self.assertIn("z-index: 3 !important;", content)
+        self.assertIn("body.is-preview .auth-card", content)
+        self.assertIn("z-index: 4 !important;", content)

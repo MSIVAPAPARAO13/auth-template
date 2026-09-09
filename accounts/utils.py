@@ -108,17 +108,49 @@ def get_auth_config_context(request, template_info):
                 filtered_custom["branding"] = custom_data["branding"]
             if "otp_buttons" in custom_data:
                 filtered_custom["otp_buttons"] = custom_data["otp_buttons"]
+            if "theme" in custom_data:
+                filtered_custom["theme"] = custom_data["theme"]
+            if "palette" in custom_data:
+                filtered_custom["palette"] = custom_data["palette"]
+            if "spacing" in custom_data:
+                filtered_custom["spacing"] = custom_data["spacing"]
+            if "buttons" in custom_data:
+                filtered_custom["buttons"] = custom_data["buttons"]
+            if "inputs" in custom_data:
+                filtered_custom["inputs"] = custom_data["inputs"]
+            if "design_preset" in custom_data:
+                filtered_custom["design_preset"] = custom_data["design_preset"]
         else:
             filtered_custom = custom_data
 
     merged = TemplateRegistry.merge_config(template_id, filtered_custom)
     auth_settings = merged.get("authentication", default_config.get("authentication", {}))
     branding = merged.get("branding", default_config.get("branding", {}))
+    background = merged.get("background", default_config.get("background", {}))
+    card_settings = merged.get("card", default_config.get("card", {}))
+    animations = merged.get("animations", default_config.get("animations", {}))
+    theme = merged.get("theme", default_config.get("theme", {"mode": "dark"}))
+    theme_mode = theme.get("mode", "dark") if isinstance(theme, dict) else "dark"
+    palette = merged.get("palette", default_config.get("palette", {"preset": "indigo"}))
+    spacing = merged.get("spacing", default_config.get("spacing", {"density": "comfortable"}))
+    buttons = merged.get("buttons", default_config.get("buttons", {}))
+    inputs = merged.get("inputs", default_config.get("inputs", {}))
+    design_preset = merged.get("design_preset", "")
     dynamic_css_vars = TemplateRegistry.generate_css_variables(merged)
 
     return {
         "auth_settings": auth_settings,
         "branding": branding,
+        "background": background,
+        "card_settings": card_settings,
+        "animations": animations,
+        "theme": theme,
+        "theme_mode": theme_mode,
+        "palette": palette,
+        "spacing": spacing,
+        "buttons": buttons,
+        "inputs": inputs,
+        "design_preset": design_preset,
         "dynamic_css_vars": dynamic_css_vars,
         "active_config": merged,
         "active_config_id": config_obj.id if config_obj else request.session.get("active_config_id"),

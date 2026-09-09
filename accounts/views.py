@@ -43,8 +43,12 @@ def login_view(request):
     if not url_has_allowed_host_and_scheme(redirect_url, allowed_hosts={request.get_host()}):
         redirect_url = "dashboard"
 
-    # If already logged in, go straight to dashboard
-    if request.user.is_authenticated:
+    is_preview = (
+        request.GET.get("preview") in ("1", "true")
+        or request.headers.get("sec-fetch-dest") == "iframe"
+    )
+    # If already logged in, go straight to dashboard (unless viewing in preview mode)
+    if request.user.is_authenticated and not is_preview:
         return redirect(redirect_url)
 
     password_form = PasswordLoginForm()
@@ -285,7 +289,11 @@ def register_view(request):
     7. Dispatches 6-digit registration OTP to selected channel.
     8. Transitions to Registration OTP Verification screen.
     """
-    if request.user.is_authenticated:
+    is_preview = (
+        request.GET.get("preview") in ("1", "true")
+        or request.headers.get("sec-fetch-dest") == "iframe"
+    )
+    if request.user.is_authenticated and not is_preview:
         return redirect("dashboard")
 
     template_path, template_info = resolve_auth_template(request, "register.html")
@@ -543,7 +551,11 @@ def forgot_password_view(request):
     Renders the Forgot Password UI (Step 1: Identifier & Channel Selector, Step 2: OTP Verification).
     Provides dynamic channel availability status for Email, SMS, and WhatsApp.
     """
-    if request.user.is_authenticated:
+    is_preview = (
+        request.GET.get("preview") in ("1", "true")
+        or request.headers.get("sec-fetch-dest") == "iframe"
+    )
+    if request.user.is_authenticated and not is_preview:
         return redirect("dashboard")
 
     template_path, template_info = resolve_auth_template(request, "forgot_password.html")
@@ -818,26 +830,31 @@ def reset_password_view(request):
     Renders the Reset Password screen (Create New Password, Confirm New Password).
     Strictly validates that the user possesses an unexpired server-side reset authorization state.
     """
-    if request.user.is_authenticated:
-        return redirect("dashboard")
+    is_preview = (
+        request.GET.get("preview") in ("1", "true")
+        or request.headers.get("sec-fetch-dest") == "iframe"
+    )
+    if not is_preview:
+        if request.user.is_authenticated:
+            return redirect("dashboard")
 
-    auth_state = request.session.get("password_reset_authorized")
-    if not auth_state:
-        messages.error(request, "Please verify your account before resetting your password.")
-        return redirect("forgot_password")
-
-    # Validate expiration
-    try:
-        from django.utils.dateparse import parse_datetime
-        expires_at = parse_datetime(auth_state.get("expires_at", ""))
-        if not expires_at or timezone.now() > expires_at:
-            request.session.pop("password_reset_authorized", None)
-            messages.error(request, "Your password reset session has expired. Please request a new code.")
+        auth_state = request.session.get("password_reset_authorized")
+        if not auth_state:
+            messages.error(request, "Please verify your account before resetting your password.")
             return redirect("forgot_password")
-    except Exception:
-        request.session.pop("password_reset_authorized", None)
-        messages.error(request, "Invalid password reset session. Please request a new code.")
-        return redirect("forgot_password")
+
+        # Validate expiration
+        try:
+            from django.utils.dateparse import parse_datetime
+            expires_at = parse_datetime(auth_state.get("expires_at", ""))
+            if not expires_at or timezone.now() > expires_at:
+                request.session.pop("password_reset_authorized", None)
+                messages.error(request, "Your password reset session has expired. Please request a new code.")
+                return redirect("forgot_password")
+        except Exception:
+            request.session.pop("password_reset_authorized", None)
+            messages.error(request, "Invalid password reset session. Please request a new code.")
+            return redirect("forgot_password")
 
     template_path, template_info = resolve_auth_template(request, "reset_password.html")
     form = ResetPasswordForm()
@@ -949,19 +966,26 @@ def reset_password_api(request):
 def templates_gallery_view(request):
     """
     Renders the official polished Google Stitch Authentication Templates Gallery
-    showcase for all registered visual templates (Modern Glass, Split Screen, Minimal Corporate).
+    showcase for all registered visual templates (Modern SaaS, Split Screen, Corporate Enterprise).
     """
     param = request.GET.get("template")
     if param and param in VALID_TEMPLATES:
         request.session["auth_template"] = param
 
     active_temp = request.session.get("auth_template", "modern")
+    template_info = VALID_TEMPLATES.get(active_temp, VALID_TEMPLATES["modern"])
+    config_ctx = get_auth_config_context(request, template_info)
+
     return render(
         request,
         "accounts/templates_preview.html",
         {
             "templates": VALID_TEMPLATES,
             "active_template": active_temp,
+            "design_presets": TemplateRegistry.get_design_presets(),
+            "color_palettes": TemplateRegistry.get_color_palettes(),
+            "user": request.user,
+            **config_ctx,
         },
     )
 
@@ -1031,6 +1055,11 @@ def builder_view(request):
             "initial_config": initial_config,
             "active_config_id": active_config_id,
             "templates": VALID_TEMPLATES,
+            "color_palettes": TemplateRegistry.get_color_palettes(),
+            "design_presets": TemplateRegistry.get_design_presets(),
+            "gradient_presets": TemplateRegistry.GRADIENT_PRESETS,
+            "color_palettes_json": json.dumps(TemplateRegistry.get_color_palettes()),
+            "design_presets_json": json.dumps(TemplateRegistry.get_design_presets()),
         },
     )
 
@@ -1173,7 +1202,11 @@ def config_apply_api(request):
     except Exception:
         payload = request.POST
 
-    config_data = payload.get("configuration") or payload.get("configuration_data") or {}
+    config_data = payload.get("configuration") or payload.get("configuration_data")
+    if not config_data and isinstance(payload, dict):
+        if any(k in payload for k in ("template", "theme", "colors", "card", "branding", "background")):
+            config_data = payload
+    config_data = config_data or {}
     config_id = payload.get("config_id")
 
     if config_id:
